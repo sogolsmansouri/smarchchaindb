@@ -7,6 +7,7 @@ Code is Apache-2.0 and docs are CC-BY-4.0
 <!--- There is no shield to get the latest version
 (including pre-release versions) from PyPI,
 so show the latest GitHub release instead.
+tripti samal
 --->
 
 [![Codecov branch](https://img.shields.io/codecov/c/github/bigchaindb/bigchaindb/master.svg)](https://codecov.io/github/bigchaindb/bigchaindb?branch=master)
