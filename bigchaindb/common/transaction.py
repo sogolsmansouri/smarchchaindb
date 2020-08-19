@@ -507,7 +507,9 @@ class Transaction(object):
 
     CREATE = 'CREATE'
     TRANSFER = 'TRANSFER'
-    ALLOWED_OPERATIONS = (CREATE, TRANSFER)
+    REQUEST_FOR_QUOTE = 'REQUEST_FOR_QUOTE'
+    INTEREST = 'INTEREST'
+    ALLOWED_OPERATIONS = (CREATE, TRANSFER, REQUEST_FOR_QUOTE,INTEREST)
     VERSION = '2.0'
 
     def __init__(self, operation, asset, inputs=None, outputs=None,
@@ -539,6 +541,9 @@ class Transaction(object):
         # Asset payloads for 'CREATE' operations must be None or
         # dicts holding a `data` property. Asset payloads for 'TRANSFER'
         # operations must be dicts holding an `id` property.
+        # Asset payloads for 'REQUEST_FOR_QUOTE transaction must either
+        #be None or a dict. Asset payloads for 'INTEREST' operations
+        # must be dicts holding an `id` property
         if (operation == self.CREATE and
                 asset is not None and not (isinstance(asset, dict) and 'data' in asset)):
             raise TypeError(('`asset` must be None or a dict holding a `data` '
@@ -546,7 +551,15 @@ class Transaction(object):
         elif (operation == self.TRANSFER and
                 not (isinstance(asset, dict) and 'id' in asset)):
             raise TypeError(('`asset` must be a dict holding an `id` property '
-                             'for \'TRANSFER\' Transactions'))
+                             "for 'TRANSFER' Transactions".format(operation)))
+        elif (operation == self.REQUEST_FOR_QUOTE and
+                 asset is not None and not (isinstance(asset, dict))):
+            raise TypeError(('`asset` must be a dict'
+                             "for 'REQUEST_FOR_QUOTE' Transactions".format(operation)))
+        elif (operation == self.INTEREST and
+                not (isinstance(asset, dict)) and 'id' in asset):
+            raise TypeError(('`asset` must be a dict holding an `id` property  '
+                             "for 'INTEREST' Transactions".format(operation)))
 
         if outputs and not isinstance(outputs, list):
             raise TypeError('`outputs` must be a list instance or None')
@@ -575,6 +588,8 @@ class Transaction(object):
         if self.operation == self.CREATE:
             self._asset_id = self._id
         elif self.operation == self.TRANSFER:
+            self._asset_id = self.asset['id']
+        elif self.operation == self.INTEREST:
             self._asset_id = self.asset['id']
         return (UnspentOutput(
             transaction_id=self._id,
@@ -664,7 +679,7 @@ class Transaction(object):
         """
 
         (inputs, outputs) = cls.validate_create(tx_signers, recipients, asset, metadata)
-        return cls(cls.CREATE, {'data': asset}, inputs, outputs, metadata)
+        return cls(cls.CREATE, {'data1': asset}, inputs, outputs, metadata)
 
     @classmethod
     def validate_transfer(cls, inputs, recipients, asset_id, metadata):
