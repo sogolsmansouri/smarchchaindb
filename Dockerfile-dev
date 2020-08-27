@@ -33,4 +33,4 @@ RUN mkdir -p /usr/src/app
 COPY . /usr/src/app/
 WORKDIR /usr/src/app
 RUN pip install -e .[dev]
-RUN bigchaindb -y configure
+RUN bigchaindb -l DEBUG -y configure
