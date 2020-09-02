@@ -14,7 +14,7 @@ from flask_restful import Resource, reqparse
 
 from bigchaindb.common.transaction_mode_types import BROADCAST_TX_ASYNC
 from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
-from bigchaindb.web.views.base import make_error
+from bigchaindb.web.views.base import make_error, validate_schema
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
 
@@ -42,6 +42,32 @@ class TransactionApi(Resource):
 
         return tx.to_dict()
 
+class TransactionValidateApi(Resource):
+    def get(self):
+        return dict()
+
+    def post(self):
+        """API endpoint to validate transaction.
+
+        Return:
+            A ``dict`` containing the data about the transaction.
+        """
+        pool = current_app.config['bigchain_pool']
+
+        tx, tx_obj = validate_schema(request)
+
+        with pool() as bigchain:
+            try:
+                bigchain.validate_transaction(tx_obj)
+            except ValidationError as e:
+                return make_error(
+                    400,
+                    'Invalid transaction ({}): {}'.format(type(e).__name__, e)
+                )
+
+        response = jsonify(tx)
+        response.status_code = 202
+        return response
 
 class TransactionListApi(Resource):
     def get(self):
@@ -71,23 +97,7 @@ class TransactionListApi(Resource):
 
         pool = current_app.config['bigchain_pool']
 
-        # `force` will try to format the body of the POST request even if the
-        # `content-type` header is not set to `application/json`
-        tx = request.get_json(force=True)
-
-        try:
-            tx_obj = Transaction.from_dict(tx)
-        except SchemaValidationError as e:
-            return make_error(
-                400,
-                message='Invalid transaction schema: {}'.format(
-                    e.__cause__.message)
-            )
-        except ValidationError as e:
-            return make_error(
-                400,
-                'Invalid transaction ({}): {}'.format(type(e).__name__, e)
-            )
+        tx, tx_obj = validate_schema(request)
 
         with pool() as bigchain:
             try:

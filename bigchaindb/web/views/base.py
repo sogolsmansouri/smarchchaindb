@@ -10,6 +10,8 @@ import logging
 from flask import jsonify, request
 
 from bigchaindb import config
+from bigchaindb.models import Transaction
+from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
 
 
 logger = logging.getLogger(__name__)
@@ -44,3 +46,24 @@ def base_ws_uri():
     port = config_wsserver['advertised_port']
 
     return '{}://{}:{}'.format(scheme, host, port)
+
+
+def validate_schema(request):
+        # `force` will try to format the body of the POST request even if the
+        # `content-type` header is not set to `application/json`
+        tx = request.get_json(force=True)
+
+        try:
+            tx_obj = Transaction.from_dict(tx)
+        except SchemaValidationError as e:
+            return make_error(
+                400,
+                message='Invalid transaction schema: {}'.format(
+                    e.__cause__.message)
+            )
+        except ValidationError as e:
+            return make_error(
+                400,
+                'Invalid transaction ({}): {}'.format(type(e).__name__, e)
+            )
+        return tx, tx_obj
