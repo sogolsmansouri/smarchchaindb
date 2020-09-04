@@ -14,7 +14,7 @@ from flask_restful import Resource, reqparse
 
 from bigchaindb.common.transaction_mode_types import BROADCAST_TX_ASYNC
 from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
-from bigchaindb.web.views.base import make_error, validate_schema
+from bigchaindb.web.views.base import make_error, validate_schema_definition
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
 
@@ -32,7 +32,7 @@ class TransactionApi(Resource):
         Return:
             A JSON string containing the data about the transaction.
         """
-        pool = current_app.config['bigchain_pool']
+        pool = current_app.config["bigchain_pool"]
 
         with pool() as bigchain:
             tx = bigchain.get_transaction(tx_id)
@@ -41,6 +41,7 @@ class TransactionApi(Resource):
             return make_error(404)
 
         return tx.to_dict()
+
 
 class TransactionValidateApi(Resource):
     def get(self):
@@ -52,33 +53,34 @@ class TransactionValidateApi(Resource):
         Return:
             A ``dict`` containing the data about the transaction.
         """
-        pool = current_app.config['bigchain_pool']
+        pool = current_app.config["bigchain_pool"]
 
-        tx, tx_obj = validate_schema(request)
+        error, tx, tx_obj = validate_schema_definition(request)
+
+        if error is not None:
+            return error
 
         with pool() as bigchain:
             try:
                 bigchain.validate_transaction(tx_obj)
             except ValidationError as e:
                 return make_error(
-                    400,
-                    'Invalid transaction ({}): {}'.format(type(e).__name__, e)
+                    400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
 
         response = jsonify(tx)
         response.status_code = 202
         return response
 
+
 class TransactionListApi(Resource):
     def get(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('operation', type=parameters.valid_operation)
-        parser.add_argument('asset_id', type=parameters.valid_txid,
-                            required=True)
-        parser.add_argument('last_tx', type=parameters.valid_bool,
-                            required=False)
+        parser.add_argument("operation", type=parameters.valid_operation)
+        parser.add_argument("asset_id", type=parameters.valid_txid, required=True)
+        parser.add_argument("last_tx", type=parameters.valid_bool, required=False)
         args = parser.parse_args()
-        with current_app.config['bigchain_pool']() as bigchain:
+        with current_app.config["bigchain_pool"]() as bigchain:
             txs = bigchain.get_transactions_filtered(**args)
 
         return [tx.to_dict() for tx in txs]
@@ -90,22 +92,25 @@ class TransactionListApi(Resource):
             A ``dict`` containing the data about the transaction.
         """
         parser = reqparse.RequestParser()
-        parser.add_argument('mode', type=parameters.valid_mode,
-                            default=BROADCAST_TX_ASYNC)
+        parser.add_argument(
+            "mode", type=parameters.valid_mode, default=BROADCAST_TX_ASYNC
+        )
         args = parser.parse_args()
-        mode = str(args['mode'])
+        mode = str(args["mode"])
 
-        pool = current_app.config['bigchain_pool']
+        pool = current_app.config["bigchain_pool"]
 
-        tx, tx_obj = validate_schema(request)
+        error, tx, tx_obj = validate_schema_definition(request)
+
+        if error is not None:
+            return error
 
         with pool() as bigchain:
             try:
                 bigchain.validate_transaction(tx_obj)
             except ValidationError as e:
                 return make_error(
-                    400,
-                    'Invalid transaction ({}): {}'.format(type(e).__name__, e)
+                    400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
             else:
                 status_code, message = bigchain.write_transaction(tx_obj, mode)

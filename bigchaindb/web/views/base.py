@@ -19,13 +19,15 @@ logger = logging.getLogger(__name__)
 
 def make_error(status_code, message=None):
     if status_code == 404 and message is None:
-        message = 'Not found'
+        message = "Not found"
 
-    response_content = {'status': status_code, 'message': message}
-    request_info = {'method': request.method, 'path': request.path}
+    response_content = {"status": status_code, "message": message}
+    request_info = {"method": request.method, "path": request.path}
     request_info.update(response_content)
 
-    logger.error('HTTP API error: %(status)s - %(method)s:%(path)s - %(message)s', request_info)
+    logger.error(
+        "HTTP API error: %(status)s - %(method)s:%(path)s - %(message)s", request_info
+    )
 
     response = jsonify(response_content)
     response.status_code = status_code
@@ -39,31 +41,29 @@ def base_ws_uri():
     customized (typically when running behind NAT, firewall, etc.)
     """
 
-    config_wsserver = config['wsserver']
+    config_wsserver = config["wsserver"]
 
-    scheme = config_wsserver['advertised_scheme']
-    host = config_wsserver['advertised_host']
-    port = config_wsserver['advertised_port']
+    scheme = config_wsserver["advertised_scheme"]
+    host = config_wsserver["advertised_host"]
+    port = config_wsserver["advertised_port"]
 
-    return '{}://{}:{}'.format(scheme, host, port)
+    return "{}://{}:{}".format(scheme, host, port)
 
 
-def validate_schema(request):
-        # `force` will try to format the body of the POST request even if the
-        # `content-type` header is not set to `application/json`
-        tx = request.get_json(force=True)
-
-        try:
-            tx_obj = Transaction.from_dict(tx)
-        except SchemaValidationError as e:
-            return make_error(
-                400,
-                message='Invalid transaction schema: {}'.format(
-                    e.__cause__.message)
-            )
-        except ValidationError as e:
-            return make_error(
-                400,
-                'Invalid transaction ({}): {}'.format(type(e).__name__, e)
-            )
-        return tx, tx_obj
+def validate_schema_definition(request):
+    # `force` will try to format the body of the POST request even if the
+    # `content-type` header is not set to `application/json`
+    tx = request.get_json(force=True)
+    tx_obj, error = None, None
+    logger.debug(tx)
+    try:
+        tx_obj = Transaction.from_dict(tx)
+    except SchemaValidationError as e:
+        error = make_error(
+            400, message="Invalid transaction schema: {}".format(e.__cause__.message)
+        )
+    except ValidationError as e:
+        error = make_error(
+            400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
+        )
+    return error, tx, tx_obj

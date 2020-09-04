@@ -8,19 +8,33 @@
 type: object
 title: Transaction Schema - CREATE specific constraints
 required:
-- asset
-- inputs
+  - asset
+  - inputs
 properties:
   asset:
     additionalProperties: false
     properties:
       data:
         anyOf:
-        - type: object
-          additionalProperties: true
-        - type: 'null'
+          - type: object
+            additionalProperties: false
+            properties:
+              machineIdentifier:
+                type: string
+              capability:
+                type: array
+                minItems: 1
+                items:
+                  type: string
+              capabilityParameters:
+                type: object
+                additionalProperties: true
+            required:
+              - machineIdentifier
+              - capability
+          - type: "null"
     required:
-    - data
+      - data
   inputs:
     type: array
     title: "Transaction inputs"
@@ -29,7 +43,40 @@ properties:
     items:
       type: "object"
       required:
-      - fulfills
+        - fulfills
       properties:
         fulfills:
-            type: "null"
+          type: "null"
+# asset:
+#     additionalProperties: false
+#     properties:
+#       data:
+#         anyOf:
+#           - type: object
+#             additionalProperties: false
+#             parts:
+#               type: array
+#               minItems: 1
+#               items:
+#                 type: object
+#                 properties:
+#                   machineIdentifier:
+#                     type: string
+#                   capability:
+#                     type: array
+#                     minItems: 1
+#                     items:
+#                       type: string
+#                   capabilityParameters:
+#                     type: object
+#                     additionalProperties: true
+#                 additionalProperties: true
+#                 required:
+#                   - machineIdentifier
+#                   - capability
+#             required:
+#               - parts
+#           - type: "null"
+
+#     required:
+#       - data

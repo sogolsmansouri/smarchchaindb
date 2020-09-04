@@ -1,0 +1,35 @@
+# Copyright BigchainDB GmbH and BigchainDB contributors
+# SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
+# Code is Apache-2.0 and docs are CC-BY-4.0
+
+---
+"$schema": "http://json-schema.org/draft-04/schema#"
+type: object
+title: Request-For-Quote Schema - RFQ specific constraints
+required:
+  - asset
+  - operation
+  - metadata
+properties:
+  asset:
+    additionalProperties: false
+    properties:
+      data:
+        anyOf:
+          - type: object
+            additionalProperties: true
+          - type: "null"
+    required:
+      - data
+  operation:
+    type: string
+    value: "REQUEST_FOR_QUOTE"
+  metadata:
+    type: object
+    properties:
+      capability:
+        type: array
+        minItems: 1
+        items:
+          type: string
+    additionalProperties: true

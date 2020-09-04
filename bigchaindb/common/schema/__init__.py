@@ -43,9 +43,11 @@ _, TX_SCHEMA_CHAIN_MIGRATION_ELECTION = _load_schema('transaction_chain_migratio
 
 _, TX_SCHEMA_VOTE = _load_schema('transaction_vote_' + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_REQUEST_FOR_QUOTE = _load_schema('transaction_request_for_quote_' + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_REQUEST_FOR_QUOTE = _load_schema('transaction_rfq_' + TX_SCHEMA_VERSION)
 
 _, TX_SCHEMA_INTEREST = _load_schema('transaction_interest_' + TX_SCHEMA_VERSION)
+
+_, TX_SCHEMA_BID = _load_schema('transaction_bid_' + TX_SCHEMA_VERSION)
 
 
 def _validate_schema(schema, body):
@@ -86,5 +88,7 @@ def validate_transaction_schema(tx):
         _validate_schema(TX_SCHEMA_REQUEST_FOR_QUOTE, tx)
     elif tx['operation'] == 'INTEREST':
         _validate_schema(TX_SCHEMA_INTEREST, tx)
+    elif tx['operation'] == 'BID':
+        _validate_schema(TX_SCHEMA_BID, tx)
     else:
         _validate_schema(TX_SCHEMA_CREATE, tx)

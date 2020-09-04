@@ -66,6 +66,9 @@ class InvalidSignature(ValidationError):
     operation
     """
 
+class InsufficientCapabilities(ValidationError):
+    """Raised when BID transaction cannot satisfy all the requested
+    capabilities"""
 
 class AssetIdMismatch(ValidationError):
     """Raised when multiple transaction inputs related to different assets"""

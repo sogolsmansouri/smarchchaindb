@@ -17,34 +17,50 @@ from functools import reduce, lru_cache
 import rapidjson
 
 import base58
+import logging
 from cryptoconditions import Fulfillment, ThresholdSha256, Ed25519Sha256
 from cryptoconditions.exceptions import (
-    ParsingError, ASN1DecodeError, ASN1EncodeError, UnsupportedTypeError)
+    ParsingError,
+    ASN1DecodeError,
+    ASN1EncodeError,
+    UnsupportedTypeError,
+)
+
 try:
     from hashlib import sha3_256
 except ImportError:
     from sha3 import sha3_256
 
 from bigchaindb.common.crypto import PrivateKey, hash_data
-from bigchaindb.common.exceptions import (KeypairMismatchException,
-                                          InputDoesNotExist, DoubleSpend,
-                                          InvalidHash, InvalidSignature,
-                                          AmountError, AssetIdMismatch,
-                                          ThresholdTooDeep)
+from bigchaindb.common.exceptions import (
+    AmountError,
+    AssetIdMismatch,
+    DoubleSpend,
+    InputDoesNotExist,
+    InsufficientCapabilities,
+    InvalidHash,
+    InvalidSignature,
+    KeypairMismatchException,
+    SchemaValidationError,
+    ThresholdTooDeep,
+    ValidationError,
+)
 from bigchaindb.common.utils import serialize
 from .memoize import memoize_from_dict, memoize_to_dict
 
+logger = logging.getLogger(__name__)
 
 UnspentOutput = namedtuple(
-    'UnspentOutput', (
+    "UnspentOutput",
+    (
         # TODO 'utxo_hash': sha3_256(f'{txid}{output_index}'.encode())
         # 'utxo_hash',   # noqa
-        'transaction_id',
-        'output_index',
-        'amount',
-        'asset_id',
-        'condition_uri',
-    )
+        "transaction_id",
+        "output_index",
+        "amount",
+        "asset_id",
+        "condition_uri",
+    ),
 )
 
 
@@ -76,9 +92,9 @@ class Input(object):
                     of a `TRANSFER` Transaction.
         """
         if fulfills is not None and not isinstance(fulfills, TransactionLink):
-            raise TypeError('`fulfills` must be a TransactionLink instance')
+            raise TypeError("`fulfills` must be a TransactionLink instance")
         if not isinstance(owners_before, list):
-            raise TypeError('`owners_before` must be a list instance')
+            raise TypeError("`owners_before` must be a list instance")
 
         self.fulfillment = fulfillment
         self.fulfills = fulfills
@@ -115,9 +131,9 @@ class Input(object):
             fulfills = None
 
         input_ = {
-            'owners_before': self.owners_before,
-            'fulfills': fulfills,
-            'fulfillment': fulfillment,
+            "owners_before": self.owners_before,
+            "fulfills": fulfills,
+            "fulfillment": fulfillment,
         }
         return input_
 
@@ -146,10 +162,10 @@ class Input(object):
             Raises:
                 InvalidSignature: If an Input's URI couldn't be parsed.
         """
-        fulfillment = data['fulfillment']
+        fulfillment = data["fulfillment"]
         if not isinstance(fulfillment, (Fulfillment, type(None))):
             try:
-                fulfillment = Fulfillment.from_uri(data['fulfillment'])
+                fulfillment = Fulfillment.from_uri(data["fulfillment"])
             except ASN1DecodeError:
                 # TODO Remove as it is legacy code, and simply fall back on
                 # ASN1DecodeError
@@ -157,9 +173,9 @@ class Input(object):
             except TypeError:
                 # NOTE: See comment about this special case in
                 #       `Input.to_dict`
-                fulfillment = _fulfillment_from_details(data['fulfillment'])
-        fulfills = TransactionLink.from_dict(data['fulfills'])
-        return cls(fulfillment, data['owners_before'], fulfills)
+                fulfillment = _fulfillment_from_details(data["fulfillment"])
+        fulfills = TransactionLink.from_dict(data["fulfills"])
+        return cls(fulfillment, data["owners_before"], fulfills)
 
 
 def _fulfillment_to_details(fulfillment):
@@ -169,21 +185,20 @@ def _fulfillment_to_details(fulfillment):
         fulfillment: Crypto-conditions Fulfillment object
     """
 
-    if fulfillment.type_name == 'ed25519-sha-256':
+    if fulfillment.type_name == "ed25519-sha-256":
         return {
-            'type': 'ed25519-sha-256',
-            'public_key': base58.b58encode(fulfillment.public_key).decode(),
+            "type": "ed25519-sha-256",
+            "public_key": base58.b58encode(fulfillment.public_key).decode(),
         }
 
-    if fulfillment.type_name == 'threshold-sha-256':
+    if fulfillment.type_name == "threshold-sha-256":
         subconditions = [
-            _fulfillment_to_details(cond['body'])
-            for cond in fulfillment.subconditions
+            _fulfillment_to_details(cond["body"]) for cond in fulfillment.subconditions
         ]
         return {
-            'type': 'threshold-sha-256',
-            'threshold': fulfillment.threshold,
-            'subconditions': subconditions,
+            "type": "threshold-sha-256",
+            "threshold": fulfillment.threshold,
+            "subconditions": subconditions,
         }
 
     raise UnsupportedTypeError(fulfillment.type_name)
@@ -198,18 +213,18 @@ def _fulfillment_from_details(data, _depth=0):
     if _depth == 100:
         raise ThresholdTooDeep()
 
-    if data['type'] == 'ed25519-sha-256':
-        public_key = base58.b58decode(data['public_key'])
+    if data["type"] == "ed25519-sha-256":
+        public_key = base58.b58decode(data["public_key"])
         return Ed25519Sha256(public_key=public_key)
 
-    if data['type'] == 'threshold-sha-256':
-        threshold = ThresholdSha256(data['threshold'])
-        for cond in data['subconditions']:
-            cond = _fulfillment_from_details(cond, _depth+1)
+    if data["type"] == "threshold-sha-256":
+        threshold = ThresholdSha256(data["threshold"])
+        for cond in data["subconditions"]:
+            cond = _fulfillment_from_details(cond, _depth + 1)
             threshold.add_subfulfillment(cond)
         return threshold
 
-    raise UnsupportedTypeError(data.get('type'))
+    raise UnsupportedTypeError(data.get("type"))
 
 
 class TransactionLink(object):
@@ -260,7 +275,7 @@ class TransactionLink(object):
                 :class:`~bigchaindb.common.transaction.TransactionLink`
         """
         try:
-            return cls(link['transaction_id'], link['output_index'])
+            return cls(link["transaction_id"], link["output_index"])
         except TypeError:
             return cls()
 
@@ -274,15 +289,14 @@ class TransactionLink(object):
             return None
         else:
             return {
-                'transaction_id': self.txid,
-                'output_index': self.output,
+                "transaction_id": self.txid,
+                "output_index": self.output,
             }
 
-    def to_uri(self, path=''):
+    def to_uri(self, path=""):
         if self.txid is None and self.output is None:
             return None
-        return '{}/transactions/{}/outputs/{}'.format(path, self.txid,
-                                                      self.output)
+        return "{}/transactions/{}/outputs/{}".format(path, self.txid, self.output)
 
 
 class Output(object):
@@ -314,13 +328,13 @@ class Output(object):
                 TypeError: if `public_keys` is not instance of `list`.
         """
         if not isinstance(public_keys, list) and public_keys is not None:
-            raise TypeError('`public_keys` must be a list instance or None')
+            raise TypeError("`public_keys` must be a list instance or None")
         if not isinstance(amount, int):
-            raise TypeError('`amount` must be an int')
+            raise TypeError("`amount` must be an int")
         if amount < 1:
-            raise AmountError('`amount` must be greater than 0')
+            raise AmountError("`amount` must be greater than 0")
         if amount > self.MAX_AMOUNT:
-            raise AmountError('`amount` must be <= %s' % self.MAX_AMOUNT)
+            raise AmountError("`amount` must be <= %s" % self.MAX_AMOUNT)
 
         self.fulfillment = fulfillment
         self.amount = amount
@@ -344,19 +358,19 @@ class Output(object):
         #              and fulfillment!
         condition = {}
         try:
-            condition['details'] = _fulfillment_to_details(self.fulfillment)
+            condition["details"] = _fulfillment_to_details(self.fulfillment)
         except AttributeError:
             pass
 
         try:
-            condition['uri'] = self.fulfillment.condition_uri
+            condition["uri"] = self.fulfillment.condition_uri
         except AttributeError:
-            condition['uri'] = self.fulfillment
+            condition["uri"] = self.fulfillment
 
         output = {
-            'public_keys': self.public_keys,
-            'condition': condition,
-            'amount': str(self.amount),
+            "public_keys": self.public_keys,
+            "condition": condition,
+            "amount": str(self.amount),
         }
         return output
 
@@ -386,25 +400,22 @@ class Output(object):
         """
         threshold = len(public_keys)
         if not isinstance(amount, int):
-            raise TypeError('`amount` must be a int')
+            raise TypeError("`amount` must be a int")
         if amount < 1:
-            raise AmountError('`amount` needs to be greater than zero')
+            raise AmountError("`amount` needs to be greater than zero")
         if not isinstance(public_keys, list):
-            raise TypeError('`public_keys` must be an instance of list')
+            raise TypeError("`public_keys` must be an instance of list")
         if len(public_keys) == 0:
-            raise ValueError('`public_keys` needs to contain at least one'
-                             'owner')
+            raise ValueError("`public_keys` needs to contain at least one" "owner")
         elif len(public_keys) == 1 and not isinstance(public_keys[0], list):
             if isinstance(public_keys[0], Fulfillment):
                 ffill = public_keys[0]
             else:
-                ffill = Ed25519Sha256(
-                    public_key=base58.b58decode(public_keys[0]))
+                ffill = Ed25519Sha256(public_key=base58.b58decode(public_keys[0]))
             return cls(ffill, public_keys, amount=amount)
         else:
             initial_cond = ThresholdSha256(threshold=threshold)
-            threshold_cond = reduce(cls._gen_condition, public_keys,
-                                    initial_cond)
+            threshold_cond = reduce(cls._gen_condition, public_keys, initial_cond)
             return cls(threshold_cond, public_keys, amount=amount)
 
     @classmethod
@@ -434,7 +445,7 @@ class Output(object):
             ffill = ThresholdSha256(threshold=threshold)
             reduce(cls._gen_condition, new_public_keys, ffill)
         elif isinstance(new_public_keys, list) and len(new_public_keys) <= 1:
-            raise ValueError('Sublist cannot contain single owner')
+            raise ValueError("Sublist cannot contain single owner")
         else:
             try:
                 new_public_keys = new_public_keys.pop()
@@ -449,8 +460,7 @@ class Output(object):
             if isinstance(new_public_keys, Fulfillment):
                 ffill = new_public_keys
             else:
-                ffill = Ed25519Sha256(
-                    public_key=base58.b58decode(new_public_keys))
+                ffill = Ed25519Sha256(public_key=base58.b58decode(new_public_keys))
         initial.add_subfulfillment(ffill)
         return initial
 
@@ -471,15 +481,15 @@ class Output(object):
                 :class:`~bigchaindb.common.transaction.Output`
         """
         try:
-            fulfillment = _fulfillment_from_details(data['condition']['details'])
+            fulfillment = _fulfillment_from_details(data["condition"]["details"])
         except KeyError:
             # NOTE: Hashlock condition case
-            fulfillment = data['condition']['uri']
+            fulfillment = data["condition"]["uri"]
         try:
-            amount = int(data['amount'])
+            amount = int(data["amount"])
         except ValueError:
-            raise AmountError('Invalid amount: %s' % data['amount'])
-        return cls(fulfillment, data['public_keys'], amount)
+            raise AmountError("Invalid amount: %s" % data["amount"])
+        return cls(fulfillment, data["public_keys"], amount)
 
 
 class Transaction(object):
@@ -505,15 +515,25 @@ class Transaction(object):
             version (string): Defines the version number of a Transaction.
     """
 
-    CREATE = 'CREATE'
-    TRANSFER = 'TRANSFER'
-    REQUEST_FOR_QUOTE = 'REQUEST_FOR_QUOTE'
-    INTEREST = 'INTEREST'
-    ALLOWED_OPERATIONS = (CREATE, TRANSFER, REQUEST_FOR_QUOTE,INTEREST)
-    VERSION = '2.0'
+    CREATE = "CREATE"
+    TRANSFER = "TRANSFER"
+    REQUEST_FOR_QUOTE = "REQUEST_FOR_QUOTE"
+    INTEREST = "INTEREST"
+    BID = "BID"
+    ALLOWED_OPERATIONS = (CREATE, TRANSFER, REQUEST_FOR_QUOTE, INTEREST, BID)
+    VERSION = "2.0"
 
-    def __init__(self, operation, asset, inputs=None, outputs=None,
-                 metadata=None, version=None, hash_id=None, tx_dict=None):
+    def __init__(
+        self,
+        operation,
+        asset,
+        inputs=None,
+        outputs=None,
+        metadata=None,
+        version=None,
+        hash_id=None,
+        tx_dict=None,
+    ):
         """The constructor allows to create a customizable Transaction.
 
             Note:
@@ -534,41 +554,66 @@ class Transaction(object):
                 hash_id (string): Hash id of the transaction.
         """
         if operation not in self.ALLOWED_OPERATIONS:
-            allowed_ops = ', '.join(self.__class__.ALLOWED_OPERATIONS)
-            raise ValueError('`operation` must be one of {}'
-                             .format(allowed_ops))
+            allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
+            raise ValueError("`operation` must be one of {}".format(allowed_ops))
 
         # Asset payloads for 'CREATE' operations must be None or
         # dicts holding a `data` property. Asset payloads for 'TRANSFER'
         # operations must be dicts holding an `id` property.
         # Asset payloads for 'REQUEST_FOR_QUOTE transaction must either
-        #be None or a dict. Asset payloads for 'INTEREST' operations
+        # be None or a dict. Asset payloads for 'INTEREST' operations
         # must be dicts holding an `id` property
-        if (operation == self.CREATE and
-                asset is not None and not (isinstance(asset, dict) and 'data' in asset)):
-            raise TypeError(('`asset` must be None or a dict holding a `data` '
-                             " property instance for '{}' Transactions".format(operation)))
-        elif (operation == self.TRANSFER and
-                not (isinstance(asset, dict) and 'id' in asset)):
-            raise TypeError(('`asset` must be a dict holding an `id` property '
-                             "for 'TRANSFER' Transactions".format(operation)))
-        elif (operation == self.REQUEST_FOR_QUOTE and
-                 asset is not None and not (isinstance(asset, dict))):
-            raise TypeError(('`asset` must be a dict'
-                             "for 'REQUEST_FOR_QUOTE' Transactions".format(operation)))
-        elif (operation == self.INTEREST and
-                not (isinstance(asset, dict)) and 'id' in asset):
-            raise TypeError(('`asset` must be a dict holding an `id` property  '
-                             "for 'INTEREST' Transactions".format(operation)))
+        if (
+            operation == self.CREATE
+            and asset is not None
+            and not (isinstance(asset, dict) and "data" in asset)
+        ):
+            raise TypeError(
+                (
+                    "`asset` must be None or a dict holding a `data` "
+                    " property instance for '{}' Transactions".format(operation)
+                )
+            )
+        elif operation == self.TRANSFER and not (
+            isinstance(asset, dict) and "id" in asset
+        ):
+            raise TypeError(
+                (
+                    "`asset` must be a dict holding an `id` property "
+                    "for 'TRANSFER' Transactions".format(operation)
+                )
+            )
+        elif (
+            operation == self.REQUEST_FOR_QUOTE
+            and asset is not None
+            and not (isinstance(asset, dict))
+        ):
+            raise TypeError(
+                (
+                    "`asset` must be a dict"
+                    "for 'REQUEST_FOR_QUOTE' Transactions".format(operation)
+                )
+            )
+        elif (
+            operation == self.INTEREST
+            and not (isinstance(asset, dict))
+            and "id" in asset
+        ):
+            raise TypeError(
+                (
+                    "`asset` must be a dict holding an `id` property  "
+                    "for 'INTEREST' Transactions".format(operation)
+                )
+            )
 
         if outputs and not isinstance(outputs, list):
-            raise TypeError('`outputs` must be a list instance or None')
+            raise TypeError("`outputs` must be a list instance or None")
 
         if inputs and not isinstance(inputs, list):
-            raise TypeError('`inputs` must be a list instance or None')
+            raise TypeError("`inputs` must be a list instance or None")
 
         if metadata is not None and not isinstance(metadata, dict):
-            raise TypeError('`metadata` must be a dict or None')
+            raise TypeError("`metadata` must be a dict or None")
 
         self.version = version if version is not None else self.VERSION
         self.operation = operation
@@ -588,16 +633,19 @@ class Transaction(object):
         if self.operation == self.CREATE:
             self._asset_id = self._id
         elif self.operation == self.TRANSFER:
-            self._asset_id = self.asset['id']
+            self._asset_id = self.asset["id"]
         elif self.operation == self.INTEREST:
-            self._asset_id = self.asset['id']
-        return (UnspentOutput(
-            transaction_id=self._id,
-            output_index=output_index,
-            amount=output.amount,
-            asset_id=self._asset_id,
-            condition_uri=output.fulfillment.condition_uri,
-        ) for output_index, output in enumerate(self.outputs))
+            self._asset_id = self.asset["id"]
+        return (
+            UnspentOutput(
+                transaction_id=self._id,
+                output_index=output_index,
+                amount=output.amount,
+                asset_id=self._asset_id,
+                condition_uri=output.fulfillment.condition_uri,
+            )
+            for output_index, output in enumerate(self.outputs)
+        )
 
     @property
     def spent_outputs(self):
@@ -605,10 +653,7 @@ class Transaction(object):
         is represented as a dictionary containing a transaction id and
         output index.
         """
-        return (
-            input_.fulfills.to_dict()
-            for input_ in self.inputs if input_.fulfills
-        )
+        return (input_.fulfills.to_dict() for input_ in self.inputs if input_.fulfills)
 
     @property
     def serialized(self):
@@ -620,17 +665,17 @@ class Transaction(object):
     @classmethod
     def validate_create(cls, tx_signers, recipients, asset, metadata):
         if not isinstance(tx_signers, list):
-            raise TypeError('`tx_signers` must be a list instance')
+            raise TypeError("`tx_signers` must be a list instance")
         if not isinstance(recipients, list):
-            raise TypeError('`recipients` must be a list instance')
+            raise TypeError("`recipients` must be a list instance")
         if len(tx_signers) == 0:
-            raise ValueError('`tx_signers` list cannot be empty')
+            raise ValueError("`tx_signers` list cannot be empty")
         if len(recipients) == 0:
-            raise ValueError('`recipients` list cannot be empty')
+            raise ValueError("`recipients` list cannot be empty")
         if not (asset is None or isinstance(asset, dict)):
-            raise TypeError('`asset` must be a dict or None')
+            raise TypeError("`asset` must be a dict or None")
         if not (metadata is None or isinstance(metadata, dict)):
-            raise TypeError('`metadata` must be a dict or None')
+            raise TypeError("`metadata` must be a dict or None")
 
         inputs = []
         outputs = []
@@ -638,9 +683,13 @@ class Transaction(object):
         # generate_outputs
         for recipient in recipients:
             if not isinstance(recipient, tuple) or len(recipient) != 2:
-                raise ValueError(('Each `recipient` in the list must be a'
-                                  ' tuple of `([<list of public keys>],'
-                                  ' <amount>)`'))
+                raise ValueError(
+                    (
+                        "Each `recipient` in the list must be a"
+                        " tuple of `([<list of public keys>],"
+                        " <amount>)`"
+                    )
+                )
             pub_keys, amount = recipient
             outputs.append(Output.generate(pub_keys, amount))
 
@@ -679,30 +728,34 @@ class Transaction(object):
         """
 
         (inputs, outputs) = cls.validate_create(tx_signers, recipients, asset, metadata)
-        return cls(cls.CREATE, {'data1': asset}, inputs, outputs, metadata)
+        return cls(cls.CREATE, {"data1": asset}, inputs, outputs, metadata)
 
     @classmethod
     def validate_transfer(cls, inputs, recipients, asset_id, metadata):
         if not isinstance(inputs, list):
-            raise TypeError('`inputs` must be a list instance')
+            raise TypeError("`inputs` must be a list instance")
         if len(inputs) == 0:
-            raise ValueError('`inputs` must contain at least one item')
+            raise ValueError("`inputs` must contain at least one item")
         if not isinstance(recipients, list):
-            raise TypeError('`recipients` must be a list instance')
+            raise TypeError("`recipients` must be a list instance")
         if len(recipients) == 0:
-            raise ValueError('`recipients` list cannot be empty')
+            raise ValueError("`recipients` list cannot be empty")
 
         outputs = []
         for recipient in recipients:
             if not isinstance(recipient, tuple) or len(recipient) != 2:
-                raise ValueError(('Each `recipient` in the list must be a'
-                                  ' tuple of `([<list of public keys>],'
-                                  ' <amount>)`'))
+                raise ValueError(
+                    (
+                        "Each `recipient` in the list must be a"
+                        " tuple of `([<list of public keys>],"
+                        " <amount>)`"
+                    )
+                )
             pub_keys, amount = recipient
             outputs.append(Output.generate(pub_keys, amount))
 
         if not isinstance(asset_id, str):
-            raise TypeError('`asset_id` must be a string')
+            raise TypeError("`asset_id` must be a string")
 
         return (deepcopy(inputs), outputs)
 
@@ -745,8 +798,10 @@ class Transaction(object):
             Returns:
                 :class:`~bigchaindb.common.transaction.Transaction`
         """
-        (inputs, outputs) = cls.validate_transfer(inputs, recipients, asset_id, metadata)
-        return cls(cls.TRANSFER, {'id': asset_id}, inputs, outputs, metadata)
+        (inputs, outputs) = cls.validate_transfer(
+            inputs, recipients, asset_id, metadata
+        )
+        return cls(cls.TRANSFER, {"id": asset_id}, inputs, outputs, metadata)
 
     def __eq__(self, other):
         try:
@@ -779,9 +834,11 @@ class Transaction(object):
         #       as inputs.
         indices = indices or range(len(self.outputs))
         return [
-            Input(self.outputs[idx].fulfillment,
-                  self.outputs[idx].public_keys,
-                  TransactionLink(self.id, idx))
+            Input(
+                self.outputs[idx].fulfillment,
+                self.outputs[idx].public_keys,
+                TransactionLink(self.id, idx),
+            )
             for idx in indices
         ]
 
@@ -793,7 +850,7 @@ class Transaction(object):
                     Input`): An Input to be added to the Transaction.
         """
         if not isinstance(input_, Input):
-            raise TypeError('`input_` must be a Input instance')
+            raise TypeError("`input_` must be a Input instance")
         self.inputs.append(input_)
 
     def add_output(self, output):
@@ -805,7 +862,7 @@ class Transaction(object):
                     Transaction.
         """
         if not isinstance(output, Output):
-            raise TypeError('`output` must be an Output instance or None')
+            raise TypeError("`output` must be an Output instance or None")
         self.outputs.append(output)
 
     def sign(self, private_keys):
@@ -831,7 +888,7 @@ class Transaction(object):
         # TODO: Singing should be possible with at least one of all private
         #       keys supplied to this method.
         if private_keys is None or not isinstance(private_keys, list):
-            raise TypeError('`private_keys` must be a list instance')
+            raise TypeError("`private_keys` must be a list instance")
 
         # NOTE: Generate public keys from private keys and match them in a
         #       dictionary:
@@ -848,8 +905,10 @@ class Transaction(object):
             # to decode to convert the bytestring into a python str
             return public_key.decode()
 
-        key_pairs = {gen_public_key(PrivateKey(private_key)):
-                     PrivateKey(private_key) for private_key in private_keys}
+        key_pairs = {
+            gen_public_key(PrivateKey(private_key)): PrivateKey(private_key)
+            for private_key in private_keys
+        }
 
         tx_dict = self.to_dict()
         tx_dict = Transaction._remove_signatures(tx_dict)
@@ -878,15 +937,14 @@ class Transaction(object):
                 key_pairs (dict): The keys to sign the Transaction with.
         """
         if isinstance(input_.fulfillment, Ed25519Sha256):
-            return cls._sign_simple_signature_fulfillment(input_, message,
-                                                          key_pairs)
+            return cls._sign_simple_signature_fulfillment(input_, message, key_pairs)
         elif isinstance(input_.fulfillment, ThresholdSha256):
-            return cls._sign_threshold_signature_fulfillment(input_, message,
-                                                             key_pairs)
+            return cls._sign_threshold_signature_fulfillment(input_, message, key_pairs)
         else:
             raise ValueError(
-                'Fulfillment couldn\'t be matched to '
-                'Cryptocondition fulfillment type.')
+                "Fulfillment couldn't be matched to "
+                "Cryptocondition fulfillment type."
+            )
 
     @classmethod
     def _sign_simple_signature_fulfillment(cls, input_, message, key_pairs):
@@ -906,18 +964,21 @@ class Transaction(object):
         public_key = input_.owners_before[0]
         message = sha3_256(message.encode())
         if input_.fulfills:
-            message.update('{}{}'.format(
-                input_.fulfills.txid, input_.fulfills.output).encode())
+            message.update(
+                "{}{}".format(input_.fulfills.txid, input_.fulfills.output).encode()
+            )
 
         try:
             # cryptoconditions makes no assumptions of the encoding of the
             # message to sign or verify. It only accepts bytestrings
             input_.fulfillment.sign(
-                message.digest(), base58.b58decode(key_pairs[public_key].encode()))
+                message.digest(), base58.b58decode(key_pairs[public_key].encode())
+            )
         except KeyError:
-            raise KeypairMismatchException('Public key {} is not a pair to '
-                                           'any of the private keys'
-                                           .format(public_key))
+            raise KeypairMismatchException(
+                "Public key {} is not a pair to "
+                "any of the private keys".format(public_key)
+            )
         return input_
 
     @classmethod
@@ -933,8 +994,9 @@ class Transaction(object):
         input_ = deepcopy(input_)
         message = sha3_256(message.encode())
         if input_.fulfills:
-            message.update('{}{}'.format(
-                input_.fulfills.txid, input_.fulfills.output).encode())
+            message.update(
+                "{}{}".format(input_.fulfills.txid, input_.fulfills.output).encode()
+            )
 
         for owner_before in set(input_.owners_before):
             # TODO: CC should throw a KeypairMismatchException, instead of
@@ -947,24 +1009,24 @@ class Transaction(object):
             # TODO FOR CC: `get_subcondition` is singular. One would not
             #              expect to get a list back.
             ccffill = input_.fulfillment
-            subffills = ccffill.get_subcondition_from_vk(
-                base58.b58decode(owner_before))
+            subffills = ccffill.get_subcondition_from_vk(base58.b58decode(owner_before))
             if not subffills:
-                raise KeypairMismatchException('Public key {} cannot be found '
-                                               'in the fulfillment'
-                                               .format(owner_before))
+                raise KeypairMismatchException(
+                    "Public key {} cannot be found "
+                    "in the fulfillment".format(owner_before)
+                )
             try:
                 private_key = key_pairs[owner_before]
             except KeyError:
-                raise KeypairMismatchException('Public key {} is not a pair '
-                                               'to any of the private keys'
-                                               .format(owner_before))
+                raise KeypairMismatchException(
+                    "Public key {} is not a pair "
+                    "to any of the private keys".format(owner_before)
+                )
 
             # cryptoconditions makes no assumptions of the encoding of the
             # message to sign or verify. It only accepts bytestrings
             for subffill in subffills:
-                subffill.sign(
-                    message.digest(), base58.b58decode(private_key.encode()))
+                subffill.sign(message.digest(), base58.b58decode(private_key.encode()))
         return input_
 
     def inputs_valid(self, outputs=None):
@@ -989,15 +1051,17 @@ class Transaction(object):
             #       to check for outputs, we're just submitting dummy
             #       values to the actual method. This simplifies it's logic
             #       greatly, as we do not have to check against `None` values.
-            return self._inputs_valid(['dummyvalue'
-                                       for _ in self.inputs])
+            return self._inputs_valid(["dummyvalue" for _ in self.inputs])
         elif self.operation == self.TRANSFER:
-            return self._inputs_valid([output.fulfillment.condition_uri
-                                       for output in outputs])
+            return self._inputs_valid(
+                [output.fulfillment.condition_uri for output in outputs]
+            )
+        # FIXME: implement inputs_valid for BID tx.
+        elif self.operation == self.BID:
+            return True
         else:
-            allowed_ops = ', '.join(self.__class__.ALLOWED_OPERATIONS)
-            raise TypeError('`operation` must be one of {}'
-                            .format(allowed_ops))
+            allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
+            raise TypeError("`operation` must be one of {}".format(allowed_ops))
 
     def _inputs_valid(self, output_condition_uris):
         """Validates an Input against a given set of Outputs.
@@ -1015,21 +1079,22 @@ class Transaction(object):
         """
 
         if len(self.inputs) != len(output_condition_uris):
-            raise ValueError('Inputs and '
-                             'output_condition_uris must have the same count')
+            raise ValueError(
+                "Inputs and " "output_condition_uris must have the same count"
+            )
 
         tx_dict = self.tx_dict if self.tx_dict else self.to_dict()
         tx_dict = Transaction._remove_signatures(tx_dict)
-        tx_dict['id'] = None
+        tx_dict["id"] = None
         tx_serialized = Transaction._to_str(tx_dict)
 
         def validate(i, output_condition_uri=None):
             """Validate input against output condition URI"""
-            return self._input_valid(self.inputs[i], self.operation,
-                                     tx_serialized, output_condition_uri)
+            return self._input_valid(
+                self.inputs[i], self.operation, tx_serialized, output_condition_uri
+            )
 
-        return all(validate(i, cond)
-                   for i, cond in enumerate(output_condition_uris))
+        return all(validate(i, cond) for i, cond in enumerate(output_condition_uris))
 
     @lru_cache(maxsize=16384)
     def _input_valid(self, input_, operation, message, output_condition_uri=None):
@@ -1053,8 +1118,7 @@ class Transaction(object):
         ccffill = input_.fulfillment
         try:
             parsed_ffill = Fulfillment.from_uri(ccffill.serialize_uri())
-        except (TypeError, ValueError,
-                ParsingError, ASN1DecodeError, ASN1EncodeError):
+        except (TypeError, ValueError, ParsingError, ASN1DecodeError, ASN1EncodeError):
             return False
 
         if operation == self.CREATE:
@@ -1066,8 +1130,9 @@ class Transaction(object):
 
         message = sha3_256(message.encode())
         if input_.fulfills:
-            message.update('{}{}'.format(
-                input_.fulfills.txid, input_.fulfills.output).encode())
+            message.update(
+                "{}{}".format(input_.fulfills.txid, input_.fulfills.output).encode()
+            )
 
         # NOTE: We pass a timestamp to `.validate`, as in case of a timeout
         #       condition we'll have to validate against it
@@ -1089,13 +1154,13 @@ class Transaction(object):
                 dict: The Transaction as an alternative serialization format.
         """
         return {
-            'inputs': [input_.to_dict() for input_ in self.inputs],
-            'outputs': [output.to_dict() for output in self.outputs],
-            'operation': str(self.operation),
-            'metadata': self.metadata,
-            'asset': self.asset,
-            'version': self.version,
-            'id': self._id,
+            "inputs": [input_.to_dict() for input_ in self.inputs],
+            "outputs": [output.to_dict() for output in self.outputs],
+            "operation": str(self.operation),
+            "metadata": self.metadata,
+            "asset": self.asset,
+            "version": self.version,
+            "id": self._id,
         }
 
     @staticmethod
@@ -1113,12 +1178,12 @@ class Transaction(object):
         # NOTE: We remove the reference since we need `tx_dict` only for the
         #       transaction's hash
         tx_dict = deepcopy(tx_dict)
-        for input_ in tx_dict['inputs']:
+        for input_ in tx_dict["inputs"]:
             # NOTE: Not all Cryptoconditions return a `signature` key (e.g.
             #       ThresholdSha256), so setting it to `None` in any
             #       case could yield incorrect signatures. This is why we only
             #       set it to `None` if it's set in the dict.
-            input_['fulfillment'] = None
+            input_["fulfillment"] = None
         return tx_dict
 
     @staticmethod
@@ -1130,7 +1195,7 @@ class Transaction(object):
         return self._id
 
     def to_hash(self):
-        return self.to_dict()['id']
+        return self.to_dict()["id"]
 
     @staticmethod
     def _to_str(value):
@@ -1166,14 +1231,19 @@ class Transaction(object):
             transactions = [transactions]
 
         # create a set of the transactions' asset ids
-        asset_ids = {tx.id if tx.operation == tx.CREATE
-                     else tx.asset['id']
-                     for tx in transactions}
+        asset_ids = {
+            tx.id if tx.operation == tx.CREATE else tx.asset["id"]
+            for tx in transactions
+        }
 
         # check that all the transasctions have the same asset id
         if len(asset_ids) > 1:
-            raise AssetIdMismatch(('All inputs of all transactions passed'
-                                   ' need to have the same asset id'))
+            raise AssetIdMismatch(
+                (
+                    "All inputs of all transactions passed"
+                    " need to have the same asset id"
+                )
+            )
         return asset_ids.pop()
 
     @staticmethod
@@ -1188,18 +1258,20 @@ class Transaction(object):
         tx_body = rapidjson.loads(rapidjson.dumps(tx_body))
 
         try:
-            proposed_tx_id = tx_body['id']
+            proposed_tx_id = tx_body["id"]
         except KeyError:
-            raise InvalidHash('No transaction id found!')
+            raise InvalidHash("No transaction id found!")
 
-        tx_body['id'] = None
+        tx_body["id"] = None
 
         tx_body_serialized = Transaction._to_str(tx_body)
         valid_tx_id = Transaction._to_hash(tx_body_serialized)
 
         if proposed_tx_id != valid_tx_id:
-            err_msg = ("The transaction's id '{}' isn't equal to "
-                       "the hash of its body, i.e. it's not valid.")
+            err_msg = (
+                "The transaction's id '{}' isn't equal to "
+                "the hash of its body, i.e. it's not valid."
+            )
             raise InvalidHash(err_msg.format(proposed_tx_id))
 
     @classmethod
@@ -1213,17 +1285,29 @@ class Transaction(object):
             Returns:
                 :class:`~bigchaindb.common.transaction.Transaction`
         """
-        operation = tx.get('operation', Transaction.CREATE) if isinstance(tx, dict) else Transaction.CREATE
+        operation = (
+            tx.get("operation", Transaction.CREATE)
+            if isinstance(tx, dict)
+            else Transaction.CREATE
+        )
         cls = Transaction.resolve_class(operation)
 
         if not skip_schema_validation:
             cls.validate_id(tx)
             cls.validate_schema(tx)
 
-        inputs = [Input.from_dict(input_) for input_ in tx['inputs']]
-        outputs = [Output.from_dict(output) for output in tx['outputs']]
-        return cls(tx['operation'], tx['asset'], inputs, outputs,
-                   tx['metadata'], tx['version'], hash_id=tx['id'], tx_dict=tx)
+        inputs = [Input.from_dict(input_) for input_ in tx["inputs"]]
+        outputs = [Output.from_dict(output) for output in tx["outputs"]]
+        return cls(
+            tx["operation"],
+            tx["asset"],
+            inputs,
+            outputs,
+            tx["metadata"],
+            tx["version"],
+            hash_id=tx["id"],
+            tx_dict=tx,
+        )
 
     @classmethod
     def from_db(cls, bigchain, tx_dict_list):
@@ -1249,22 +1333,22 @@ class Transaction(object):
         tx_map = {}
         tx_ids = []
         for tx in tx_dict_list:
-            tx.update({'metadata': None})
-            tx_map[tx['id']] = tx
-            tx_ids.append(tx['id'])
+            tx.update({"metadata": None})
+            tx_map[tx["id"]] = tx
+            tx_ids.append(tx["id"])
 
         assets = list(bigchain.get_assets(tx_ids))
         for asset in assets:
             if asset is not None:
-                tx = tx_map[asset['id']]
-                del asset['id']
-                tx['asset'] = asset
+                tx = tx_map[asset["id"]]
+                del asset["id"]
+                tx["asset"] = asset
 
         tx_ids = list(tx_map.keys())
         metadata_list = list(bigchain.get_metadata(tx_ids))
         for metadata in metadata_list:
-            tx = tx_map[metadata['id']]
-            tx.update({'metadata': metadata.get('metadata')})
+            tx = tx_map[metadata["id"]]
+            tx.update({"metadata": metadata.get("metadata")})
 
         if return_list:
             tx_list = []
@@ -1281,15 +1365,56 @@ class Transaction(object):
     def register_type(tx_type, tx_class):
         Transaction.type_registry[tx_type] = tx_class
 
+    @staticmethod
     def resolve_class(operation):
-        """For the given `tx` based on the `operation` key return its implementation class"""
-
+        """For the given `tx` based on the `operation` key return its
+        implementation class"""
         create_txn_class = Transaction.type_registry.get(Transaction.CREATE)
         return Transaction.type_registry.get(operation, create_txn_class)
 
     @classmethod
     def validate_schema(cls, tx):
         pass
+
+    def validate_bid(self, bigchain, current_transactions=[]):
+        if "rfq_id" not in self.asset["data"] or "id" not in self.asset["data"]:
+            raise SchemaValidationError(
+                "BID transaction must have `id`"
+                " and `rfq_id` keys in asset data object"
+            )
+
+        rfq_tx_id = self.asset["data"]["rfq_id"]
+        rfq_tx = bigchain.get_transaction(rfq_tx_id)
+
+        if rfq_tx is None:
+            raise InputDoesNotExist("RFQ input `{}` doesn't exist".format(rfq_tx_id))
+
+        if rfq_tx.operation != self.REQUEST_FOR_QUOTE:
+            raise ValidationError(
+                "BID transaction must be against a commited RFQ transaction"
+            )
+
+        requested_cap = rfq_tx.metadata["capability"]
+        create_tx_id = self.asset["data"]["id"]
+
+        if not self.match_capabilities(bigchain, requested_cap, create_tx_id):
+            raise InsufficientCapabilities(
+                "BID transaction must fulfill all the requested capabilities"
+            )
+
+        return True
+
+    def match_capabilities(self, bigchain, requested_cap, input_tx_id) -> bool:
+        input_tx = bigchain.get_transaction(input_tx_id)
+        if input_tx is None:
+            raise InputDoesNotExist("input `{}` doesn't exist".format(input_tx_id))
+
+        input_capability_set = set()
+        input_capability_list = list(input_tx.asset["data"]["capability"])
+        input_capability_set.update(input_capability_list)
+
+        requested_capability_set = set(requested_cap)
+        return requested_capability_set.issubset(input_capability_set)
 
     def validate_transfer_inputs(self, bigchain, current_transactions=[]):
         # store the inputs so that we can check if the asset ids match
@@ -1305,14 +1430,13 @@ class Transaction(object):
                         input_tx = ctxn
 
             if input_tx is None:
-                raise InputDoesNotExist("input `{}` doesn't exist"
-                                        .format(input_txid))
+                raise InputDoesNotExist("input `{}` doesn't exist".format(input_txid))
 
-            spent = bigchain.get_spent(input_txid, input_.fulfills.output,
-                                       current_transactions)
+            spent = bigchain.get_spent(
+                input_txid, input_.fulfills.output, current_transactions
+            )
             if spent:
-                raise DoubleSpend('input `{}` was already spent'
-                                  .format(input_txid))
+                raise DoubleSpend("input `{}` was already spent".format(input_txid))
 
             output = input_tx.outputs[input_.fulfills.output]
             input_conditions.append(output)
@@ -1325,21 +1449,33 @@ class Transaction(object):
 
         # validate asset id
         asset_id = self.get_asset_id(input_txs)
-        if asset_id != self.asset['id']:
-            raise AssetIdMismatch(('The asset id of the input does not'
-                                   ' match the asset id of the'
-                                   ' transaction'))
+        # FIXME: self.asset["id"]
+        if asset_id != self.asset["data"]["id"]:
+            raise AssetIdMismatch(
+                (
+                    "The asset id of the input does not"
+                    " match the asset id of the"
+                    " transaction"
+                )
+            )
 
-        input_amount = sum([input_condition.amount for input_condition in input_conditions])
-        output_amount = sum([output_condition.amount for output_condition in self.outputs])
+        input_amount = sum(
+            [input_condition.amount for input_condition in input_conditions]
+        )
+        output_amount = sum(
+            [output_condition.amount for output_condition in self.outputs]
+        )
 
         if output_amount != input_amount:
-            raise AmountError(('The amount used in the inputs `{}`'
-                               ' needs to be same as the amount used'
-                               ' in the outputs `{}`')
-                              .format(input_amount, output_amount))
+            raise AmountError(
+                (
+                    "The amount used in the inputs `{}`"
+                    " needs to be same as the amount used"
+                    " in the outputs `{}`"
+                ).format(input_amount, output_amount)
+            )
 
         if not self.inputs_valid(input_conditions):
-            raise InvalidSignature('Transaction signature is invalid.')
+            raise InvalidSignature("Transaction signature is invalid.")
 
         return True

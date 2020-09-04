@@ -101,6 +101,8 @@ from bigchaindb.elections.vote import Vote  # noqa
 
 Transaction.register_type(Transaction.CREATE, models.Transaction)
 Transaction.register_type(Transaction.TRANSFER, models.Transaction)
+Transaction.register_type(Transaction.REQUEST_FOR_QUOTE, models.Transaction)
+Transaction.register_type(Transaction.BID, models.Transaction)
 Transaction.register_type(ValidatorElection.OPERATION, ValidatorElection)
 Transaction.register_type(ChainMigrationElection.OPERATION, ChainMigrationElection)
 Transaction.register_type(Vote.OPERATION, Vote)
