@@ -41,8 +41,14 @@ class Transaction(Transaction):
         elif self.operation == Transaction.TRANSFER:
             self.validate_transfer_inputs(bigchain, current_transactions)
 
-        elif self.operation == Transaction.REQUEST_FOR_QUOTE:
+        elif self.operation == Transaction.PRE_REQUEST:
             pass
+
+        elif self.operation == Transaction.INTEREST:
+            self.validate_interest(bigchain, current_transactions)
+
+        elif self.operation == Transaction.REQUEST_FOR_QUOTE:
+            self.validate_rfq(bigchain, current_transactions)
 
         elif self.operation == Transaction.BID:
             self.validate_bid(bigchain, current_transactions)

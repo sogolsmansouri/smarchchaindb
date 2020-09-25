@@ -19,35 +19,38 @@ logger = logging.getLogger(__name__)
 
 def _load_schema(name, path=__file__):
     """Load a schema from disk"""
-    path = os.path.join(os.path.dirname(path), name + '.yaml')
+    path = os.path.join(os.path.dirname(path), name + ".yaml")
     with open(path) as handle:
         schema = yaml.safe_load(handle)
     fast_schema = rapidjson.Validator(rapidjson.dumps(schema))
     return path, (schema, fast_schema)
 
 
-TX_SCHEMA_VERSION = 'v2.0'
+TX_SCHEMA_VERSION = "v2.0"
 
-TX_SCHEMA_PATH, TX_SCHEMA_COMMON = _load_schema('transaction_' +
-                                                TX_SCHEMA_VERSION)
-_, TX_SCHEMA_CREATE = _load_schema('transaction_create_' +
-                                   TX_SCHEMA_VERSION)
-_, TX_SCHEMA_TRANSFER = _load_schema('transaction_transfer_' +
-                                     TX_SCHEMA_VERSION)
+TX_SCHEMA_PATH, TX_SCHEMA_COMMON = _load_schema("transaction_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_CREATE = _load_schema("transaction_create_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_TRANSFER = _load_schema("transaction_transfer_" + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_VALIDATOR_ELECTION = _load_schema('transaction_validator_election_' +
-                                               TX_SCHEMA_VERSION)
+_, TX_SCHEMA_VALIDATOR_ELECTION = _load_schema(
+    "transaction_validator_election_" + TX_SCHEMA_VERSION
+)
 
-_, TX_SCHEMA_CHAIN_MIGRATION_ELECTION = _load_schema('transaction_chain_migration_election_' +
-                                                     TX_SCHEMA_VERSION)
+_, TX_SCHEMA_CHAIN_MIGRATION_ELECTION = _load_schema(
+    "transaction_chain_migration_election_" + TX_SCHEMA_VERSION
+)
 
-_, TX_SCHEMA_VOTE = _load_schema('transaction_vote_' + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_VOTE = _load_schema("transaction_vote_" + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_REQUEST_FOR_QUOTE = _load_schema('transaction_rfq_' + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_PRE_REQUEST = _load_schema("transaction_pre_request_" + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_INTEREST = _load_schema('transaction_interest_' + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_INTEREST = _load_schema("transaction_interest_" + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_BID = _load_schema('transaction_bid_' + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_REQUEST_FOR_QUOTE = _load_schema(
+    "transaction_request_for_quote_" + TX_SCHEMA_VERSION
+)
+
+_, TX_SCHEMA_BID = _load_schema("transaction_bid_" + TX_SCHEMA_VERSION)
 
 
 def _validate_schema(schema, body):
@@ -71,7 +74,10 @@ def _validate_schema(schema, body):
             jsonschema.validate(body, schema[0])
         except jsonschema.ValidationError as exc2:
             raise SchemaValidationError(str(exc2)) from exc2
-        logger.warning('code problem: jsonschema did not raise an exception, wheras rapidjson raised %s', exc)
+        logger.warning(
+            "code problem: jsonschema did not raise an exception, wheras rapidjson raised %s",
+            exc,
+        )
         raise SchemaValidationError(str(exc)) from exc
 
 
@@ -82,13 +88,15 @@ def validate_transaction_schema(tx):
     transaction. TX_SCHEMA_[TRANSFER|CREATE|REQUEST_FOR_QUOTE|INTEREST] add additional constraints on top.
     """
     _validate_schema(TX_SCHEMA_COMMON, tx)
-    if tx['operation'] == 'TRANSFER':
+    if tx["operation"] == "TRANSFER":
         _validate_schema(TX_SCHEMA_TRANSFER, tx)
-    elif tx['operation'] == 'REQUEST_FOR_QUOTE':
-        _validate_schema(TX_SCHEMA_REQUEST_FOR_QUOTE, tx)
-    elif tx['operation'] == 'INTEREST':
+    elif tx["operation"] == "PRE_REQUEST":
+        _validate_schema(TX_SCHEMA_PRE_REQUEST, tx)
+    elif tx["operation"] == "INTEREST":
         _validate_schema(TX_SCHEMA_INTEREST, tx)
-    elif tx['operation'] == 'BID':
+    elif tx["operation"] == "REQUEST_FOR_QUOTE":
+        _validate_schema(TX_SCHEMA_REQUEST_FOR_QUOTE, tx)
+    elif tx["operation"] == "BID":
         _validate_schema(TX_SCHEMA_BID, tx)
     else:
         _validate_schema(TX_SCHEMA_CREATE, tx)

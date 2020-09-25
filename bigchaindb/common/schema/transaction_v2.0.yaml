@@ -66,6 +66,7 @@ definitions:
       - VALIDATOR_ELECTION
       - CHAIN_MIGRATION_ELECTION
       - VOTE
+      - PRE_REQUEST
       - REQUEST_FOR_QUOTE
       - INTEREST
       - BID

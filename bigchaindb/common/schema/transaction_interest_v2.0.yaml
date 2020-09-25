@@ -1,14 +1,33 @@
-# Copyright BigchainDB GmbH and BigchainDB contributors
+# Copyright © 2020 Interplanetary Database Association e.V.,
+# BigchainDB and IPDB software contributors.
 # SPDX-License-Identifier: (Apache-2.0 AND CC-BY-4.0)
 # Code is Apache-2.0 and docs are CC-BY-4.0
 
 ---
 "$schema": "http://json-schema.org/draft-04/schema#"
 type: object
-title: Interest Schema - Initiate an interest
+title: Interest Transaction Schema - Interest specific properties
 required:
-- operation
+  - asset
 properties:
-  operation:
+  asset:
+    type: object
+    additionalProperties: false
+    properties:
+      data:
+        additionalProperties: false
+        properties:
+          id:
+            "$ref": "#/definitions/sha3_hexdigest"
+          pre_request_id:
+            "$ref": "#/definitions/sha3_hexdigest"
+        required:
+          - id
+          - pre_request_id
+    required:
+      - data
+
+definitions:
+  sha3_hexdigest:
+    pattern: "[0-9a-f]{64}"
     type: string
-    value: "INTEREST"

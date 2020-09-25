@@ -5,7 +5,7 @@
 ---
 "$schema": "http://json-schema.org/draft-04/schema#"
 type: object
-title: Request-For-Quote Schema - RFQ specific constraints
+title: Pre-Request Schema
 required:
   - asset
   - operation
@@ -23,7 +23,7 @@ properties:
       - data
   operation:
     type: string
-    value: "REQUEST_FOR_QUOTE"
+    value: "PRE_REQUEST"
   metadata:
     type: object
     properties:

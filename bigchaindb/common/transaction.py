@@ -517,10 +517,18 @@ class Transaction(object):
 
     CREATE = "CREATE"
     TRANSFER = "TRANSFER"
-    REQUEST_FOR_QUOTE = "REQUEST_FOR_QUOTE"
+    PRE_REQUEST = "PRE_REQUEST"
     INTEREST = "INTEREST"
+    REQUEST_FOR_QUOTE = "REQUEST_FOR_QUOTE"
     BID = "BID"
-    ALLOWED_OPERATIONS = (CREATE, TRANSFER, REQUEST_FOR_QUOTE, INTEREST, BID)
+    ALLOWED_OPERATIONS = (
+        CREATE,
+        TRANSFER,
+        PRE_REQUEST,
+        INTEREST,
+        REQUEST_FOR_QUOTE,
+        BID,
+    )
     VERSION = "2.0"
 
     def __init__(
@@ -564,7 +572,7 @@ class Transaction(object):
         # be None or a dict. Asset payloads for 'INTEREST' operations
         # must be dicts holding an `id` property
         if (
-            operation == self.CREATE
+            (operation == self.CREATE or operation == self.BID)
             and asset is not None
             and not (isinstance(asset, dict) and "data" in asset)
         ):
@@ -584,7 +592,7 @@ class Transaction(object):
                 )
             )
         elif (
-            operation == self.REQUEST_FOR_QUOTE
+            (operation == self.PRE_REQUEST or operation == self.REQUEST_FOR_QUOTE)
             and asset is not None
             and not (isinstance(asset, dict))
         ):
@@ -594,10 +602,8 @@ class Transaction(object):
                     "for 'REQUEST_FOR_QUOTE' Transactions".format(operation)
                 )
             )
-        elif (
-            operation == self.INTEREST
-            and not (isinstance(asset, dict))
-            and "id" in asset
+        elif (operation == self.INTEREST or operation == self.BID) and not (
+            isinstance(asset, dict)
         ):
             raise TypeError(
                 (
@@ -636,6 +642,7 @@ class Transaction(object):
             self._asset_id = self.asset["id"]
         elif self.operation == self.INTEREST:
             self._asset_id = self.asset["id"]
+        # FIXME: Add PRE_REQUEST, INTEREST, and BID
         return (
             UnspentOutput(
                 transaction_id=self._id,
@@ -1057,7 +1064,11 @@ class Transaction(object):
                 [output.fulfillment.condition_uri for output in outputs]
             )
         # FIXME: implement inputs_valid for BID tx.
-        elif self.operation == self.BID:
+        elif (
+            self.operation == self.BID
+            or self.operation == self.PRE_REQUEST
+            or self.operation == self.INTEREST
+        ):
             return True
         else:
             allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
@@ -1375,6 +1386,57 @@ class Transaction(object):
     @classmethod
     def validate_schema(cls, tx):
         pass
+
+    def validate_interest(self, bigchain, current_transactions=[]):
+        if "pre_request_id" not in self.asset["data"] or "id" not in self.asset["data"]:
+            raise SchemaValidationError(
+                "INTEREST transaction must have `id`"
+                " and `pre_request_id` keys in asset data object"
+            )
+
+        rfq_tx_id = self.asset["data"]["pre_request_id"]
+        rfq_tx = bigchain.get_transaction(rfq_tx_id)
+
+        if rfq_tx is None:
+            raise InputDoesNotExist(
+                "PRE_REQUEST input `{}` doesn't exist".format(rfq_tx_id)
+            )
+
+        if rfq_tx.operation != self.PRE_REQUEST:
+            raise ValidationError(
+                "INTEREST transaction must be against a commited PRE_REQUEST transaction"
+            )
+
+        requested_cap = rfq_tx.metadata["capability"]
+        create_tx_id = self.asset["data"]["id"]
+
+        if not self.match_capabilities(bigchain, requested_cap, create_tx_id):
+            raise InsufficientCapabilities(
+                "INTEREST transaction must fulfill all the requested capabilities"
+            )
+
+        return True
+
+    def validate_rfq(self, bigchain, current_transactions=[]):
+        if "pre_request_id" not in self.asset["data"]:
+            raise SchemaValidationError(
+                "RFQ transaction must have `pre_request_id` keys in asset data object"
+            )
+
+        rfq_tx_id = self.asset["data"]["pre_request_id"]
+        rfq_tx = bigchain.get_transaction(rfq_tx_id)
+
+        if rfq_tx is None:
+            raise InputDoesNotExist(
+                "PRE_REQUEST input `{}` doesn't exist".format(rfq_tx_id)
+            )
+
+        if rfq_tx.operation != self.PRE_REQUEST:
+            raise ValidationError(
+                "RFQ transaction must be related to a commited PRE_REQUEST transaction"
+            )
+
+        return True
 
     def validate_bid(self, bigchain, current_transactions=[]):
         if "rfq_id" not in self.asset["data"] or "id" not in self.asset["data"]:
