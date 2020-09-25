@@ -23,7 +23,7 @@ This setup is intended for [VCL](https://vcl.ncsu.edu)
 6. Start the container using
 
     ```sh
-    docker container run --name stardog/stardog -p 5820:5820 -d -e STARDOG_SERVER_FLAGS="--web-console" --restart always stardog/stardog
+    docker container run --name stardog -p 5820:5820 -d -e STARDOG_SERVER_FLAGS="--web-console" --restart always stardog
     ```
 
     *You can ignore the `STARDOG_SERVER_FLAGS` environment variable if you don't want to enable the web-console*
