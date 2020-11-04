@@ -568,9 +568,6 @@ class Transaction(object):
         # Asset payloads for 'CREATE' operations must be None or
         # dicts holding a `data` property. Asset payloads for 'TRANSFER'
         # operations must be dicts holding an `id` property.
-        # Asset payloads for 'REQUEST_FOR_QUOTE transaction must either
-        # be None or a dict. Asset payloads for 'INTEREST' operations
-        # must be dicts holding an `id` property
         if (
             (operation == self.CREATE or operation == self.BID)
             and asset is not None
@@ -1456,9 +1453,10 @@ class Transaction(object):
                 "BID transaction must be against a commited RFQ transaction"
             )
 
+        self.validate_transfer_inputs(bigchain, current_transactions)
+
         requested_cap = rfq_tx.metadata["capability"]
         create_tx_id = self.asset["data"]["id"]
-
         if not self.match_capabilities(bigchain, requested_cap, create_tx_id):
             raise InsufficientCapabilities(
                 "BID transaction must fulfill all the requested capabilities"
@@ -1511,8 +1509,11 @@ class Transaction(object):
 
         # validate asset id
         asset_id = self.get_asset_id(input_txs)
-        # FIXME: self.asset["id"]
-        if asset_id != self.asset["data"]["id"]:
+
+        tx_asset_id = (
+            self.asset["data"]["id"] if self.operation == self.BID else self.asset["id"]
+        )
+        if asset_id != tx_asset_id:
             raise AssetIdMismatch(
                 (
                     "The asset id of the input does not"

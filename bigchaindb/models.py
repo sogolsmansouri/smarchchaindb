@@ -52,7 +52,6 @@ class Transaction(Transaction):
 
         elif self.operation == Transaction.BID:
             self.validate_bid(bigchain, current_transactions)
-            self.validate_transfer_inputs(bigchain, current_transactions)
 
         return self
 

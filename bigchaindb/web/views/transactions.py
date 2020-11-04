@@ -12,11 +12,21 @@ import logging
 from flask import current_app, request, jsonify
 from flask_restful import Resource, reqparse
 
-from bigchaindb.common.transaction_mode_types import BROADCAST_TX_ASYNC
+from bigchaindb.common.transaction_mode_types import (
+    BROADCAST_TX_ASYNC,
+    BROADCAST_TX_SYNC,
+    BROADCAST_TX_COMMIT,
+)
 from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
 from bigchaindb.web.views.base import make_error, validate_schema_definition
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
+from bigchaindb.common.transaction import Output
+from cryptoconditions import Ed25519Sha256
+from base58 import b58encode, b58decode
+from bigchaindb import config
+from bigchaindb.common.crypto import public_key_from_ed25519_key
+import time
 
 
 logger = logging.getLogger(__name__)
@@ -101,7 +111,6 @@ class TransactionListApi(Resource):
         pool = current_app.config["bigchain_pool"]
 
         error, tx, tx_obj = validate_schema_definition(request)
-
         if error is not None:
             return error
 
@@ -113,7 +122,12 @@ class TransactionListApi(Resource):
                     400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
             else:
-                status_code, message = bigchain.write_transaction(tx_obj, mode)
+                status_code, message = bigchain.write_transaction(
+                    tx_obj,
+                    BROADCAST_TX_COMMIT
+                    if tx_obj.operation is Transaction.BID
+                    else mode,
+                )
 
         if status_code == 202:
             response = jsonify(tx)
