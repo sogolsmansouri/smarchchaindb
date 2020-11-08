@@ -19,8 +19,12 @@ properties:
         properties:
           pre_request_id:
             "$ref": "#/definitions/sha3_hexdigest"
+          deadline:
+            type: string
+            # pattern: "^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$"
         required:
           - pre_request_id
+          - deadline
         # anyOf:
         #   - type: object
         #     additionalProperties: true
