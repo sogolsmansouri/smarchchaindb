@@ -52,10 +52,6 @@ _database_map = {
 }
 
 config = {
-    "smartchaindb_keypair": {
-        "public": "3yfQPHeWAa1MxTX9Zf9176QqcpcnWcanVZZbaHb8B3h9",
-        "private": "3AeWpPdhEZzWLYfkfYHBfMFC2r1f8HEaGS9NtbbKssya",
-    },
     "server": {
         # Note: this section supports all the Gunicorn settings:
         #       - http://docs.gunicorn.org/en/stable/settings.html
@@ -112,6 +108,7 @@ Transaction.register_type(Transaction.PRE_REQUEST, models.Transaction)
 Transaction.register_type(Transaction.INTEREST, models.Transaction)
 Transaction.register_type(Transaction.REQUEST_FOR_QUOTE, models.Transaction)
 Transaction.register_type(Transaction.BID, models.Transaction)
+Transaction.register_type(Transaction.ACCEPT, models.Transaction)
 Transaction.register_type(ValidatorElection.OPERATION, ValidatorElection)
 Transaction.register_type(ChainMigrationElection.OPERATION, ChainMigrationElection)
 Transaction.register_type(Vote.OPERATION, Vote)
