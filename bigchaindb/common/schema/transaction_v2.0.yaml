@@ -70,6 +70,7 @@ definitions:
       - REQUEST_FOR_QUOTE
       - INTEREST
       - BID
+      - ACCEPT
   asset:
     type: object
     additionalProperties: false

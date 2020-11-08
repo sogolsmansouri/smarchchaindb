@@ -6,7 +6,7 @@
 ---
 "$schema": "http://json-schema.org/draft-04/schema#"
 type: object
-title: Transaction Schema - BID specific properties
+title: Transaction Schema - ACCEPT specific properties
 required:
   - asset
 properties:
@@ -22,7 +22,7 @@ properties:
           winner_bid_id:
             "$ref": "#/definitions/sha3_hexdigest"
         required:
-          - id
+          - winner_bid_id
           - rfq_id
     required:
       - data

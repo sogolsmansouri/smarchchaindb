@@ -52,6 +52,8 @@ _, TX_SCHEMA_REQUEST_FOR_QUOTE = _load_schema(
 
 _, TX_SCHEMA_BID = _load_schema("transaction_bid_" + TX_SCHEMA_VERSION)
 
+_, TX_SCHEMA_ACCEPT = _load_schema("transaction_accept_" + TX_SCHEMA_VERSION)
+
 
 def _validate_schema(schema, body):
     """Validate data against a schema"""
@@ -85,7 +87,7 @@ def validate_transaction_schema(tx):
     """Validate a transaction dict.
 
     TX_SCHEMA_COMMON contains properties that are common to all types of
-    transaction. TX_SCHEMA_[TRANSFER|CREATE|REQUEST_FOR_QUOTE|INTEREST] add additional constraints on top.
+    transaction. TX_SCHEMA_[TRANSFER|CREATE|REQUEST_FOR_QUOTE|INTEREST|ACCEPT] add additional constraints on top.
     """
     _validate_schema(TX_SCHEMA_COMMON, tx)
     if tx["operation"] == "TRANSFER":
@@ -98,5 +100,7 @@ def validate_transaction_schema(tx):
         _validate_schema(TX_SCHEMA_REQUEST_FOR_QUOTE, tx)
     elif tx["operation"] == "BID":
         _validate_schema(TX_SCHEMA_BID, tx)
+    elif tx["operation"] == "ACCEPT":
+        _validate_schema(TX_SCHEMA_ACCEPT, tx)
     else:
         _validate_schema(TX_SCHEMA_CREATE, tx)
