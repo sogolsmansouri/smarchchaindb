@@ -22,6 +22,7 @@ from bigchaindb.web.views.base import make_error, validate_schema_definition
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
 from bigchaindb.common.transaction import Output
+from bigchaindb.common.crypto import generate_key_pair
 from cryptoconditions import Ed25519Sha256
 from base58 import b58encode, b58decode
 from bigchaindb import config
@@ -92,7 +93,6 @@ class TransactionListApi(Resource):
         args = parser.parse_args()
         with current_app.config["bigchain_pool"]() as bigchain:
             txs = bigchain.get_transactions_filtered(**args)
-
         return [tx.to_dict() for tx in txs]
 
     def post(self):
@@ -125,9 +125,12 @@ class TransactionListApi(Resource):
                 status_code, message = bigchain.write_transaction(
                     tx_obj,
                     BROADCAST_TX_COMMIT
-                    if tx_obj.operation is Transaction.BID
+                    if tx_obj.operation is Transaction.ACCEPT
                     else mode,
                 )
+            if status_code == 202 and tx_obj.operation == Transaction.ACCEPT:
+                # time.sleep(2)
+                tx_obj.trigger_transfers(bigchain)
 
         if status_code == 202:
             response = jsonify(tx)
@@ -135,3 +138,21 @@ class TransactionListApi(Resource):
             return response
         else:
             return make_error(status_code, message)
+
+
+class BidsForRFQTransactionApi(Resource):
+    def get(self, tx_id):
+        """API endpoint to get all bids raised against a RFQ transaction.
+
+        Args:
+            tx_id (str): the id of the RFQ transaction.
+
+        Return:
+            A JSON string containing the data about the Bid transactions.
+        """
+        pool = current_app.config["bigchain_pool"]
+
+        with pool() as bigchain:
+            txs = bigchain.get_all_bids_for_rfq(tx_id)
+
+        return [tx.to_dict() for tx in txs]

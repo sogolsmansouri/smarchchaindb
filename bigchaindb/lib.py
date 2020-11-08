@@ -24,12 +24,16 @@ import requests
 import bigchaindb
 from bigchaindb import backend, config_utils, fastquery
 from bigchaindb.models import Transaction
-from bigchaindb.common.exceptions import (SchemaValidationError,
-                                          ValidationError,
-                                          DoubleSpend)
-from bigchaindb.common.transaction_mode_types import (BROADCAST_TX_COMMIT,
-                                                      BROADCAST_TX_ASYNC,
-                                                      BROADCAST_TX_SYNC)
+from bigchaindb.common.exceptions import (
+    SchemaValidationError,
+    ValidationError,
+    DoubleSpend,
+)
+from bigchaindb.common.transaction_mode_types import (
+    BROADCAST_TX_COMMIT,
+    BROADCAST_TX_ASYNC,
+    BROADCAST_TX_SYNC,
+)
 from bigchaindb.tendermint_utils import encode_transaction, merkleroot
 from bigchaindb import exceptions as core_exceptions
 from bigchaindb.validation import BaseValidationRules
@@ -62,34 +66,41 @@ class BigchainDB(object):
         """
         config_utils.autoconfigure()
         self.mode_commit = BROADCAST_TX_COMMIT
-        self.mode_list = (BROADCAST_TX_ASYNC,
-                          BROADCAST_TX_SYNC,
-                          self.mode_commit)
-        self.tendermint_host = bigchaindb.config['tendermint']['host']
-        self.tendermint_port = bigchaindb.config['tendermint']['port']
-        self.endpoint = 'http://{}:{}/'.format(self.tendermint_host, self.tendermint_port)
+        self.mode_list = (BROADCAST_TX_ASYNC, BROADCAST_TX_SYNC, self.mode_commit)
+        self.tendermint_host = bigchaindb.config["tendermint"]["host"]
+        self.tendermint_port = bigchaindb.config["tendermint"]["port"]
+        self.endpoint = "http://{}:{}/".format(
+            self.tendermint_host, self.tendermint_port
+        )
 
-        validationPlugin = bigchaindb.config.get('validation_plugin')
+        validationPlugin = bigchaindb.config.get("validation_plugin")
 
         if validationPlugin:
             self.validation = config_utils.load_validation_plugin(validationPlugin)
         else:
             self.validation = BaseValidationRules
 
-        self.connection = connection if connection else backend.connect(**bigchaindb.config['database'])
+        self.connection = (
+            connection
+            if connection
+            else backend.connect(**bigchaindb.config["database"])
+        )
 
     def post_transaction(self, transaction, mode):
         """Submit a valid transaction to the mempool."""
         if not mode or mode not in self.mode_list:
-            raise ValidationError('Mode must be one of the following {}.'
-                                  .format(', '.join(self.mode_list)))
+            raise ValidationError(
+                "Mode must be one of the following {}.".format(
+                    ", ".join(self.mode_list)
+                )
+            )
 
         tx_dict = transaction.tx_dict if transaction.tx_dict else transaction.to_dict()
         payload = {
-            'method': mode,
-            'jsonrpc': '2.0',
-            'params': [encode_transaction(tx_dict)],
-            'id': str(uuid4())
+            "method": mode,
+            "jsonrpc": "2.0",
+            "params": [encode_transaction(tx_dict)],
+            "id": str(uuid4()),
         }
         # TODO: handle connection errors!
         return requests.post(self.endpoint, json=payload)
@@ -103,44 +114,47 @@ class BigchainDB(object):
     def _process_post_response(self, response, mode):
         logger.debug(response)
 
-        error = response.get('error')
+        error = response.get("error")
         if error:
             status_code = 500
-            message = error.get('message', 'Internal Error')
-            data = error.get('data', '')
+            message = error.get("message", "Internal Error")
+            data = error.get("data", "")
 
-            if 'Tx already exists in cache' in data:
+            if "Tx already exists in cache" in data:
                 status_code = 400
 
-            return (status_code, message + ' - ' + data)
+            return (status_code, message + " - " + data)
 
-        result = response['result']
+        result = response["result"]
         if mode == self.mode_commit:
-            check_tx_code = result.get('check_tx', {}).get('code', 0)
-            deliver_tx_code = result.get('deliver_tx', {}).get('code', 0)
+            check_tx_code = result.get("check_tx", {}).get("code", 0)
+            deliver_tx_code = result.get("deliver_tx", {}).get("code", 0)
             error_code = check_tx_code or deliver_tx_code
         else:
-            error_code = result.get('code', 0)
+            error_code = result.get("code", 0)
 
         if error_code:
-            return (500, 'Transaction validation failed')
+            return (500, "Transaction validation failed")
 
-        return (202, '')
+        return (202, "")
 
     def store_bulk_transactions(self, transactions):
         txns = []
         assets = []
         txn_metadatas = []
         for t in transactions:
-            transaction = t.tx_dict if t.tx_dict else rapidjson.loads(rapidjson.dumps(t.to_dict()))
-            if transaction['operation'] == t.CREATE:
-                asset = transaction.pop('asset')
-                asset['id'] = transaction['id']
+            transaction = (
+                t.tx_dict
+                if t.tx_dict
+                else rapidjson.loads(rapidjson.dumps(t.to_dict()))
+            )
+            if transaction["operation"] == t.CREATE:
+                asset = transaction.pop("asset")
+                asset["id"] = transaction["id"]
                 assets.append(asset)
 
-            metadata = transaction.pop('metadata')
-            txn_metadatas.append({'id': transaction['id'],
-                                  'metadata': metadata})
+            metadata = transaction.pop("metadata")
+            txn_metadatas.append({"id": transaction["id"], "metadata": metadata})
             txns.append(transaction)
 
         backend.query.store_metadatas(self.connection, txn_metadatas)
@@ -161,9 +175,7 @@ class BigchainDB(object):
                 transaction incoming into the system for which the UTXO
                 set needs to be updated.
         """
-        spent_outputs = [
-            spent_output for spent_output in transaction.spent_outputs
-        ]
+        spent_outputs = [spent_output for spent_output in transaction.spent_outputs]
         if spent_outputs:
             self.delete_unspent_outputs(*spent_outputs)
         self.store_unspent_outputs(
@@ -179,7 +191,8 @@ class BigchainDB(object):
         """
         if unspent_outputs:
             return backend.query.store_unspent_outputs(
-                                            self.connection, *unspent_outputs)
+                self.connection, *unspent_outputs
+            )
 
     def get_utxoset_merkle_root(self):
         """Returns the merkle root of the utxoset. This implies that
@@ -209,8 +222,9 @@ class BigchainDB(object):
         # See common/transactions.py for details.
         hashes = [
             sha3_256(
-                '{}{}'.format(utxo['transaction_id'], utxo['output_index']).encode()
-            ).digest() for utxo in utxoset
+                "{}{}".format(utxo["transaction_id"], utxo["output_index"]).encode()
+            ).digest()
+            for utxo in utxoset
         ]
         # TODO Notice the sorted call!
         return merkleroot(sorted(hashes))
@@ -233,7 +247,8 @@ class BigchainDB(object):
         """
         if unspent_outputs:
             return backend.query.delete_unspent_outputs(
-                                        self.connection, *unspent_outputs)
+                self.connection, *unspent_outputs
+            )
 
     def is_committed(self, transaction_id):
         transaction = backend.query.get_transaction(self.connection, transaction_id)
@@ -246,14 +261,14 @@ class BigchainDB(object):
             asset = backend.query.get_asset(self.connection, transaction_id)
             metadata = backend.query.get_metadata(self.connection, [transaction_id])
             if asset:
-                transaction['asset'] = asset
+                transaction["asset"] = asset
 
-            if 'metadata' not in transaction:
+            if "metadata" not in transaction:
                 metadata = metadata[0] if metadata else None
                 if metadata:
-                    metadata = metadata.get('metadata')
+                    metadata = metadata.get("metadata")
 
-                transaction.update({'metadata': metadata})
+                transaction.update({"metadata": metadata})
 
             transaction = Transaction.from_dict(transaction)
 
@@ -265,10 +280,38 @@ class BigchainDB(object):
     def get_transactions_filtered(self, asset_id, operation=None, last_tx=None):
         """Get a list of transactions filtered on some criteria
         """
-        txids = backend.query.get_txids_filtered(self.connection, asset_id,
-                                                 operation, last_tx)
+        txids = backend.query.get_txids_filtered(
+            self.connection, asset_id, operation, last_tx
+        )
         for txid in txids:
             yield self.get_transaction(txid)
+
+    def get_transactions_by_operation(self, operation):
+        """Get a list of transaction filtered by operation
+        """
+        txids = backend.query.get_txids_by_operation(self.connection, operation)
+        for txid in txids:
+            yield self.get_transaction(txid)
+
+    def get_all_bids_for_rfq(self, rfq_tx_id):
+        """Get a list of bid transactions for a RFQ transaction
+        """
+        txids = backend.query.get_bid_txids_by_rfq(self.connection, rfq_tx_id)
+        for txid in txids:
+            yield self.get_transaction(txid)
+
+    def get_owned_bid_ids(self, owner):
+        """Retrieve the list of BID transaction (tx ids) owned by `owner`
+
+        Args:
+            owner (str): public key of owner
+
+        Returns:
+            Transaction id list (list(string))
+        """
+        txs = list(backend.query.get_owned_bid_ids(self.connection, owner))
+
+        return [tx["id"] for tx in txs]
 
     def get_outputs_filtered(self, owner, spent=None):
         """Get a list of output links filtered on some criteria
@@ -292,20 +335,22 @@ class BigchainDB(object):
             return self.fastquery.filter_spent_outputs(outputs)
 
     def get_spent(self, txid, output, current_transactions=[]):
-        transactions = backend.query.get_spent(self.connection, txid,
-                                               output)
+        transactions = backend.query.get_spent(self.connection, txid, output)
         transactions = list(transactions) if transactions else []
         if len(transactions) > 1:
             raise core_exceptions.CriticalDoubleSpend(
-                '`{}` was spent more than once. There is a problem'
-                ' with the chain'.format(txid))
+                "`{}` was spent more than once. There is a problem"
+                " with the chain".format(txid)
+            )
 
         current_spent_transactions = []
         for ctxn in current_transactions:
             for ctxn_input in ctxn.inputs:
-                if ctxn_input.fulfills and\
-                   ctxn_input.fulfills.txid == txid and\
-                   ctxn_input.fulfills.output == output:
+                if (
+                    ctxn_input.fulfills
+                    and ctxn_input.fulfills.txid == txid
+                    and ctxn_input.fulfills.output == output
+                ):
                     current_spent_transactions.append(ctxn)
 
         transaction = None
@@ -340,17 +385,20 @@ class BigchainDB(object):
 
         block = backend.query.get_block(self.connection, block_id)
         latest_block = self.get_latest_block()
-        latest_block_height = latest_block['height'] if latest_block else 0
+        latest_block_height = latest_block["height"] if latest_block else 0
 
         if not block and block_id > latest_block_height:
             return
 
-        result = {'height': block_id,
-                  'transactions': []}
+        result = {"height": block_id, "transactions": []}
 
         if block:
-            transactions = backend.query.get_transactions(self.connection, block['transactions'])
-            result['transactions'] = [t.to_dict() for t in Transaction.from_db(self, transactions)]
+            transactions = backend.query.get_transactions(
+                self.connection, block["transactions"]
+            )
+            result["transactions"] = [
+                t.to_dict() for t in Transaction.from_db(self, transactions)
+            ]
 
         return result
 
@@ -366,9 +414,9 @@ class BigchainDB(object):
         """
         blocks = list(backend.query.get_block_with_transaction(self.connection, txid))
         if len(blocks) > 1:
-            logger.critical('Transaction id %s exists in multiple blocks', txid)
+            logger.critical("Transaction id %s exists in multiple blocks", txid)
 
-        return [block['height'] for block in blocks]
+        return [block["height"] for block in blocks]
 
     def validate_transaction(self, tx, current_transactions=[]):
         """Validate a transaction against the current status of the database."""
@@ -382,10 +430,10 @@ class BigchainDB(object):
             try:
                 transaction = Transaction.from_dict(tx)
             except SchemaValidationError as e:
-                logger.warning('Invalid transaction schema: %s', e.__cause__.message)
+                logger.warning("Invalid transaction schema: %s", e.__cause__.message)
                 return False
             except ValidationError as e:
-                logger.warning('Invalid transaction (%s): %s', type(e).__name__, e)
+                logger.warning("Invalid transaction (%s): %s", type(e).__name__, e)
                 return False
         return transaction.validate(self, current_transactions)
 
@@ -395,10 +443,10 @@ class BigchainDB(object):
         try:
             return self.validate_transaction(tx, current_transactions)
         except ValidationError as e:
-            logger.warning('Invalid transaction (%s): %s', type(e).__name__, e)
+            logger.warning("Invalid transaction (%s): %s", type(e).__name__, e)
             return False
 
-    def text_search(self, search, *, limit=0, table='assets'):
+    def text_search(self, search, *, limit=0, table="assets"):
         """Return an iterator of assets that match the text search
 
         Args:
@@ -408,8 +456,9 @@ class BigchainDB(object):
         Returns:
             iter: An iterator of assets that match the text search.
         """
-        return backend.query.text_search(self.connection, search, limit=limit,
-                                         table=table)
+        return backend.query.text_search(
+            self.connection, search, limit=limit, table=table
+        )
 
     def get_assets(self, asset_ids):
         """Return a list of assets that match the asset_ids
@@ -444,7 +493,7 @@ class BigchainDB(object):
 
     def get_validators(self, height=None):
         result = self.get_validator_change(height)
-        return [] if result is None else result['validators']
+        return [] if result is None else result["validators"]
 
     def get_election(self, election_id):
         return backend.query.get_election(self.connection, election_id)
@@ -460,15 +509,17 @@ class BigchainDB(object):
            NOTE: If the validator set already exists at that `height` then an
            exception will be raised.
         """
-        return backend.query.store_validator_set(self.connection, {'height': height,
-                                                                   'validators': validators})
+        return backend.query.store_validator_set(
+            self.connection, {"height": height, "validators": validators}
+        )
 
     def delete_validator_set(self, height):
         return backend.query.delete_validator_set(self.connection, height)
 
     def store_abci_chain(self, height, chain_id, is_synced=True):
-        return backend.query.store_abci_chain(self.connection, height,
-                                              chain_id, is_synced)
+        return backend.query.store_abci_chain(
+            self.connection, height, chain_id, is_synced
+        )
 
     def delete_abci_chain(self, height):
         return backend.query.delete_abci_chain(self.connection, height)
@@ -493,16 +544,17 @@ class BigchainDB(object):
 
         block = self.get_latest_block()
 
-        suffix = '-migrated-at-height-'
-        chain_id = latest_chain['chain_id']
-        block_height_str = str(block['height'])
+        suffix = "-migrated-at-height-"
+        chain_id = latest_chain["chain_id"]
+        block_height_str = str(block["height"])
         new_chain_id = chain_id.split(suffix)[0] + suffix + block_height_str
 
-        self.store_abci_chain(block['height'] + 1, new_chain_id, False)
+        self.store_abci_chain(block["height"] + 1, new_chain_id, False)
 
     def store_election(self, election_id, height, is_concluded):
-        return backend.query.store_election(self.connection, election_id,
-                                            height, is_concluded)
+        return backend.query.store_election(
+            self.connection, election_id, height, is_concluded
+        )
 
     def store_elections(self, elections):
         return backend.query.store_elections(self.connection, elections)
@@ -511,4 +563,5 @@ class BigchainDB(object):
         return backend.query.delete_elections(self.connection, height)
 
 
-Block = namedtuple('Block', ('app_hash', 'height', 'transactions'))
+Block = namedtuple("Block", ("app_hash", "height", "transactions"))
+

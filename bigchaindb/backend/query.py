@@ -149,6 +149,20 @@ def get_owned_ids(connection, owner):
 
 
 @singledispatch
+def get_owned_bid_ids(connection, owner):
+    """Retrieve a list of BID `txids` that can we used has inputs.
+
+    Args:
+        owner (str): base58 encoded public key.
+
+    Returns:
+        Iterator of (block_id, transaction) for transactions
+        that list given owner in conditions.
+    """
+    raise NotImplementedError
+
+
+@singledispatch
 def get_block(connection, block_id):
     """Get a block from the bigchain table.
 
@@ -215,8 +229,38 @@ def get_txids_filtered(connection, asset_id, operation=None):
 
 
 @singledispatch
-def text_search(conn, search, *, language='english', case_sensitive=False,
-                diacritic_sensitive=False, text_score=False, limit=0, table=None):
+def get_txids_by_operation(connection, operation):
+    """Return all transactions for a particular operation.
+
+    Args:
+        operation (str): Operation to filter on
+    """
+
+    raise NotImplementedError
+
+
+@singledispatch
+def get_bid_txids_by_rfq(connection, rfq_tx_id):
+    """Return all Bid transactions for a particular RFQ transaction id.
+
+    Args:
+        rfq_tx_id (str): ID of RFQ transaction
+    """
+    raise NotImplementedError
+
+
+@singledispatch
+def text_search(
+    conn,
+    search,
+    *,
+    language="english",
+    case_sensitive=False,
+    diacritic_sensitive=False,
+    text_score=False,
+    limit=0,
+    table=None
+):
     """Return all the assets that match the text search.
 
     The results are sorted by text score.
@@ -243,8 +287,10 @@ def text_search(conn, search, *, language='english', case_sensitive=False,
         OperationError: If the backend does not support text search
     """
 
-    raise OperationError('This query is only supported when running '
-                         'BigchainDB with MongoDB as the backend.')
+    raise OperationError(
+        "This query is only supported when running "
+        "BigchainDB with MongoDB as the backend."
+    )
 
 
 @singledispatch
