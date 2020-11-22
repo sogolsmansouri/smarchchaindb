@@ -300,6 +300,15 @@ class BigchainDB(object):
         for txid in txids:
             yield self.get_transaction(txid)
 
+    def get_locked_bid_txids_for_rfq(self, rfq_tx_id):
+        """Get a list of bid transactions for a RFQ transaction locked by the special smartchaindb account.
+        """
+        txids = backend.query.get_locked_bid_txids_by_rfq(self.connection, rfq_tx_id)
+        # for txid in txids:
+        #     yield self.get_transaction(txid)
+
+        return list(txids)
+
     def get_owned_bid_ids(self, owner):
         """Retrieve the list of BID transaction (tx ids) owned by `owner`
 

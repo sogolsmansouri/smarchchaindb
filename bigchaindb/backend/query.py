@@ -250,6 +250,17 @@ def get_bid_txids_by_rfq(connection, rfq_tx_id):
 
 
 @singledispatch
+def get_locked_bid_txids_by_rfq(connection, rfq_tx_id):
+    """Return all Bid transactions for a particular RFQ transaction id,
+    locked by the special smartchaindb account.
+
+    Args:
+        rfq_tx_id (str): ID of RFQ transaction
+    """
+    raise NotImplementedError
+
+
+@singledispatch
 def text_search(
     conn,
     search,

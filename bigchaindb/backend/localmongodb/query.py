@@ -12,6 +12,7 @@ from bigchaindb.backend.exceptions import DuplicateKeyError
 from bigchaindb.backend.utils import module_dispatch_registrar
 from bigchaindb.backend.localmongodb.connection import LocalMongoDBConnection
 from bigchaindb.common.transaction import Transaction
+from bigchaindb.common import config
 
 register_query = module_dispatch_registrar(backend.query)
 
@@ -152,6 +153,21 @@ def get_txids_by_operation(conn, operation):
 def get_bid_txids_by_rfq(conn, rfq_tx_id):
 
     query = {"$and": [{"operation": "BID"}, {"asset.data.rfq_id": rfq_tx_id}]}
+    cursor = conn.run(conn.collection("transactions").find(query))
+
+    return (elem["id"] for elem in cursor)
+
+
+@register_query(LocalMongoDBConnection)
+def get_locked_bid_txids_by_rfq(conn, rfq_tx_id):
+
+    query = {
+        "$and": [
+            {"operation": "BID"},
+            {"asset.data.rfq_id": rfq_tx_id},
+            {"outputs.public_keys": config["smartchaindb_key_pair"]["public_key"]},
+        ]
+    }
     cursor = conn.run(conn.collection("transactions").find(query))
 
     return (elem["id"] for elem in cursor)
