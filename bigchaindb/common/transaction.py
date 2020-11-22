@@ -1472,10 +1472,7 @@ class Transaction(object):
 
         all_accept_txs = list(bigchain.get_transactions_by_operation(self.ACCEPT))
         for tx in all_accept_txs + current_transactions:
-            if (
-                tx.operation == self.ACCEPT
-                and rfq_tx_id == tx["asset"]["data"]["rfq_id"]
-            ):
+            if tx.operation == self.ACCEPT and rfq_tx_id == tx.asset["data"]["rfq_id"]:
                 raise DoubleSpend(
                     "ACCEPT tx with the same RFQ input `{}` already spent".format(
                         rfq_tx_id

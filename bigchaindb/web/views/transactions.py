@@ -129,7 +129,6 @@ class TransactionListApi(Resource):
                     else mode,
                 )
             if status_code == 202 and tx_obj.operation == Transaction.ACCEPT:
-                # time.sleep(2)
                 tx_obj.trigger_transfers(bigchain)
 
         if status_code == 202:
