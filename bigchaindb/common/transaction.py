@@ -1587,9 +1587,8 @@ class Transaction(object):
         rfq_tx = bigchain.get_transaction(rfq_tx_id)
 
         winning_bid_id = self.asset["data"]["winner_bid_id"]
-        owned_bid_ids = bigchain.get_owned_bid_ids(
-            config["smartchaindb_key_pair"]["public_key"]
-        )
+        owned_bid_ids = bigchain.get_locked_bid_txids_for_rfq(rfq_tx_id)
+
         selected_bids = [winning_bid_id]
         rejected_bids = [tx_id for tx_id in owned_bid_ids if tx_id not in selected_bids]
 
@@ -1654,4 +1653,4 @@ class Transaction(object):
             private_keys=config["smartchaindb_key_pair"]["private_key"],
         )
 
-        sent_transfer_tx = bdb.transactions.send_async(fulfilled_transfer_tx)
+        bdb.transactions.send_async(fulfilled_transfer_tx)
