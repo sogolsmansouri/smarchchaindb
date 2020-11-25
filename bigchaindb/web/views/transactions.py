@@ -103,7 +103,7 @@ class TransactionListApi(Resource):
         """
         parser = reqparse.RequestParser()
         parser.add_argument(
-            "mode", type=parameters.valid_mode, default=BROADCAST_TX_ASYNC
+            "mode", type=parameters.valid_mode, default=BROADCAST_TX_COMMIT
         )
         args = parser.parse_args()
         mode = str(args["mode"])
@@ -122,15 +122,20 @@ class TransactionListApi(Resource):
                     400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
             else:
+                tx_obj.metadata["consensum_ts"] = time.monotonic()
                 status_code, message = bigchain.write_transaction(
                     tx_obj,
                     BROADCAST_TX_COMMIT
                     if tx_obj.operation is Transaction.ACCEPT
                     else mode,
                 )
+                tx_obj.metadata["consensus_ts"] = (
+                    time.monotonic() - tx_obj.metadata["consensus_ts"]
+                )
             if status_code == 202 and tx_obj.operation == Transaction.ACCEPT:
                 tx_obj.trigger_transfers(bigchain)
 
+        tx_obj.metadata["server_ts"] = time.monotonic() - tx_obj.metadata["server_ts"]
         if status_code == 202:
             response = jsonify(tx)
             response.status_code = 202

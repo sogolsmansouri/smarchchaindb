@@ -6,6 +6,7 @@
 """Common classes and methods for API handlers
 """
 import logging
+import time
 
 from flask import jsonify, request
 
@@ -55,6 +56,7 @@ def validate_schema_definition(request):
     # `content-type` header is not set to `application/json`
     tx = request.get_json(force=True)
     tx_obj, error = None, None
+    tx["metdata"]["server_ts"] = time.monotonic()
     logger.debug(tx)
     try:
         tx_obj = Transaction.from_dict(tx)

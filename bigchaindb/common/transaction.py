@@ -1466,6 +1466,7 @@ class Transaction(object):
         rfq_tx_id = self.asset["data"]["rfq_id"]
         winning_bid_id = self.asset["data"]["winner_bid_id"]
 
+        # TODO: check if ACCEPT signer is same as RFQ signer, match it with RFQ input
         rfq_tx = bigchain.get_transaction(rfq_tx_id)
         if rfq_tx is None or rfq_tx.operation != self.REQUEST_FOR_QUOTE:
             raise InputDoesNotExist("RFQ input `{}` doesn't exist".format(rfq_tx_id))
