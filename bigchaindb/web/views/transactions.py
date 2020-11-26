@@ -152,6 +152,6 @@ class BidsForRFQTransactionApi(Resource):
         pool = current_app.config["bigchain_pool"]
 
         with pool() as bigchain:
-            txs = bigchain.get_all_bids_for_rfq(tx_id)
+            txs = bigchain.get_locked_bid_txids_for_rfq(tx_id)
 
-        return [tx.to_dict() for tx in txs]
+        return txs
