@@ -103,7 +103,7 @@ class TransactionListApi(Resource):
         """
         parser = reqparse.RequestParser()
         parser.add_argument(
-            "mode", type=parameters.valid_mode, default=BROADCAST_TX_COMMIT
+            "mode", type=parameters.valid_mode, default=BROADCAST_TX_SYNC
         )
         args = parser.parse_args()
         mode = str(args["mode"])
