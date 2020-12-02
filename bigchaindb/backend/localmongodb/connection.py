@@ -9,9 +9,11 @@ from ssl import CERT_REQUIRED
 import pymongo
 
 from bigchaindb.backend.connection import Connection
-from bigchaindb.backend.exceptions import (DuplicateKeyError,
-                                           OperationError,
-                                           ConnectionError)
+from bigchaindb.backend.exceptions import (
+    DuplicateKeyError,
+    OperationError,
+    ConnectionError,
+)
 from bigchaindb.backend.utils import get_bigchaindb_config_value
 from bigchaindb.common.exceptions import ConfigurationError
 from bigchaindb.utils import Lazy
@@ -20,10 +22,20 @@ logger = logging.getLogger(__name__)
 
 
 class LocalMongoDBConnection(Connection):
-
-    def __init__(self, replicaset=None, ssl=None, login=None, password=None,
-                 ca_cert=None, certfile=None, keyfile=None,
-                 keyfile_passphrase=None, crlfile=None, **kwargs):
+    def __init__(
+        self,
+        replicaset=None,
+        ssl=None,
+        authsource=None,
+        login=None,
+        password=None,
+        ca_cert=None,
+        certfile=None,
+        keyfile=None,
+        keyfile_passphrase=None,
+        crlfile=None,
+        **kwargs,
+    ):
         """Create a new Connection instance.
 
         Args:
@@ -34,15 +46,18 @@ class LocalMongoDBConnection(Connection):
         """
 
         super().__init__(**kwargs)
-        self.replicaset = replicaset or get_bigchaindb_config_value('replicaset')
-        self.ssl = ssl if ssl is not None else get_bigchaindb_config_value('ssl', False)
-        self.login = login or get_bigchaindb_config_value('login')
-        self.password = password or get_bigchaindb_config_value('password')
-        self.ca_cert = ca_cert or get_bigchaindb_config_value('ca_cert')
-        self.certfile = certfile or get_bigchaindb_config_value('certfile')
-        self.keyfile = keyfile or get_bigchaindb_config_value('keyfile')
-        self.keyfile_passphrase = keyfile_passphrase or get_bigchaindb_config_value('keyfile_passphrase')
-        self.crlfile = crlfile or get_bigchaindb_config_value('crlfile')
+        self.replicaset = replicaset or get_bigchaindb_config_value("replicaset")
+        self.ssl = ssl if ssl is not None else get_bigchaindb_config_value("ssl", False)
+        self.authsource = authsource or get_bigchaindb_config_value("authsource")
+        self.login = login or get_bigchaindb_config_value("login")
+        self.password = password or get_bigchaindb_config_value("password")
+        self.ca_cert = ca_cert or get_bigchaindb_config_value("ca_cert")
+        self.certfile = certfile or get_bigchaindb_config_value("certfile")
+        self.keyfile = keyfile or get_bigchaindb_config_value("keyfile")
+        self.keyfile_passphrase = keyfile_passphrase or get_bigchaindb_config_value(
+            "keyfile_passphrase"
+        )
+        self.crlfile = crlfile or get_bigchaindb_config_value("crlfile")
 
     @property
     def db(self):
@@ -64,15 +79,14 @@ class LocalMongoDBConnection(Connection):
             try:
                 return query.run(self.conn)
             except pymongo.errors.AutoReconnect:
-                logger.warning('Lost connection to the database, '
-                               'retrying query.')
+                logger.warning("Lost connection to the database, " "retrying query.")
                 return query.run(self.conn)
         except pymongo.errors.AutoReconnect as exc:
             raise ConnectionError from exc
         except pymongo.errors.DuplicateKeyError as exc:
             raise DuplicateKeyError from exc
         except pymongo.errors.OperationFailure as exc:
-            print(f'DETAILS: {exc.details}')
+            print(f"DETAILS: {exc.details}")
             raise OperationError from exc
 
     def _connect(self):
@@ -93,44 +107,58 @@ class LocalMongoDBConnection(Connection):
             # `ConnectionFailure`.
             # The presence of ca_cert, certfile, keyfile, crlfile implies the
             # use of certificates for TLS connectivity.
-            if self.ca_cert is None or self.certfile is None or \
-                    self.keyfile is None or self.crlfile is None:
-                client = pymongo.MongoClient(self.host,
-                                             self.port,
-                                             replicaset=self.replicaset,
-                                             serverselectiontimeoutms=self.connection_timeout,
-                                             ssl=self.ssl,
-                                             **MONGO_OPTS)
+            if (
+                self.ca_cert is None
+                or self.certfile is None
+                or self.keyfile is None
+                or self.crlfile is None
+            ):
+                client = pymongo.MongoClient(
+                    self.host,
+                    self.port,
+                    replicaset=self.replicaset,
+                    serverselectiontimeoutms=self.connection_timeout,
+                    ssl=self.ssl,
+                    username=self.login,
+                    password=self.password,
+                    authSource=self.authsource,
+                    **MONGO_OPTS,
+                )
                 if self.login is not None and self.password is not None:
-                    client[self.dbname].authenticate(self.login, self.password)
+                    client[self.authsource].authenticate(self.login, self.password)
             else:
-                logger.info('Connecting to MongoDB over TLS/SSL...')
-                client = pymongo.MongoClient(self.host,
-                                             self.port,
-                                             replicaset=self.replicaset,
-                                             serverselectiontimeoutms=self.connection_timeout,
-                                             ssl=self.ssl,
-                                             ssl_ca_certs=self.ca_cert,
-                                             ssl_certfile=self.certfile,
-                                             ssl_keyfile=self.keyfile,
-                                             ssl_pem_passphrase=self.keyfile_passphrase,
-                                             ssl_crlfile=self.crlfile,
-                                             ssl_cert_reqs=CERT_REQUIRED,
-                                             **MONGO_OPTS)
+                logger.info("Connecting to MongoDB over TLS/SSL...")
+                client = pymongo.MongoClient(
+                    self.host,
+                    self.port,
+                    replicaset=self.replicaset,
+                    serverselectiontimeoutms=self.connection_timeout,
+                    ssl=self.ssl,
+                    ssl_ca_certs=self.ca_cert,
+                    ssl_certfile=self.certfile,
+                    ssl_keyfile=self.keyfile,
+                    ssl_pem_passphrase=self.keyfile_passphrase,
+                    ssl_crlfile=self.crlfile,
+                    ssl_cert_reqs=CERT_REQUIRED,
+                    **MONGO_OPTS,
+                )
                 if self.login is not None:
-                    client[self.dbname].authenticate(self.login,
-                                                     mechanism='MONGODB-X509')
+                    client[self.dbname].authenticate(
+                        self.login, mechanism="MONGODB-X509"
+                    )
 
             return client
 
-        except (pymongo.errors.ConnectionFailure,
-                pymongo.errors.OperationFailure) as exc:
-            logger.info('Exception in _connect(): {}'.format(exc))
+        except (
+            pymongo.errors.ConnectionFailure,
+            pymongo.errors.OperationFailure,
+        ) as exc:
+            logger.info("Exception in _connect(): {}".format(exc))
             raise ConnectionError(str(exc)) from exc
         except pymongo.errors.ConfigurationError as exc:
             raise ConfigurationError from exc
 
 
 MONGO_OPTS = {
-    'socketTimeoutMS': 20000,
+    "socketTimeoutMS": 20000,
 }

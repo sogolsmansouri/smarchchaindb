@@ -29,6 +29,7 @@ _base_database_localmongodb = {
     "host": "localhost",
     "port": 27017,
     "name": "bigchain",
+    "authsource": "admin",
     "replicaset": None,
     "login": None,
     "password": None,
