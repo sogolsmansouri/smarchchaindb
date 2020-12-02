@@ -9,20 +9,37 @@ from itertools import repeat
 
 import bigchaindb
 from bigchaindb.backend.exceptions import ConnectionError
-from bigchaindb.backend.utils import get_bigchaindb_config_value, get_bigchaindb_config_value_or_key_error
+from bigchaindb.backend.utils import (
+    get_bigchaindb_config_value,
+    get_bigchaindb_config_value_or_key_error,
+)
 from bigchaindb.common.exceptions import ConfigurationError
 
 BACKENDS = {
-    'localmongodb': 'bigchaindb.backend.localmongodb.connection.LocalMongoDBConnection',
+    "localmongodb": "bigchaindb.backend.localmongodb.connection.LocalMongoDBConnection",
 }
 
 logger = logging.getLogger(__name__)
 
 
-def connect(backend=None, host=None, port=None, name=None, max_tries=None,
-            connection_timeout=None, replicaset=None, ssl=None, login=None, password=None,
-            ca_cert=None, certfile=None, keyfile=None, keyfile_passphrase=None,
-            crlfile=None):
+def connect(
+    backend=None,
+    host=None,
+    port=None,
+    name=None,
+    authsource=None,
+    max_tries=None,
+    connection_timeout=None,
+    replicaset=None,
+    ssl=None,
+    login=None,
+    password=None,
+    ca_cert=None,
+    certfile=None,
+    keyfile=None,
+    keyfile_passphrase=None,
+    crlfile=None,
+):
     """Create a new connection to the database backend.
 
     All arguments default to the current configuration's values if not
@@ -48,10 +65,11 @@ def connect(backend=None, host=None, port=None, name=None, max_tries=None,
             Authentication failure after connecting to the database.
     """
 
-    backend = backend or get_bigchaindb_config_value_or_key_error('backend')
-    host = host or get_bigchaindb_config_value_or_key_error('host')
-    port = port or get_bigchaindb_config_value_or_key_error('port')
-    dbname = name or get_bigchaindb_config_value_or_key_error('name')
+    backend = backend or get_bigchaindb_config_value_or_key_error("backend")
+    host = host or get_bigchaindb_config_value_or_key_error("host")
+    port = port or get_bigchaindb_config_value_or_key_error("port")
+    dbname = name or get_bigchaindb_config_value_or_key_error("name")
+    authsource = authsource or get_bigchaindb_config_value_or_key_error("authsource")
     # Not sure how to handle this here. This setting is only relevant for
     # mongodb.
     # I added **kwargs for both RethinkDBConnection and MongoDBConnection
@@ -61,31 +79,47 @@ def connect(backend=None, host=None, port=None, name=None, max_tries=None,
     # UPD: RethinkDBConnection is not here anymore cause we no longer support RethinkDB.
     # The problem described above might be reconsidered next time we introduce a backend,
     # if it ever happens.
-    replicaset = replicaset or get_bigchaindb_config_value('replicaset')
-    ssl = ssl if ssl is not None else get_bigchaindb_config_value('ssl', False)
-    login = login or get_bigchaindb_config_value('login')
-    password = password or get_bigchaindb_config_value('password')
-    ca_cert = ca_cert or get_bigchaindb_config_value('ca_cert')
-    certfile = certfile or get_bigchaindb_config_value('certfile')
-    keyfile = keyfile or get_bigchaindb_config_value('keyfile')
-    keyfile_passphrase = keyfile_passphrase or get_bigchaindb_config_value('keyfile_passphrase', None)
-    crlfile = crlfile or get_bigchaindb_config_value('crlfile')
+    replicaset = replicaset or get_bigchaindb_config_value("replicaset")
+    ssl = ssl if ssl is not None else get_bigchaindb_config_value("ssl", False)
+    login = login or get_bigchaindb_config_value("login")
+    password = password or get_bigchaindb_config_value("password")
+    ca_cert = ca_cert or get_bigchaindb_config_value("ca_cert")
+    certfile = certfile or get_bigchaindb_config_value("certfile")
+    keyfile = keyfile or get_bigchaindb_config_value("keyfile")
+    keyfile_passphrase = keyfile_passphrase or get_bigchaindb_config_value(
+        "keyfile_passphrase", None
+    )
+    crlfile = crlfile or get_bigchaindb_config_value("crlfile")
 
     try:
-        module_name, _, class_name = BACKENDS[backend].rpartition('.')
+        module_name, _, class_name = BACKENDS[backend].rpartition(".")
         Class = getattr(import_module(module_name), class_name)
     except KeyError:
-        raise ConfigurationError('Backend `{}` is not supported. '
-                                 'BigchainDB currently supports {}'.format(backend, BACKENDS.keys()))
+        raise ConfigurationError(
+            "Backend `{}` is not supported. "
+            "BigchainDB currently supports {}".format(backend, BACKENDS.keys())
+        )
     except (ImportError, AttributeError) as exc:
-        raise ConfigurationError('Error loading backend `{}`'.format(backend)) from exc
+        raise ConfigurationError("Error loading backend `{}`".format(backend)) from exc
 
-    logger.debug('Connection: {}'.format(Class))
-    return Class(host=host, port=port, dbname=dbname,
-                 max_tries=max_tries, connection_timeout=connection_timeout,
-                 replicaset=replicaset, ssl=ssl, login=login, password=password,
-                 ca_cert=ca_cert, certfile=certfile, keyfile=keyfile,
-                 keyfile_passphrase=keyfile_passphrase, crlfile=crlfile)
+    logger.debug("Connection: {}".format(Class))
+    return Class(
+        host=host,
+        port=port,
+        dbname=dbname,
+        authsource=authsource,
+        max_tries=max_tries,
+        connection_timeout=connection_timeout,
+        replicaset=replicaset,
+        ssl=ssl,
+        login=login,
+        password=password,
+        ca_cert=ca_cert,
+        certfile=certfile,
+        keyfile=keyfile,
+        keyfile_passphrase=keyfile_passphrase,
+        crlfile=crlfile,
+    )
 
 
 class Connection:
@@ -95,9 +129,15 @@ class Connection:
     from and implements this class.
     """
 
-    def __init__(self, host=None, port=None, dbname=None,
-                 connection_timeout=None, max_tries=None,
-                 **kwargs):
+    def __init__(
+        self,
+        host=None,
+        port=None,
+        dbname=None,
+        connection_timeout=None,
+        max_tries=None,
+        **kwargs
+    ):
         """Create a new :class:`~.Connection` instance.
 
         Args:
@@ -113,15 +153,20 @@ class Connection:
                 configuration's ``database`` settings
         """
 
-        dbconf = bigchaindb.config['database']
+        dbconf = bigchaindb.config["database"]
 
-        self.host = host or dbconf['host']
-        self.port = port or dbconf['port']
-        self.dbname = dbname or dbconf['name']
-        self.connection_timeout = connection_timeout if connection_timeout is not None \
-            else dbconf['connection_timeout']
-        self.max_tries = max_tries if max_tries is not None else dbconf['max_tries']
-        self.max_tries_counter = range(self.max_tries) if self.max_tries != 0 else repeat(0)
+        self.host = host or dbconf["host"]
+        self.port = port or dbconf["port"]
+        self.dbname = dbname or dbconf["name"]
+        self.connection_timeout = (
+            connection_timeout
+            if connection_timeout is not None
+            else dbconf["connection_timeout"]
+        )
+        self.max_tries = max_tries if max_tries is not None else dbconf["max_tries"]
+        self.max_tries_counter = (
+            range(self.max_tries) if self.max_tries != 0 else repeat(0)
+        )
         self._conn = None
 
     @property
@@ -160,11 +205,16 @@ class Connection:
             try:
                 self._conn = self._connect()
             except ConnectionError as exc:
-                logger.warning('Attempt %s/%s. Connection to %s:%s failed after %sms.',
-                               attempt, self.max_tries if self.max_tries != 0 else '∞',
-                               self.host, self.port, self.connection_timeout)
+                logger.warning(
+                    "Attempt %s/%s. Connection to %s:%s failed after %sms.",
+                    attempt,
+                    self.max_tries if self.max_tries != 0 else "∞",
+                    self.host,
+                    self.port,
+                    self.connection_timeout,
+                )
                 if attempt == self.max_tries:
-                    logger.critical('Cannot connect to the Database. Giving up.')
+                    logger.critical("Cannot connect to the Database. Giving up.")
                     raise ConnectionError() from exc
             else:
                 break

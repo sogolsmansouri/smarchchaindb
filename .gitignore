@@ -101,3 +101,4 @@ docs/contributing/source/cross-project-policies/*.md
 # VS Code specific
 .vscode/
 
+.env
