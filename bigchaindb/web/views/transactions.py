@@ -11,6 +11,7 @@ import logging
 
 from flask import current_app, request, jsonify
 from flask_restful import Resource, reqparse
+from datetime import datetime
 
 from bigchaindb.common.transaction_mode_types import (
     BROADCAST_TX_ASYNC,
@@ -110,7 +111,8 @@ class TransactionListApi(Resource):
 
         pool = current_app.config["bigchain_pool"]
 
-        error, tx, tx_obj = validate_schema_definition(request)
+        tx = request.get_json(force=True)
+        error, tx, tx_obj = validate_schema_definition(tx)
         if error is not None:
             return error
 

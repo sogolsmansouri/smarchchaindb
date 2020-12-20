@@ -8,6 +8,7 @@ with Tendermint.
 """
 import logging
 import sys
+from datetime import datetime
 
 from abci.application import BaseApplication
 from abci import CodeTypeOk
@@ -151,6 +152,15 @@ class App(BaseApplication):
         transaction = decode_transaction(raw_transaction)
         if self.bigchaindb.is_valid_transaction(transaction):
             logger.debug("check_tx: VALID")
+            t0 = transaction["metadata"]["requestCreationTimestamp"]
+            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+            logger.debug(
+                "\ncheck_tx,"
+                + str(int(delta.total_seconds() * 1000))
+                + ","
+                + str(len(transaction["metadata"]["capabilities"]))
+                + "\n"
+            )
             return self.abci.ResponseCheckTx(code=CodeTypeOk)
         else:
             logger.debug("check_tx: INVALID")
@@ -196,6 +206,15 @@ class App(BaseApplication):
             logger.debug("storing tx")
             self.block_txn_ids.append(transaction.id)
             self.block_transactions.append(transaction)
+            t0 = transaction.metadata["requestCreationTimestamp"]
+            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+            logger.debug(
+                "\ndeliver_tx,"
+                + str(int(delta.total_seconds() * 1000))
+                + ","
+                + str(len(transaction.metadata["capabilities"]))
+                + "\n"
+            )
             return self.abci.ResponseDeliverTx(code=CodeTypeOk)
 
     def end_block(self, request_end_block):
@@ -233,6 +252,17 @@ class App(BaseApplication):
             self.bigchaindb, self.new_height, self.block_transactions
         )
 
+        for tx in self.block_transactions:
+            t0 = tx.metadata["requestCreationTimestamp"]
+            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+            logger.debug(
+                "\nend_block,"
+                + str(int(delta.total_seconds() * 1000))
+                + ","
+                + str(len(tx.metadata["capabilities"]))
+                + "\n"
+            )
+
         return self.abci.ResponseEndBlock(validator_updates=validator_update)
 
     def commit(self):
@@ -268,6 +298,17 @@ class App(BaseApplication):
                 {"height": self.new_height, "transactions": self.block_transactions},
             )
             self.events_queue.put(event)
+
+        for tx in self.block_transactions:
+            t0 = tx.metadata["requestCreationTimestamp"]
+            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+            logger.debug(
+                "\ncommit,"
+                + str(int(delta.total_seconds() * 1000))
+                + ","
+                + str(len(tx.metadata["capabilities"]))
+                + "\n"
+            )
 
         return self.abci.ResponseCommit(data=data)
 
