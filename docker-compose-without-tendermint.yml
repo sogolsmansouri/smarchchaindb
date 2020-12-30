@@ -10,6 +10,11 @@ services:
   # Run: docker-compose run -d bdb
   mongodb:
     image: mongo:3.6
+    env_file:
+      - .env
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "27017:27017"
     command: mongod
@@ -32,6 +37,8 @@ services:
     environment:
       BIGCHAINDB_DATABASE_BACKEND: localmongodb
       BIGCHAINDB_DATABASE_HOST: mongodb
+      BIGCHAINDB_DATABASE_LOGIN: ${MONGO_INITDB_ROOT_USERNAME}
+      BIGCHAINDB_DATABASE_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
       BIGCHAINDB_DATABASE_PORT: 27017
       BIGCHAINDB_SERVER_BIND: 0.0.0.0:9984
       BIGCHAINDB_WSSERVER_HOST: 0.0.0.0
