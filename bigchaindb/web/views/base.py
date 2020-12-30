@@ -66,4 +66,4 @@ def validate_schema_definition(tx):
         error = make_error(
             400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
         )
-    return error, tx, tx_obj
+    return error, tx_obj

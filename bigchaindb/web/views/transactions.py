@@ -112,7 +112,7 @@ class TransactionListApi(Resource):
         pool = current_app.config["bigchain_pool"]
 
         tx = request.get_json(force=True)
-        error, tx, tx_obj = validate_schema_definition(tx)
+        error, tx_obj = validate_schema_definition(tx)
         if error is not None:
             return error
 
