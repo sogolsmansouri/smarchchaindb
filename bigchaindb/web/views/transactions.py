@@ -110,9 +110,19 @@ class TransactionListApi(Resource):
         mode = str(args["mode"])
 
         pool = current_app.config["bigchain_pool"]
-
         tx = request.get_json(force=True)
-        error, tx_obj = validate_schema_definition(tx)
+        t0 = tx["metadata"]["requestCreationTimestamp"]
+        delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+        logger.info(
+            "\nreceived_tx,"
+            + str(int(delta.total_seconds() * 1000))
+            + ","
+            + str(len(tx["metadata"]["capabilities"]))
+            + ","
+            + tx["id"]
+            + "\n"
+        )
+        error, tx, tx_obj = validate_schema_definition(tx)
         if error is not None:
             return error
 
@@ -124,6 +134,17 @@ class TransactionListApi(Resource):
                     400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
             else:
+                t0 = tx_obj.metadata["requestCreationTimestamp"]
+                delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
+                logger.info(
+                    "\nbefore_tendermint,"
+                    + str(int(delta.total_seconds() * 1000))
+                    + ","
+                    + str(len(tx_obj.metadata["capabilities"]))
+                    + ","
+                    + tx_obj._id
+                    + "\n"
+                )
                 status_code, message = bigchain.write_transaction(tx_obj, mode)
             if status_code == 202 and tx_obj.operation == Transaction.ACCEPT:
                 tx_obj.trigger_transfers(bigchain)

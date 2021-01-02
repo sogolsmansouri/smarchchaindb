@@ -45,7 +45,6 @@ class App(BaseApplication):
         self.block_transactions = []
         self.validators = None
         self.new_height = None
-        self.check_tx_file = open("check_tx.txt", "a")
         self.chain = self.bigchaindb.get_latest_abci_chain()
 
     def log_abci_migration_error(self, chain_id, validators):
@@ -149,28 +148,24 @@ class App(BaseApplication):
 
         self.abort_if_abci_chain_is_not_synced()
 
-        logger.debug("check_tx: %s", raw_transaction)
+        # logger.debug("check_tx: %s", raw_transaction)
         transaction = decode_transaction(raw_transaction)
         if self.bigchaindb.is_valid_transaction(transaction):
-            logger.debug("check_tx: VALID")
+            # logger.debug("check_tx: VALID")
             t0 = transaction["metadata"]["requestCreationTimestamp"]
             delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.debug(
+            logger.info(
                 "\ncheck_tx,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
                 + str(len(transaction["metadata"]["capabilities"]))
-                + "\n"
-            )
-            self.check_tx_file.append(
-                str(int(delta.total_seconds() * 1000))
                 + ","
-                + str(len(transaction["metadata"]["capabilities"]))
+                + transaction["id"]
                 + "\n"
             )
             return self.abci.ResponseCheckTx(code=CodeTypeOk)
         else:
-            logger.debug("check_tx: INVALID")
+            # logger.debug("check_tx: INVALID")
             return self.abci.ResponseCheckTx(code=CodeTypeError)
 
     def begin_block(self, req_begin_block):
@@ -182,11 +177,12 @@ class App(BaseApplication):
         self.abort_if_abci_chain_is_not_synced()
 
         chain_shift = 0 if self.chain is None else self.chain["height"]
-        logger.debug(
+
+        """ logger.debug(
             "BEGIN BLOCK, height:%s, num_txs:%s",
             req_begin_block.header.height + chain_shift,
             req_begin_block.header.num_txs,
-        )
+        ) """
 
         self.block_txn_ids = []
         self.block_transactions = []
@@ -201,25 +197,27 @@ class App(BaseApplication):
 
         self.abort_if_abci_chain_is_not_synced()
 
-        logger.debug("deliver_tx: %s", raw_transaction)
+        # logger.debug("deliver_tx: %s", raw_transaction)
         transaction = self.bigchaindb.is_valid_transaction(
             decode_transaction(raw_transaction), self.block_transactions
         )
 
         if not transaction:
-            logger.debug("deliver_tx: INVALID")
+            # logger.debug("deliver_tx: INVALID")
             return self.abci.ResponseDeliverTx(code=CodeTypeError)
         else:
-            logger.debug("storing tx")
+            # logger.debug("storing tx")
             self.block_txn_ids.append(transaction.id)
             self.block_transactions.append(transaction)
             t0 = transaction.metadata["requestCreationTimestamp"]
             delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.debug(
+            logger.info(
                 "\ndeliver_tx,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
                 + str(len(transaction.metadata["capabilities"]))
+                + ","
+                + transaction._id
                 + "\n"
             )
             return self.abci.ResponseDeliverTx(code=CodeTypeOk)
@@ -241,14 +239,14 @@ class App(BaseApplication):
 
         # store pre-commit state to recover in case there is a crash during
         # `end_block` or `commit`
-        logger.debug(f"Updating pre-commit state: {self.new_height}")
+        # logger.debug(f"Updating pre-commit state: {self.new_height}")
         pre_commit_state = dict(height=self.new_height, transactions=self.block_txn_ids)
         self.bigchaindb.store_pre_commit_state(pre_commit_state)
 
         block_txn_hash = calculate_hash(self.block_txn_ids)
         block = self.bigchaindb.get_latest_block()
 
-        logger.debug(f"Block from local backend: {block}")
+        # logger.debug(f"Block from local backend: {block}")
 
         if self.block_txn_ids:
             self.block_txn_hash = calculate_hash([block["app_hash"], block_txn_hash])
@@ -262,11 +260,13 @@ class App(BaseApplication):
         for tx in self.block_transactions:
             t0 = tx.metadata["requestCreationTimestamp"]
             delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.debug(
+            logger.info(
                 "\nend_block,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
                 + str(len(tx.metadata["capabilities"]))
+                + ","
+                + tx._id
                 + "\n"
             )
 
@@ -292,12 +292,12 @@ class App(BaseApplication):
         # this effects crash recovery. Refer BEP#8 for details
         self.bigchaindb.store_block(block._asdict())
 
-        logger.debug(
+        """ logger.debug(
             "Commit-ing new block with hash: apphash=%s ," "height=%s, txn ids=%s",
             data,
             self.new_height,
             self.block_txn_ids,
-        )
+        ) """
 
         if self.events_queue:
             event = Event(
@@ -309,11 +309,13 @@ class App(BaseApplication):
         for tx in self.block_transactions:
             t0 = tx.metadata["requestCreationTimestamp"]
             delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.debug(
+            logger.info(
                 "\ncommit,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
                 + str(len(tx.metadata["capabilities"]))
+                + ","
+                + tx._id
                 + "\n"
             )
 
