@@ -45,6 +45,7 @@ class App(BaseApplication):
         self.block_transactions = []
         self.validators = None
         self.new_height = None
+        self.check_tx_file = open("check_tx.txt", "a")
         self.chain = self.bigchaindb.get_latest_abci_chain()
 
     def log_abci_migration_error(self, chain_id, validators):
@@ -157,6 +158,12 @@ class App(BaseApplication):
             logger.debug(
                 "\ncheck_tx,"
                 + str(int(delta.total_seconds() * 1000))
+                + ","
+                + str(len(transaction["metadata"]["capabilities"]))
+                + "\n"
+            )
+            self.check_tx_file.append(
+                str(int(delta.total_seconds() * 1000))
                 + ","
                 + str(len(transaction["metadata"]["capabilities"]))
                 + "\n"
