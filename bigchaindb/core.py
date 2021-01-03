@@ -158,7 +158,7 @@ class App(BaseApplication):
                 "\ncheck_tx,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
-                + str(len(transaction["metadata"]["capabilities"]))
+                + str(transaction["operation"])
                 + ","
                 + transaction["id"]
                 + "\n"
@@ -215,7 +215,7 @@ class App(BaseApplication):
                 "\ndeliver_tx,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
-                + str(len(transaction.metadata["capabilities"]))
+                + str(transaction.operation)
                 + ","
                 + transaction._id
                 + "\n"
@@ -264,7 +264,7 @@ class App(BaseApplication):
                 "\nend_block,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
-                + str(len(tx.metadata["capabilities"]))
+                + str(tx.operation)
                 + ","
                 + tx._id
                 + "\n"
@@ -313,7 +313,7 @@ class App(BaseApplication):
                 "\ncommit,"
                 + str(int(delta.total_seconds() * 1000))
                 + ","
-                + str(len(tx.metadata["capabilities"]))
+                + str(tx.operation)
                 + ","
                 + tx._id
                 + "\n"

@@ -17,6 +17,7 @@ from collections import namedtuple
 from copy import deepcopy
 from functools import reduce, lru_cache
 import rapidjson
+from datetime import datetime
 
 import base58
 import logging
@@ -1472,7 +1473,7 @@ class Transaction(object):
             raise InputDoesNotExist("RFQ input `{}` doesn't exist".format(rfq_tx_id))
 
         all_accept_txs = list(bigchain.get_transactions_by_operation(self.ACCEPT))
-        for tx in all_accept_txs + current_transactions:
+        for tx in all_accept_txs:
             if tx.operation == self.ACCEPT and rfq_tx_id == tx.asset["data"]["rfq_id"]:
                 raise DoubleSpend(
                     "ACCEPT tx with the same RFQ input `{}` already spent".format(
@@ -1579,7 +1580,7 @@ class Transaction(object):
 
         return True
 
-    def trigger_transfers(self, bigchain):
+    def trigger_transfers(self, bigchain, current_transactions=[]):
         """Triggers TRANSFER transactions for this/self ACCEPT transaction
         """
         logger.debug("Triggering transfer txs for ACCECPT tx(%s)", self.tx_dict["id"])
@@ -1590,8 +1591,27 @@ class Transaction(object):
         winning_bid_id = self.asset["data"]["winner_bid_id"]
         owned_bid_ids = bigchain.get_locked_bid_txids_for_rfq(rfq_tx_id)
 
-        selected_bids = [winning_bid_id]
-        rejected_bids = [tx_id for tx_id in owned_bid_ids if tx_id not in selected_bids]
+        if not owned_bid_ids:
+            return
+
+        # NOTE: Support one output
+        output_index = 0
+        selected_bids, rejected_bids = [], []
+
+        if winning_bid_id in owned_bid_ids:
+            selected_bids.append(winning_bid_id)
+            spent = bigchain.get_spent(
+                winning_bid_id, output_index, current_transactions
+            )
+            if spent:
+                selected_bids = []
+
+        for tx_id in owned_bid_ids:
+            if tx_id not in selected_bids:
+                rejected_bids.append(tx_id)
+                spent = bigchain.get_spent(tx_id, output_index, current_transactions)
+                if spent:
+                    rejected_bids = rejected_bids[:-1]
 
         for bid_id in selected_bids:
             bid_tx = bigchain.get_transaction(bid_id)
@@ -1640,11 +1660,15 @@ class Transaction(object):
             "fulfills": {"output_index": output_index, "transaction_id": asset_id,},
             "owners_before": output.public_keys,
         }
+        transfer_metadata = {
+            "requestCreationTimestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+        }
 
         prepared_transfer_tx = bdb.transactions.prepare(
             operation="TRANSFER",
             asset=transfer_asset,
             inputs=transfer_input,
+            metadata=transfer_metadata,
             recipients=recipient_pub_key,
         )
 

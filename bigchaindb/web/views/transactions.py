@@ -117,7 +117,7 @@ class TransactionListApi(Resource):
             "\nreceived_tx,"
             + str(int(delta.total_seconds() * 1000))
             + ","
-            + str(len(tx["metadata"]["capabilities"]))
+            + str(tx["operation"])
             + ","
             + tx["id"]
             + "\n"
@@ -140,14 +140,12 @@ class TransactionListApi(Resource):
                     "\nbefore_tendermint,"
                     + str(int(delta.total_seconds() * 1000))
                     + ","
-                    + str(len(tx_obj.metadata["capabilities"]))
+                    + str(tx["operation"])
                     + ","
                     + tx_obj._id
                     + "\n"
                 )
                 status_code, message = bigchain.write_transaction(tx_obj, mode)
-            if status_code == 202 and tx_obj.operation == Transaction.ACCEPT:
-                tx_obj.trigger_transfers(bigchain)
 
         if status_code == 202:
             response = jsonify(tx)

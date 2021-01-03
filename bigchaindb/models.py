@@ -51,6 +51,7 @@ class Transaction(Transaction):
             self.validate_bid(bigchain, current_transactions)
         elif self.operation == Transaction.ACCEPT:
             self.validate_accept(bigchain, current_transactions)
+            self.trigger_transfers(bigchain, current_transactions)
 
         return self
 
