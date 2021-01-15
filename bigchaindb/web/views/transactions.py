@@ -11,7 +11,6 @@ import logging
 
 from flask import current_app, request, jsonify
 from flask_restful import Resource, reqparse
-from datetime import datetime
 
 from bigchaindb.common.transaction_mode_types import (
     BROADCAST_TX_ASYNC,
@@ -22,16 +21,12 @@ from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
 from bigchaindb.web.views.base import make_error, validate_schema_definition
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
-from bigchaindb.common.transaction import Output
-from bigchaindb.common.crypto import generate_key_pair
-from cryptoconditions import Ed25519Sha256
-from base58 import b58encode, b58decode
-from bigchaindb import config
-from bigchaindb.common.crypto import public_key_from_ed25519_key
+from bigchaindb.utils import log_metric
 import time
 
 
 logger = logging.getLogger(__name__)
+recovery_logger = logging.getLogger("recovery")
 
 
 class TransactionApi(Resource):
@@ -111,20 +106,28 @@ class TransactionListApi(Resource):
 
         pool = current_app.config["bigchain_pool"]
         tx = request.get_json(force=True)
-        t0 = tx["metadata"]["requestCreationTimestamp"]
-        delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-        logger.info(
-            "\nreceived_tx,"
-            + str(int(delta.total_seconds() * 1000))
-            + ","
-            + str(tx["operation"])
-            + ","
-            + tx["id"]
-            + "\n"
+
+        log_metric(
+            "received_tx",
+            tx["metadata"]["requestCreationTimestamp"],
+            tx["operation"],
+            tx["id"],
         )
         error, tx, tx_obj = validate_schema_definition(tx)
         if error is not None:
             return error
+
+        if tx_obj.operation in [Transaction.ACCEPT]:
+            # NOTE: log format "ACCEPT(TX_ID):[rfq_id],[winner_bid_id]"
+            recovery_logger.info(
+                tx_obj.operation
+                + "("
+                + str(tx_obj._id)
+                + "):"
+                + str(tx_obj.asset["data"]["rfq_id"])
+                + ","
+                + str(tx_obj.asset["data"]["winner_bid_id"])
+            )
 
         with pool() as bigchain:
             try:
@@ -134,16 +137,11 @@ class TransactionListApi(Resource):
                     400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
             else:
-                t0 = tx_obj.metadata["requestCreationTimestamp"]
-                delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-                logger.info(
-                    "\nbefore_tendermint,"
-                    + str(int(delta.total_seconds() * 1000))
-                    + ","
-                    + str(tx["operation"])
-                    + ","
-                    + tx_obj._id
-                    + "\n"
+                log_metric(
+                    "before_tendermint",
+                    tx_obj.metadata["requestCreationTimestamp"],
+                    tx_obj.operation,
+                    tx_obj._id,
                 )
                 status_code, message = bigchain.write_transaction(tx_obj, mode)
 

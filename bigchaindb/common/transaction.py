@@ -1599,19 +1599,17 @@ class Transaction(object):
         selected_bids, rejected_bids = [], []
 
         if winning_bid_id in owned_bid_ids:
-            selected_bids.append(winning_bid_id)
             spent = bigchain.get_spent(
                 winning_bid_id, output_index, current_transactions
             )
-            if spent:
-                selected_bids = []
+            if not spent:
+                selected_bids.append(winning_bid_id)
 
         for tx_id in owned_bid_ids:
             if tx_id not in selected_bids:
-                rejected_bids.append(tx_id)
                 spent = bigchain.get_spent(tx_id, output_index, current_transactions)
-                if spent:
-                    rejected_bids = rejected_bids[:-1]
+                if not spent:
+                    rejected_bids.append(tx_id)
 
         for bid_id in selected_bids:
             bid_tx = bigchain.get_transaction(bid_id)
@@ -1628,7 +1626,7 @@ class Transaction(object):
 
             # NOTE: Supports only one bidder and one input(i.e. incompatible with divisible asset tokens)
             input_index = 0
-            bidder_pub_key = rfq_tx.inputs[input_index].owners_before[-1]
+            bidder_pub_key = bid_tx.inputs[input_index].owners_before[-1]
             Transaction.send_transfer(bid_id, bid_tx, bidder_pub_key)
 
     @classmethod

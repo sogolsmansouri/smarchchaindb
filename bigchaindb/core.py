@@ -8,7 +8,6 @@ with Tendermint.
 """
 import logging
 import sys
-from datetime import datetime
 
 from abci.application import BaseApplication
 from abci import CodeTypeOk
@@ -21,6 +20,7 @@ from bigchaindb.tendermint_utils import decode_transaction, calculate_hash
 from bigchaindb.lib import Block
 import bigchaindb.upsert_validator.validator_utils as vutils
 from bigchaindb.events import EventTypes, Event
+from bigchaindb.utils import log_metric
 
 
 CodeTypeError = 1
@@ -148,24 +148,19 @@ class App(BaseApplication):
 
         self.abort_if_abci_chain_is_not_synced()
 
-        # logger.debug("check_tx: %s", raw_transaction)
+        logger.debug("check_tx: %s", raw_transaction)
         transaction = decode_transaction(raw_transaction)
         if self.bigchaindb.is_valid_transaction(transaction):
-            # logger.debug("check_tx: VALID")
-            t0 = transaction["metadata"]["requestCreationTimestamp"]
-            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.info(
-                "\ncheck_tx,"
-                + str(int(delta.total_seconds() * 1000))
-                + ","
-                + str(transaction["operation"])
-                + ","
-                + transaction["id"]
-                + "\n"
+            logger.debug("check_tx: VALID")
+            log_metric(
+                "check_tx",
+                transaction["metadata"]["requestCreationTimestamp"],
+                transaction["operation"],
+                transaction["id"],
             )
             return self.abci.ResponseCheckTx(code=CodeTypeOk)
         else:
-            # logger.debug("check_tx: INVALID")
+            logger.debug("check_tx: INVALID")
             return self.abci.ResponseCheckTx(code=CodeTypeError)
 
     def begin_block(self, req_begin_block):
@@ -178,11 +173,11 @@ class App(BaseApplication):
 
         chain_shift = 0 if self.chain is None else self.chain["height"]
 
-        """ logger.debug(
+        logger.debug(
             "BEGIN BLOCK, height:%s, num_txs:%s",
             req_begin_block.header.height + chain_shift,
             req_begin_block.header.num_txs,
-        ) """
+        )
 
         self.block_txn_ids = []
         self.block_transactions = []
@@ -197,28 +192,23 @@ class App(BaseApplication):
 
         self.abort_if_abci_chain_is_not_synced()
 
-        # logger.debug("deliver_tx: %s", raw_transaction)
+        logger.debug("deliver_tx: %s", raw_transaction)
         transaction = self.bigchaindb.is_valid_transaction(
             decode_transaction(raw_transaction), self.block_transactions
         )
 
         if not transaction:
-            # logger.debug("deliver_tx: INVALID")
+            logger.debug("deliver_tx: INVALID")
             return self.abci.ResponseDeliverTx(code=CodeTypeError)
         else:
-            # logger.debug("storing tx")
+            logger.debug("storing tx")
             self.block_txn_ids.append(transaction.id)
             self.block_transactions.append(transaction)
-            t0 = transaction.metadata["requestCreationTimestamp"]
-            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.info(
-                "\ndeliver_tx,"
-                + str(int(delta.total_seconds() * 1000))
-                + ","
-                + str(transaction.operation)
-                + ","
-                + transaction._id
-                + "\n"
+            log_metric(
+                "deliver_tx",
+                transaction.metadata["requestCreationTimestamp"],
+                transaction.operation,
+                transaction._id,
             )
             return self.abci.ResponseDeliverTx(code=CodeTypeOk)
 
@@ -239,14 +229,14 @@ class App(BaseApplication):
 
         # store pre-commit state to recover in case there is a crash during
         # `end_block` or `commit`
-        # logger.debug(f"Updating pre-commit state: {self.new_height}")
+        logger.debug(f"Updating pre-commit state: {self.new_height}")
         pre_commit_state = dict(height=self.new_height, transactions=self.block_txn_ids)
         self.bigchaindb.store_pre_commit_state(pre_commit_state)
 
         block_txn_hash = calculate_hash(self.block_txn_ids)
         block = self.bigchaindb.get_latest_block()
 
-        # logger.debug(f"Block from local backend: {block}")
+        logger.debug(f"Block from local backend: {block}")
 
         if self.block_txn_ids:
             self.block_txn_hash = calculate_hash([block["app_hash"], block_txn_hash])
@@ -258,16 +248,11 @@ class App(BaseApplication):
         )
 
         for tx in self.block_transactions:
-            t0 = tx.metadata["requestCreationTimestamp"]
-            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.info(
-                "\nend_block,"
-                + str(int(delta.total_seconds() * 1000))
-                + ","
-                + str(tx.operation)
-                + ","
-                + tx._id
-                + "\n"
+            log_metric(
+                "end_block",
+                tx.metadata["requestCreationTimestamp"],
+                tx.operation,
+                tx._id,
             )
 
         return self.abci.ResponseEndBlock(validator_updates=validator_update)
@@ -292,12 +277,12 @@ class App(BaseApplication):
         # this effects crash recovery. Refer BEP#8 for details
         self.bigchaindb.store_block(block._asdict())
 
-        """ logger.debug(
+        logger.debug(
             "Commit-ing new block with hash: apphash=%s ," "height=%s, txn ids=%s",
             data,
             self.new_height,
             self.block_txn_ids,
-        ) """
+        )
 
         if self.events_queue:
             event = Event(
@@ -307,16 +292,11 @@ class App(BaseApplication):
             self.events_queue.put(event)
 
         for tx in self.block_transactions:
-            t0 = tx.metadata["requestCreationTimestamp"]
-            delta = datetime.now() - datetime.strptime(t0, "%Y-%m-%dT%H:%M:%S.%f")
-            logger.info(
-                "\ncommit,"
-                + str(int(delta.total_seconds() * 1000))
-                + ","
-                + str(tx.operation)
-                + ","
-                + tx._id
-                + "\n"
+            log_metric(
+                "commit_tx",
+                tx.metadata["requestCreationTimestamp"],
+                tx.operation,
+                tx._id,
             )
 
         return self.abci.ResponseCommit(data=data)
