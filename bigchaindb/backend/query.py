@@ -149,20 +149,6 @@ def get_owned_ids(connection, owner):
 
 
 @singledispatch
-def get_owned_bid_ids(connection, owner):
-    """Retrieve a list of BID `txids` that can we used has inputs.
-
-    Args:
-        owner (str): base58 encoded public key.
-
-    Returns:
-        Iterator of (block_id, transaction) for transactions
-        that list given owner in conditions.
-    """
-    raise NotImplementedError
-
-
-@singledispatch
 def get_block(connection, block_id):
     """Get a block from the bigchain table.
 
@@ -240,8 +226,9 @@ def get_txids_by_operation(connection, operation):
 
 
 @singledispatch
-def get_bid_txids_by_rfq(connection, rfq_tx_id):
-    """Return all Bid transactions for a particular RFQ transaction id.
+def get_locked_bid_txids_by_rfq(connection, rfq_tx_id):
+    """Return all Bid transactions for a particular RFQ transaction id,
+    locked by the special smartchaindb account.
 
     Args:
         rfq_tx_id (str): ID of RFQ transaction
@@ -250,9 +237,8 @@ def get_bid_txids_by_rfq(connection, rfq_tx_id):
 
 
 @singledispatch
-def get_locked_bid_txids_by_rfq(connection, rfq_tx_id):
-    """Return all Bid transactions for a particular RFQ transaction id,
-    locked by the special smartchaindb account.
+def get_accept_tx_for_rfq(connection, rfq_tx_id):
+    """Return Accept Bid tx(if any) for a particular RFQ transaction id.
 
     Args:
         rfq_tx_id (str): ID of RFQ transaction

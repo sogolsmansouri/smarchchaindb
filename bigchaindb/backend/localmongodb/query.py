@@ -150,15 +150,6 @@ def get_txids_by_operation(conn, operation):
 
 
 @register_query(LocalMongoDBConnection)
-def get_bid_txids_by_rfq(conn, rfq_tx_id):
-
-    query = {"$and": [{"operation": "BID"}, {"asset.data.rfq_id": rfq_tx_id}]}
-    cursor = conn.run(conn.collection("transactions").find(query))
-
-    return (elem["id"] for elem in cursor)
-
-
-@register_query(LocalMongoDBConnection)
 def get_locked_bid_txids_by_rfq(conn, rfq_tx_id):
 
     query = {
@@ -171,6 +162,12 @@ def get_locked_bid_txids_by_rfq(conn, rfq_tx_id):
     cursor = conn.run(conn.collection("transactions").find(query))
 
     return (elem["id"] for elem in cursor)
+
+
+@register_query(LocalMongoDBConnection)
+def get_accept_tx_for_rfq(conn, rfq_tx_id):
+    query = {"$and": [{"operation": "ACCEPT"}, {"asset.data.rfq_id": rfq_tx_id},]}
+    return conn.run(conn.collection("transactions").find_one(query))
 
 
 @register_query(LocalMongoDBConnection)
@@ -218,19 +215,6 @@ def get_owned_ids(conn, owner):
     cursor = conn.run(
         conn.collection("transactions").aggregate(
             [{"$match": {"outputs.public_keys": owner}}, {"$project": {"_id": False}}]
-        )
-    )
-    return cursor
-
-
-@register_query(LocalMongoDBConnection)
-def get_owned_bid_ids(conn, owner):
-    cursor = conn.run(
-        conn.collection("transactions").aggregate(
-            [
-                {"$match": {"operation": "BID", "outputs.public_keys": owner}},
-                {"$project": {"id": 1, "_id": False}},
-            ]
         )
     )
     return cursor
