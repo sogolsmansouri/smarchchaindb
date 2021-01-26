@@ -28,7 +28,13 @@ class Transaction(Transaction):
         """
         input_conditions = []
 
-        if self.operation == Transaction.CREATE:
+        if self.operation in [
+            Transaction.CREATE,
+            Transaction.PRE_REQUEST,
+            Transaction.INTEREST,
+            Transaction.REQUEST_FOR_QUOTE,
+            Transaction.ACCEPT,
+        ]:
             duplicates = any(txn for txn in current_transactions if txn.id == self.id)
             if bigchain.is_committed(self.id) or duplicates:
                 raise DuplicateTransaction(
@@ -38,20 +44,17 @@ class Transaction(Transaction):
             if not self.inputs_valid(input_conditions):
                 raise InvalidSignature("Transaction signature is invalid.")
 
-        elif self.operation == Transaction.TRANSFER:
+        if self.operation == Transaction.TRANSFER:
             self.validate_transfer_inputs(bigchain, current_transactions)
-        elif self.operation == Transaction.PRE_REQUEST:
-            pass
         elif self.operation == Transaction.INTEREST:
             self.validate_interest(bigchain, current_transactions)
         elif self.operation == Transaction.REQUEST_FOR_QUOTE:
-            # self.validate_rfq(bigchain, current_transactions)
-            pass
+            self.validate_rfq(bigchain, current_transactions)
         elif self.operation == Transaction.BID:
             self.validate_bid(bigchain, current_transactions)
         elif self.operation == Transaction.ACCEPT:
             self.validate_accept(bigchain, current_transactions)
-            self.trigger_transfers(bigchain, current_transactions)
+            # self.trigger_transfers(bigchain, current_transactions)
 
         return self
 
