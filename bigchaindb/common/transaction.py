@@ -48,6 +48,7 @@ from bigchaindb.common.exceptions import (
     DuplicateTransaction,
     ThresholdTooDeep,
     ValidationError,
+    InvalidAccount,
 )
 from bigchaindb.common.utils import serialize
 from .memoize import memoize_from_dict, memoize_to_dict
@@ -1061,24 +1062,22 @@ class Transaction(object):
             Returns:
                 bool: If all Inputs are valid.
         """
-        if (
-            self.operation == self.CREATE
-            or self.operation == self.PRE_REQUEST
-            or self.operation == self.INTEREST
-            or self.operation == self.ACCEPT
-        ):
+        if self.operation in [
+            self.CREATE,
+            self.PRE_REQUEST,
+            self.REQUEST_FOR_QUOTE,
+            self.INTEREST,
+            self.ACCEPT,
+        ]:
             # NOTE: Since in the case of a `CREATE`-transaction we do not have
             #       to check for outputs, we're just submitting dummy
             #       values to the actual method. This simplifies it's logic
             #       greatly, as we do not have to check against `None` values.
             return self._inputs_valid(["dummyvalue" for _ in self.inputs])
-        elif self.operation == self.TRANSFER:
+        elif self.operation in [self.TRANSFER, self.BID]:
             return self._inputs_valid(
                 [output.fulfillment.condition_uri for output in outputs]
             )
-        # FIXME: BID input signature validation must be same as TRANSFER
-        elif self.operation == self.BID:
-            return True
         else:
             allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
             raise TypeError("`operation` must be one of {}".format(allowed_ops))
@@ -1141,7 +1140,13 @@ class Transaction(object):
         except (TypeError, ValueError, ParsingError, ASN1DecodeError, ASN1EncodeError):
             return False
 
-        if operation == self.CREATE:
+        if operation in [
+            self.CREATE,
+            self.PRE_REQUEST,
+            self.REQUEST_FOR_QUOTE,
+            self.INTEREST,
+            self.ACCEPT,
+        ]:
             # NOTE: In the case of a `CREATE` transaction, the
             #       output is always valid.
             output_valid = True
@@ -1253,11 +1258,12 @@ class Transaction(object):
         # create a set of the transactions' asset ids
         asset_ids = set()
         for tx in transactions:
-            asset_id = tx.asset["id"]
             if tx.operation == tx.CREATE:
                 asset_id = tx.id
             elif tx.operation == tx.BID:
                 asset_id = tx.asset["data"]["id"]
+            else:
+                asset_id = tx.asset["id"]
             asset_ids.add(asset_id)
 
         # check that all the transasctions have the same asset id
@@ -1437,19 +1443,19 @@ class Transaction(object):
         return True
 
     def validate_rfq(self, bigchain, current_transactions=[]):
-        rfq_tx_id = self.asset["data"]["pre_request_id"]
-        rfq_tx = bigchain.get_transaction(rfq_tx_id)
+        # pre_rfq_tx_id = self.asset["data"]["pre_request_id"]
+        # pre_rfq_tx = bigchain.get_transaction(pre_rfq_tx_id)
 
-        # TODO: Deadline field validation
-        if rfq_tx is None:
-            raise InputDoesNotExist(
-                "PRE_REQUEST input `{}` doesn't exist".format(rfq_tx_id)
-            )
+        # # TODO: Deadline field validation
+        # if rfq_tx is None:
+        #     raise InputDoesNotExist(
+        #         "PRE_REQUEST input `{}` doesn't exist".format(rfq_tx_id)
+        #     )
 
-        if rfq_tx.operation != self.PRE_REQUEST:
-            raise ValidationError(
-                "RFQ transaction must be related to a commited PRE_REQUEST transaction"
-            )
+        # if rfq_tx.operation != self.PRE_REQUEST:
+        #     raise ValidationError(
+        #         "RFQ transaction must be related to a commited PRE_REQUEST transaction"
+        #     )
 
         return True
 
@@ -1489,10 +1495,19 @@ class Transaction(object):
         rfq_tx_id = self.asset["data"]["rfq_id"]
         winning_bid_id = self.asset["data"]["winner_bid_id"]
 
-        # TODO: check if ACCEPT signer is same as RFQ signer, match it with RFQ input
         rfq_tx = bigchain.get_transaction(rfq_tx_id)
         if rfq_tx is None or rfq_tx.operation != self.REQUEST_FOR_QUOTE:
             raise InputDoesNotExist("RFQ input `{}` doesn't exist".format(rfq_tx_id))
+
+        accept_ffill = self.inputs[0].fulfillment.to_dict()
+        for rfq_input in rfq_tx.inputs:
+            rfq_ffill = rfq_input.fulfillment.to_dict()
+            if rfq_ffill["public_key"] != accept_ffill["public_key"]:
+                raise InvalidAccount(
+                    "ACCEPT tx signer must be same as its associated RFQ(`{}`) signer".format(
+                        rfq_tx_id
+                    )
+                )
 
         accept_tx = bigchain.get_accept_tx_for_rfq(rfq_tx_id)
         if accept_tx:
