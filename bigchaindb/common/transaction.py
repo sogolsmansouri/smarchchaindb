@@ -17,6 +17,7 @@ from collections import namedtuple
 from copy import deepcopy
 from functools import reduce, lru_cache
 import rapidjson
+from datetime import datetime
 
 import base58
 import logging
@@ -44,9 +45,10 @@ from bigchaindb.common.exceptions import (
     InvalidHash,
     InvalidSignature,
     KeypairMismatchException,
-    SchemaValidationError,
+    DuplicateTransaction,
     ThresholdTooDeep,
     ValidationError,
+    InvalidAccount,
 )
 from bigchaindb.common.utils import serialize
 from .memoize import memoize_from_dict, memoize_to_dict
@@ -1060,24 +1062,22 @@ class Transaction(object):
             Returns:
                 bool: If all Inputs are valid.
         """
-        if (
-            self.operation == self.CREATE
-            or self.operation == self.PRE_REQUEST
-            or self.operation == self.INTEREST
-            or self.operation == self.ACCEPT
-        ):
+        if self.operation in [
+            self.CREATE,
+            self.PRE_REQUEST,
+            self.REQUEST_FOR_QUOTE,
+            self.INTEREST,
+            self.ACCEPT,
+        ]:
             # NOTE: Since in the case of a `CREATE`-transaction we do not have
             #       to check for outputs, we're just submitting dummy
             #       values to the actual method. This simplifies it's logic
             #       greatly, as we do not have to check against `None` values.
             return self._inputs_valid(["dummyvalue" for _ in self.inputs])
-        elif self.operation == self.TRANSFER:
+        elif self.operation in [self.TRANSFER, self.BID]:
             return self._inputs_valid(
                 [output.fulfillment.condition_uri for output in outputs]
             )
-        # FIXME: BID input signature validation must be same as TRANSFER
-        elif self.operation == self.BID:
-            return True
         else:
             allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
             raise TypeError("`operation` must be one of {}".format(allowed_ops))
@@ -1140,7 +1140,13 @@ class Transaction(object):
         except (TypeError, ValueError, ParsingError, ASN1DecodeError, ASN1EncodeError):
             return False
 
-        if operation == self.CREATE:
+        if operation in [
+            self.CREATE,
+            self.PRE_REQUEST,
+            self.REQUEST_FOR_QUOTE,
+            self.INTEREST,
+            self.ACCEPT,
+        ]:
             # NOTE: In the case of a `CREATE` transaction, the
             #       output is always valid.
             output_valid = True
@@ -1250,12 +1256,15 @@ class Transaction(object):
             transactions = [transactions]
 
         # create a set of the transactions' asset ids
-        asset_ids = {
-            tx.id
-            if tx.operation == tx.CREATE or tx.operation == tx.BID
-            else tx.asset["id"]
-            for tx in transactions
-        }
+        asset_ids = set()
+        for tx in transactions:
+            if tx.operation == tx.CREATE:
+                asset_id = tx.id
+            elif tx.operation == tx.BID:
+                asset_id = tx.asset["data"]["id"]
+            else:
+                asset_id = tx.asset["id"]
+            asset_ids.add(asset_id)
 
         # check that all the transasctions have the same asset id
         if len(asset_ids) > 1:
@@ -1397,6 +1406,18 @@ class Transaction(object):
     def validate_schema(cls, tx):
         pass
 
+    def __match_capabilities(self, bigchain, requested_cap, input_tx_id) -> bool:
+        input_tx = bigchain.get_transaction(input_tx_id)
+        if input_tx is None:
+            raise InputDoesNotExist("input `{}` doesn't exist".format(input_tx_id))
+
+        input_capability_set = set()
+        input_capability_list = list(input_tx.asset["data"]["capability"])
+        input_capability_set.update(input_capability_list)
+
+        requested_capability_set = set(requested_cap)
+        return requested_capability_set.issubset(input_capability_set)
+
     def validate_interest(self, bigchain, current_transactions=[]):
         rfq_tx_id = self.asset["data"]["pre_request_id"]
         rfq_tx = bigchain.get_transaction(rfq_tx_id)
@@ -1414,7 +1435,7 @@ class Transaction(object):
         requested_cap = rfq_tx.metadata["capability"]
         create_tx_id = self.asset["data"]["id"]
 
-        if not self.match_capabilities(bigchain, requested_cap, create_tx_id):
+        if not self.__match_capabilities(bigchain, requested_cap, create_tx_id):
             raise InsufficientCapabilities(
                 "INTEREST transaction must fulfill all the requested capabilities"
             )
@@ -1422,19 +1443,19 @@ class Transaction(object):
         return True
 
     def validate_rfq(self, bigchain, current_transactions=[]):
-        rfq_tx_id = self.asset["data"]["pre_request_id"]
-        rfq_tx = bigchain.get_transaction(rfq_tx_id)
+        # pre_rfq_tx_id = self.asset["data"]["pre_request_id"]
+        # pre_rfq_tx = bigchain.get_transaction(pre_rfq_tx_id)
 
-        # TODO: Deadline field validation
-        if rfq_tx is None:
-            raise InputDoesNotExist(
-                "PRE_REQUEST input `{}` doesn't exist".format(rfq_tx_id)
-            )
+        # # TODO: Deadline field validation
+        # if rfq_tx is None:
+        #     raise InputDoesNotExist(
+        #         "PRE_REQUEST input `{}` doesn't exist".format(rfq_tx_id)
+        #     )
 
-        if rfq_tx.operation != self.PRE_REQUEST:
-            raise ValidationError(
-                "RFQ transaction must be related to a commited PRE_REQUEST transaction"
-            )
+        # if rfq_tx.operation != self.PRE_REQUEST:
+        #     raise ValidationError(
+        #         "RFQ transaction must be related to a commited PRE_REQUEST transaction"
+        #     )
 
         return True
 
@@ -1451,16 +1472,24 @@ class Transaction(object):
                 "BID transaction must be against a commited RFQ transaction"
             )
 
-        self.validate_transfer_inputs(bigchain, current_transactions)
+        for output in self.outputs:
+            if (
+                len(output.public_keys) != 1
+                or output.public_keys[0]
+                != config["smartchaindb_key_pair"]["public_key"]
+            ):
+                raise ValidationError(
+                    "BID transaction's outputs must point to Escrow account"
+                )
 
         requested_cap = rfq_tx.metadata["capability"]
         create_tx_id = self.asset["data"]["id"]
-        if not self.match_capabilities(bigchain, requested_cap, create_tx_id):
+        if not self.__match_capabilities(bigchain, requested_cap, create_tx_id):
             raise InsufficientCapabilities(
                 "BID transaction must fulfill all the requested capabilities"
             )
 
-        return True
+        return self.validate_transfer_inputs(bigchain, current_transactions)
 
     def validate_accept(self, bigchain, current_transactions=[]):
         rfq_tx_id = self.asset["data"]["rfq_id"]
@@ -1470,14 +1499,23 @@ class Transaction(object):
         if rfq_tx is None or rfq_tx.operation != self.REQUEST_FOR_QUOTE:
             raise InputDoesNotExist("RFQ input `{}` doesn't exist".format(rfq_tx_id))
 
-        all_accept_txs = list(bigchain.get_transactions_by_operation(self.ACCEPT))
-        for tx in all_accept_txs + current_transactions:
-            if tx.operation == self.ACCEPT and rfq_tx_id == tx.asset["data"]["rfq_id"]:
-                raise DoubleSpend(
-                    "ACCEPT tx with the same RFQ input `{}` already spent".format(
+        accept_ffill = self.inputs[0].fulfillment.to_dict()
+        for rfq_input in rfq_tx.inputs:
+            rfq_ffill = rfq_input.fulfillment.to_dict()
+            if rfq_ffill["public_key"] != accept_ffill["public_key"]:
+                raise InvalidAccount(
+                    "ACCEPT tx signer must be same as its associated RFQ(`{}`) signer".format(
                         rfq_tx_id
                     )
                 )
+
+        accept_tx = bigchain.get_accept_tx_for_rfq(rfq_tx_id)
+        if accept_tx:
+            raise DuplicateTransaction(
+                "ACCEPT tx with the same RFQ input `{}` already committed".format(
+                    rfq_tx_id
+                )
+            )
 
         winning_bid = bigchain.get_transaction(winning_bid_id)
         if winning_bid is None or winning_bid.operation != self.BID:
@@ -1486,9 +1524,7 @@ class Transaction(object):
             )
 
         winning_bid_id = self.asset["data"]["winner_bid_id"]
-        owned_bid_ids = bigchain.get_owned_bid_ids(
-            config["smartchaindb_key_pair"]["public_key"]
-        )
+        owned_bid_ids = bigchain.get_locked_bid_txids_for_rfq(rfq_tx_id)
 
         if winning_bid_id not in owned_bid_ids:
             raise InputDoesNotExist(
@@ -1498,18 +1534,6 @@ class Transaction(object):
             )
 
         return True
-
-    def match_capabilities(self, bigchain, requested_cap, input_tx_id) -> bool:
-        input_tx = bigchain.get_transaction(input_tx_id)
-        if input_tx is None:
-            raise InputDoesNotExist("input `{}` doesn't exist".format(input_tx_id))
-
-        input_capability_set = set()
-        input_capability_list = list(input_tx.asset["data"]["capability"])
-        input_capability_set.update(input_capability_list)
-
-        requested_capability_set = set(requested_cap)
-        return requested_capability_set.issubset(input_capability_set)
 
     def validate_transfer_inputs(self, bigchain, current_transactions=[]):
         # store the inputs so that we can check if the asset ids match
@@ -1578,7 +1602,7 @@ class Transaction(object):
 
         return True
 
-    def trigger_transfers(self, bigchain):
+    def trigger_transfers(self, bigchain, current_transactions=[]):
         """Triggers TRANSFER transactions for this/self ACCEPT transaction
         """
         logger.debug("Triggering transfer txs for ACCECPT tx(%s)", self.tx_dict["id"])
@@ -1589,8 +1613,25 @@ class Transaction(object):
         winning_bid_id = self.asset["data"]["winner_bid_id"]
         owned_bid_ids = bigchain.get_locked_bid_txids_for_rfq(rfq_tx_id)
 
-        selected_bids = [winning_bid_id]
-        rejected_bids = [tx_id for tx_id in owned_bid_ids if tx_id not in selected_bids]
+        if not owned_bid_ids:
+            return
+
+        # NOTE: Support one output
+        output_index = 0
+        selected_bids, rejected_bids = [], []
+
+        if winning_bid_id in owned_bid_ids:
+            spent = bigchain.get_spent(
+                winning_bid_id, output_index, current_transactions
+            )
+            if not spent:
+                selected_bids.append(winning_bid_id)
+
+        for tx_id in owned_bid_ids:
+            if tx_id not in selected_bids:
+                spent = bigchain.get_spent(tx_id, output_index, current_transactions)
+                if not spent:
+                    rejected_bids.append(tx_id)
 
         for bid_id in selected_bids:
             bid_tx = bigchain.get_transaction(bid_id)
@@ -1607,7 +1648,7 @@ class Transaction(object):
 
             # NOTE: Supports only one bidder and one input(i.e. incompatible with divisible asset tokens)
             input_index = 0
-            bidder_pub_key = rfq_tx.inputs[input_index].owners_before[-1]
+            bidder_pub_key = bid_tx.inputs[input_index].owners_before[-1]
             Transaction.send_transfer(bid_id, bid_tx, bidder_pub_key)
 
     @classmethod
@@ -1639,11 +1680,15 @@ class Transaction(object):
             "fulfills": {"output_index": output_index, "transaction_id": asset_id,},
             "owners_before": output.public_keys,
         }
+        transfer_metadata = {
+            "requestCreationTimestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+        }
 
         prepared_transfer_tx = bdb.transactions.prepare(
             operation="TRANSFER",
             asset=transfer_asset,
             inputs=transfer_input,
+            metadata=transfer_metadata,
             recipients=recipient_pub_key,
         )
 

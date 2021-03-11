@@ -21,16 +21,12 @@ from bigchaindb.common.exceptions import SchemaValidationError, ValidationError
 from bigchaindb.web.views.base import make_error, validate_schema_definition
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
-from bigchaindb.common.transaction import Output
-from bigchaindb.common.crypto import generate_key_pair
-from cryptoconditions import Ed25519Sha256
-from base58 import b58encode, b58decode
-from bigchaindb import config
-from bigchaindb.common.crypto import public_key_from_ed25519_key
+from bigchaindb.utils import log_metric
 import time
 
 
 logger = logging.getLogger(__name__)
+recovery_logger = logging.getLogger("recovery")
 
 
 class TransactionApi(Resource):
@@ -109,10 +105,29 @@ class TransactionListApi(Resource):
         mode = str(args["mode"])
 
         pool = current_app.config["bigchain_pool"]
+        tx = request.get_json(force=True)
 
-        error, tx, tx_obj = validate_schema_definition(request)
+        log_metric(
+            "received_tx",
+            tx["metadata"]["requestCreationTimestamp"],
+            tx["operation"],
+            tx["id"],
+        )
+        error, tx, tx_obj = validate_schema_definition(tx)
         if error is not None:
             return error
+
+        if tx_obj.operation in [Transaction.ACCEPT]:
+            # NOTE: log format "ACCEPT(TX_ID):[rfq_id],[winner_bid_id]"
+            recovery_logger.info(
+                tx_obj.operation
+                + "("
+                + str(tx_obj._id)
+                + "):"
+                + str(tx_obj.asset["data"]["rfq_id"])
+                + ","
+                + str(tx_obj.asset["data"]["winner_bid_id"])
+            )
 
         with pool() as bigchain:
             try:
@@ -122,14 +137,13 @@ class TransactionListApi(Resource):
                     400, "Invalid transaction ({}): {}".format(type(e).__name__, e)
                 )
             else:
-                status_code, message = bigchain.write_transaction(
-                    tx_obj,
-                    BROADCAST_TX_COMMIT
-                    if tx_obj.operation is Transaction.ACCEPT
-                    else mode,
+                log_metric(
+                    "before_tendermint",
+                    tx_obj.metadata["requestCreationTimestamp"],
+                    tx_obj.operation,
+                    tx_obj._id,
                 )
-            if status_code == 202 and tx_obj.operation == Transaction.ACCEPT:
-                tx_obj.trigger_transfers(bigchain)
+                status_code, message = bigchain.write_transaction(tx_obj, mode)
 
         if status_code == 202:
             response = jsonify(tx)

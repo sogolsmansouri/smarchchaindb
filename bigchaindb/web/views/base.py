@@ -6,6 +6,7 @@
 """Common classes and methods for API handlers
 """
 import logging
+import time
 
 from flask import jsonify, request
 
@@ -50,12 +51,11 @@ def base_ws_uri():
     return "{}://{}:{}".format(scheme, host, port)
 
 
-def validate_schema_definition(request):
+def validate_schema_definition(tx):
     # `force` will try to format the body of the POST request even if the
     # `content-type` header is not set to `application/json`
-    tx = request.get_json(force=True)
-    tx_obj, error = None, None
     logger.debug(tx)
+    tx_obj, error = None, None
     try:
         tx_obj = Transaction.from_dict(tx)
     except SchemaValidationError as e:

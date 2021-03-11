@@ -116,3 +116,7 @@ class InvalidPowerChange(ValidationError):
 
 class InvalidPublicKey(ValidationError):
     """Raised if public key doesn't match the encoding type"""
+
+
+class InvalidAccount(ValidationError):
+    """Raised if one tx's initiator account doesn't match with its interlinked tx, for example, RFQ -> ACCEPT."""
