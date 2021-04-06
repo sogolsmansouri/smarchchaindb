@@ -29,6 +29,7 @@ from cryptoconditions.exceptions import (
     UnsupportedTypeError,
 )
 
+
 try:
     from hashlib import sha3_256
 except ImportError:
@@ -88,14 +89,14 @@ class Input(object):
     def __init__(self, fulfillment, owners_before, fulfills=None):
         """Create an instance of an :class:`~.Input`.
 
-            Args:
-                fulfillment (:class:`cryptoconditions.Fulfillment`): A
-                    Fulfillment to be signed with a private key.
-                owners_before (:obj:`list` of :obj:`str`): A list of owners
-                    after a Transaction was confirmed.
-                fulfills (:class:`~bigchaindb.common.transaction.
-                    TransactionLink`, optional): A link representing the input
-                    of a `TRANSFER` Transaction.
+        Args:
+            fulfillment (:class:`cryptoconditions.Fulfillment`): A
+                Fulfillment to be signed with a private key.
+            owners_before (:obj:`list` of :obj:`str`): A list of owners
+                after a Transaction was confirmed.
+            fulfills (:class:`~bigchaindb.common.transaction.
+                TransactionLink`, optional): A link representing the input
+                of a `TRANSFER` Transaction.
         """
         if fulfills is not None and not isinstance(fulfills, TransactionLink):
             raise TypeError("`fulfills` must be a TransactionLink instance")
@@ -118,12 +119,12 @@ class Input(object):
     def to_dict(self):
         """Transforms the object to a Python dictionary.
 
-            Note:
-                If an Input hasn't been signed yet, this method returns a
-                dictionary representation.
+        Note:
+            If an Input hasn't been signed yet, this method returns a
+            dictionary representation.
 
-            Returns:
-                dict: The Input as an alternative serialization format.
+        Returns:
+            dict: The Input as an alternative serialization format.
         """
         try:
             fulfillment = self.fulfillment.serialize_uri()
@@ -155,18 +156,18 @@ class Input(object):
     def from_dict(cls, data):
         """Transforms a Python dictionary to an Input object.
 
-            Note:
-                Optionally, this method can also serialize a Cryptoconditions-
-                Fulfillment that is not yet signed.
+        Note:
+            Optionally, this method can also serialize a Cryptoconditions-
+            Fulfillment that is not yet signed.
 
-            Args:
-                data (dict): The Input to be transformed.
+        Args:
+            data (dict): The Input to be transformed.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.Input`
+        Returns:
+            :class:`~bigchaindb.common.transaction.Input`
 
-            Raises:
-                InvalidSignature: If an Input's URI couldn't be parsed.
+        Raises:
+            InvalidSignature: If an Input's URI couldn't be parsed.
         """
         fulfillment = data["fulfillment"]
         if not isinstance(fulfillment, (Fulfillment, type(None))):
@@ -236,26 +237,26 @@ def _fulfillment_from_details(data, _depth=0):
 class TransactionLink(object):
     """An object for unidirectional linking to a Transaction's Output.
 
-        Attributes:
-            txid (str, optional): A Transaction to link to.
-            output (int, optional): An output's index in a Transaction with id
-            `txid`.
+    Attributes:
+        txid (str, optional): A Transaction to link to.
+        output (int, optional): An output's index in a Transaction with id
+        `txid`.
     """
 
     def __init__(self, txid=None, output=None):
         """Create an instance of a :class:`~.TransactionLink`.
 
-            Note:
-                In an IPLD implementation, this class is not necessary anymore,
-                as an IPLD link can simply point to an object, as well as an
-                objects properties. So instead of having a (de)serializable
-                class, we can have a simple IPLD link of the form:
-                `/<tx_id>/transaction/outputs/<output>/`.
+        Note:
+            In an IPLD implementation, this class is not necessary anymore,
+            as an IPLD link can simply point to an object, as well as an
+            objects properties. So instead of having a (de)serializable
+            class, we can have a simple IPLD link of the form:
+            `/<tx_id>/transaction/outputs/<output>/`.
 
-            Args:
-                txid (str, optional): A Transaction to link to.
-                output (int, optional): An Outputs's index in a Transaction with
-                    id `txid`.
+        Args:
+            txid (str, optional): A Transaction to link to.
+            output (int, optional): An Outputs's index in a Transaction with
+                id `txid`.
         """
         self.txid = txid
         self.output = output
@@ -274,11 +275,11 @@ class TransactionLink(object):
     def from_dict(cls, link):
         """Transforms a Python dictionary to a TransactionLink object.
 
-            Args:
-                link (dict): The link to be transformed.
+        Args:
+            link (dict): The link to be transformed.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.TransactionLink`
+        Returns:
+            :class:`~bigchaindb.common.transaction.TransactionLink`
         """
         try:
             return cls(link["transaction_id"], link["output_index"])
@@ -288,8 +289,8 @@ class TransactionLink(object):
     def to_dict(self):
         """Transforms the object to a Python dictionary.
 
-            Returns:
-                (dict|None): The link as an alternative serialization format.
+        Returns:
+            (dict|None): The link as an alternative serialization format.
         """
         if self.txid is None and self.output is None:
             return None
@@ -322,16 +323,16 @@ class Output(object):
     def __init__(self, fulfillment, public_keys=None, amount=1):
         """Create an instance of a :class:`~.Output`.
 
-            Args:
-                fulfillment (:class:`cryptoconditions.Fulfillment`): A
-                    Fulfillment to extract a Condition from.
-                public_keys (:obj:`list` of :obj:`str`, optional): A list of
-                    owners before a Transaction was confirmed.
-                amount (int): The amount of Assets to be locked with this
-                    Output.
+        Args:
+            fulfillment (:class:`cryptoconditions.Fulfillment`): A
+                Fulfillment to extract a Condition from.
+            public_keys (:obj:`list` of :obj:`str`, optional): A list of
+                owners before a Transaction was confirmed.
+            amount (int): The amount of Assets to be locked with this
+                Output.
 
-            Raises:
-                TypeError: if `public_keys` is not instance of `list`.
+        Raises:
+            TypeError: if `public_keys` is not instance of `list`.
         """
         if not isinstance(public_keys, list) and public_keys is not None:
             raise TypeError("`public_keys` must be a list instance or None")
@@ -353,12 +354,12 @@ class Output(object):
     def to_dict(self):
         """Transforms the object to a Python dictionary.
 
-            Note:
-                A dictionary serialization of the Input the Output was
-                derived from is always provided.
+        Note:
+            A dictionary serialization of the Input the Output was
+            derived from is always provided.
 
-            Returns:
-                dict: The Output as an alternative serialization format.
+        Returns:
+            dict: The Output as an alternative serialization format.
         """
         # TODO FOR CC: It must be able to recognize a hashlock condition
         #              and fulfillment!
@@ -384,25 +385,25 @@ class Output(object):
     def generate(cls, public_keys, amount):
         """Generates a Output from a specifically formed tuple or list.
 
-            Note:
-                If a ThresholdCondition has to be generated where the threshold
-                is always the number of subconditions it is split between, a
-                list of the following structure is sufficient:
+        Note:
+            If a ThresholdCondition has to be generated where the threshold
+            is always the number of subconditions it is split between, a
+            list of the following structure is sufficient:
 
-                [(address|condition)*, [(address|condition)*, ...], ...]
+            [(address|condition)*, [(address|condition)*, ...], ...]
 
-            Args:
-                public_keys (:obj:`list` of :obj:`str`): The public key of
-                    the users that should be able to fulfill the Condition
-                    that is being created.
-                amount (:obj:`int`): The amount locked by the Output.
+        Args:
+            public_keys (:obj:`list` of :obj:`str`): The public key of
+                the users that should be able to fulfill the Condition
+                that is being created.
+            amount (:obj:`int`): The amount locked by the Output.
 
-            Returns:
-                An Output that can be used in a Transaction.
+        Returns:
+            An Output that can be used in a Transaction.
 
-            Raises:
-                TypeError: If `public_keys` is not an instance of `list`.
-                ValueError: If `public_keys` is an empty list.
+        Raises:
+            TypeError: If `public_keys` is not an instance of `list`.
+            ValueError: If `public_keys` is an empty list.
         """
         threshold = len(public_keys)
         if not isinstance(amount, int):
@@ -428,19 +429,19 @@ class Output(object):
     def _gen_condition(cls, initial, new_public_keys):
         """Generates ThresholdSha256 conditions from a list of new owners.
 
-            Note:
-                This method is intended only to be used with a reduce function.
-                For a description on how to use this method, see
-                :meth:`~.Output.generate`.
+        Note:
+            This method is intended only to be used with a reduce function.
+            For a description on how to use this method, see
+            :meth:`~.Output.generate`.
 
-            Args:
-                initial (:class:`cryptoconditions.ThresholdSha256`):
-                    A Condition representing the overall root.
-                new_public_keys (:obj:`list` of :obj:`str`|str): A list of new
-                    owners or a single new owner.
+        Args:
+            initial (:class:`cryptoconditions.ThresholdSha256`):
+                A Condition representing the overall root.
+            new_public_keys (:obj:`list` of :obj:`str`|str): A list of new
+                owners or a single new owner.
 
-            Returns:
-                :class:`cryptoconditions.ThresholdSha256`:
+        Returns:
+            :class:`cryptoconditions.ThresholdSha256`:
         """
         try:
             threshold = len(new_public_keys)
@@ -474,17 +475,17 @@ class Output(object):
     def from_dict(cls, data):
         """Transforms a Python dictionary to an Output object.
 
-            Note:
-                To pass a serialization cycle multiple times, a
-                Cryptoconditions Fulfillment needs to be present in the
-                passed-in dictionary, as Condition URIs are not serializable
-                anymore.
+        Note:
+            To pass a serialization cycle multiple times, a
+            Cryptoconditions Fulfillment needs to be present in the
+            passed-in dictionary, as Condition URIs are not serializable
+            anymore.
 
-            Args:
-                data (dict): The dict to be transformed.
+        Args:
+            data (dict): The dict to be transformed.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.Output`
+        Returns:
+            :class:`~bigchaindb.common.transaction.Output`
         """
         try:
             fulfillment = _fulfillment_from_details(data["condition"]["details"])
@@ -501,24 +502,24 @@ class Output(object):
 class Transaction(object):
     """A Transaction is used to create and transfer assets.
 
-        Note:
-            For adding Inputs and Outputs, this class provides methods
-            to do so.
+    Note:
+        For adding Inputs and Outputs, this class provides methods
+        to do so.
 
-        Attributes:
-            operation (str): Defines the operation of the Transaction.
-            inputs (:obj:`list` of :class:`~bigchaindb.common.
-                transaction.Input`, optional): Define the assets to
-                spend.
-            outputs (:obj:`list` of :class:`~bigchaindb.common.
-                transaction.Output`, optional): Define the assets to lock.
-            asset (dict): Asset payload for this Transaction. ``CREATE``
-                Transactions require a dict with a ``data``
-                property while ``TRANSFER`` Transactions require a dict with a
-                ``id`` property.
-            metadata (dict):
-                Metadata to be stored along with the Transaction.
-            version (string): Defines the version number of a Transaction.
+    Attributes:
+        operation (str): Defines the operation of the Transaction.
+        inputs (:obj:`list` of :class:`~bigchaindb.common.
+            transaction.Input`, optional): Define the assets to
+            spend.
+        outputs (:obj:`list` of :class:`~bigchaindb.common.
+            transaction.Output`, optional): Define the assets to lock.
+        asset (dict): Asset payload for this Transaction. ``CREATE``
+            Transactions require a dict with a ``data``
+            property while ``TRANSFER`` Transactions require a dict with a
+            ``id`` property.
+        metadata (dict):
+            Metadata to be stored along with the Transaction.
+        version (string): Defines the version number of a Transaction.
     """
 
     CREATE = "CREATE"
@@ -528,6 +529,7 @@ class Transaction(object):
     REQUEST_FOR_QUOTE = "REQUEST_FOR_QUOTE"
     BID = "BID"
     ACCEPT = "ACCEPT"
+    RETURN = "RETURN"
     ALLOWED_OPERATIONS = (
         CREATE,
         TRANSFER,
@@ -536,6 +538,7 @@ class Transaction(object):
         REQUEST_FOR_QUOTE,
         BID,
         ACCEPT,
+        RETURN,
     )
     VERSION = "2.0"
 
@@ -552,22 +555,22 @@ class Transaction(object):
     ):
         """The constructor allows to create a customizable Transaction.
 
-            Note:
-                When no `version` is provided, one is being
-                generated by this method.
+        Note:
+            When no `version` is provided, one is being
+            generated by this method.
 
-            Args:
-                operation (str): Defines the operation of the Transaction.
-                asset (dict): Asset payload for this Transaction.
-                inputs (:obj:`list` of :class:`~bigchaindb.common.
-                    transaction.Input`, optional): Define the assets to
-                outputs (:obj:`list` of :class:`~bigchaindb.common.
-                    transaction.Output`, optional): Define the assets to
-                    lock.
-                metadata (dict): Metadata to be stored along with the
-                    Transaction.
-                version (string): Defines the version number of a Transaction.
-                hash_id (string): Hash id of the transaction.
+        Args:
+            operation (str): Defines the operation of the Transaction.
+            asset (dict): Asset payload for this Transaction.
+            inputs (:obj:`list` of :class:`~bigchaindb.common.
+                transaction.Input`, optional): Define the assets to
+            outputs (:obj:`list` of :class:`~bigchaindb.common.
+                transaction.Output`, optional): Define the assets to
+                lock.
+            metadata (dict): Metadata to be stored along with the
+                Transaction.
+            version (string): Defines the version number of a Transaction.
+            hash_id (string): Hash id of the transaction.
         """
         if operation not in self.ALLOWED_OPERATIONS:
             allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
@@ -718,29 +721,29 @@ class Transaction(object):
     def create(cls, tx_signers, recipients, metadata=None, asset=None):
         """A simple way to generate a `CREATE` transaction.
 
-            Note:
-                This method currently supports the following Cryptoconditions
-                use cases:
-                    - Ed25519
-                    - ThresholdSha256
+        Note:
+            This method currently supports the following Cryptoconditions
+            use cases:
+                - Ed25519
+                - ThresholdSha256
 
-                Additionally, it provides support for the following BigchainDB
-                use cases:
-                    - Multiple inputs and outputs.
+            Additionally, it provides support for the following BigchainDB
+            use cases:
+                - Multiple inputs and outputs.
 
-            Args:
-                tx_signers (:obj:`list` of :obj:`str`): A list of keys that
-                    represent the signers of the CREATE Transaction.
-                recipients (:obj:`list` of :obj:`tuple`): A list of
-                    ([keys],amount) that represent the recipients of this
-                    Transaction.
-                metadata (dict): The metadata to be stored along with the
-                    Transaction.
-                asset (dict): The metadata associated with the asset that will
-                    be created in this Transaction.
+        Args:
+            tx_signers (:obj:`list` of :obj:`str`): A list of keys that
+                represent the signers of the CREATE Transaction.
+            recipients (:obj:`list` of :obj:`tuple`): A list of
+                ([keys],amount) that represent the recipients of this
+                Transaction.
+            metadata (dict): The metadata to be stored along with the
+                Transaction.
+            asset (dict): The metadata associated with the asset that will
+                be created in this Transaction.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.Transaction`
+        Returns:
+            :class:`~bigchaindb.common.transaction.Transaction`
         """
 
         (inputs, outputs) = cls.validate_create(tx_signers, recipients, asset, metadata)
@@ -779,40 +782,40 @@ class Transaction(object):
     def transfer(cls, inputs, recipients, asset_id, metadata=None):
         """A simple way to generate a `TRANSFER` transaction.
 
-            Note:
-                Different cases for threshold conditions:
+        Note:
+            Different cases for threshold conditions:
 
-                Combining multiple `inputs` with an arbitrary number of
-                `recipients` can yield interesting cases for the creation of
-                threshold conditions we'd like to support. The following
-                notation is proposed:
+            Combining multiple `inputs` with an arbitrary number of
+            `recipients` can yield interesting cases for the creation of
+            threshold conditions we'd like to support. The following
+            notation is proposed:
 
-                1. The index of a `recipient` corresponds to the index of
-                   an input:
-                   e.g. `transfer([input1], [a])`, means `input1` would now be
-                        owned by user `a`.
+            1. The index of a `recipient` corresponds to the index of
+               an input:
+               e.g. `transfer([input1], [a])`, means `input1` would now be
+                    owned by user `a`.
 
-                2. `recipients` can (almost) get arbitrary deeply nested,
-                   creating various complex threshold conditions:
-                   e.g. `transfer([inp1, inp2], [[a, [b, c]], d])`, means
-                        `a`'s signature would have a 50% weight on `inp1`
-                        compared to `b` and `c` that share 25% of the leftover
-                        weight respectively. `inp2` is owned completely by `d`.
+            2. `recipients` can (almost) get arbitrary deeply nested,
+               creating various complex threshold conditions:
+               e.g. `transfer([inp1, inp2], [[a, [b, c]], d])`, means
+                    `a`'s signature would have a 50% weight on `inp1`
+                    compared to `b` and `c` that share 25% of the leftover
+                    weight respectively. `inp2` is owned completely by `d`.
 
-            Args:
-                inputs (:obj:`list` of :class:`~bigchaindb.common.transaction.
-                    Input`): Converted `Output`s, intended to
-                    be used as inputs in the transfer to generate.
-                recipients (:obj:`list` of :obj:`tuple`): A list of
-                    ([keys],amount) that represent the recipients of this
-                    Transaction.
-                asset_id (str): The asset ID of the asset to be transferred in
-                    this Transaction.
-                metadata (dict): Python dictionary to be stored along with the
-                    Transaction.
+        Args:
+            inputs (:obj:`list` of :class:`~bigchaindb.common.transaction.
+                Input`): Converted `Output`s, intended to
+                be used as inputs in the transfer to generate.
+            recipients (:obj:`list` of :obj:`tuple`): A list of
+                ([keys],amount) that represent the recipients of this
+                Transaction.
+            asset_id (str): The asset ID of the asset to be transferred in
+                this Transaction.
+            metadata (dict): Python dictionary to be stored along with the
+                Transaction.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.Transaction`
+        Returns:
+            :class:`~bigchaindb.common.transaction.Transaction`
         """
         (inputs, outputs) = cls.validate_transfer(
             inputs, recipients, asset_id, metadata
@@ -829,22 +832,22 @@ class Transaction(object):
     def to_inputs(self, indices=None):
         """Converts a Transaction's outputs to spendable inputs.
 
-            Note:
-                Takes the Transaction's outputs and derives inputs
-                from that can then be passed into `Transaction.transfer` as
-                `inputs`.
-                A list of integers can be passed to `indices` that
-                defines which outputs should be returned as inputs.
-                If no `indices` are passed (empty list or None) all
-                outputs of the Transaction are returned.
+        Note:
+            Takes the Transaction's outputs and derives inputs
+            from that can then be passed into `Transaction.transfer` as
+            `inputs`.
+            A list of integers can be passed to `indices` that
+            defines which outputs should be returned as inputs.
+            If no `indices` are passed (empty list or None) all
+            outputs of the Transaction are returned.
 
-            Args:
-                indices (:obj:`list` of int): Defines which
-                    outputs should be returned as inputs.
+        Args:
+            indices (:obj:`list` of int): Defines which
+                outputs should be returned as inputs.
 
-            Returns:
-                :obj:`list` of :class:`~bigchaindb.common.transaction.
-                    Input`
+        Returns:
+            :obj:`list` of :class:`~bigchaindb.common.transaction.
+                Input`
         """
         # NOTE: If no indices are passed, we just assume to take all outputs
         #       as inputs.
@@ -861,9 +864,9 @@ class Transaction(object):
     def add_input(self, input_):
         """Adds an input to a Transaction's list of inputs.
 
-            Args:
-                input_ (:class:`~bigchaindb.common.transaction.
-                    Input`): An Input to be added to the Transaction.
+        Args:
+            input_ (:class:`~bigchaindb.common.transaction.
+                Input`): An Input to be added to the Transaction.
         """
         if not isinstance(input_, Input):
             raise TypeError("`input_` must be a Input instance")
@@ -872,10 +875,10 @@ class Transaction(object):
     def add_output(self, output):
         """Adds an output to a Transaction's list of outputs.
 
-            Args:
-                output (:class:`~bigchaindb.common.transaction.
-                    Output`): An Output to be added to the
-                    Transaction.
+        Args:
+            output (:class:`~bigchaindb.common.transaction.
+                Output`): An Output to be added to the
+                Transaction.
         """
         if not isinstance(output, Output):
             raise TypeError("`output` must be an Output instance or None")
@@ -884,22 +887,22 @@ class Transaction(object):
     def sign(self, private_keys):
         """Fulfills a previous Transaction's Output by signing Inputs.
 
-            Note:
-                This method works only for the following Cryptoconditions
-                currently:
-                    - Ed25519Fulfillment
-                    - ThresholdSha256
-                Furthermore, note that all keys required to fully sign the
-                Transaction have to be passed to this method. A subset of all
-                will cause this method to fail.
+        Note:
+            This method works only for the following Cryptoconditions
+            currently:
+                - Ed25519Fulfillment
+                - ThresholdSha256
+            Furthermore, note that all keys required to fully sign the
+            Transaction have to be passed to this method. A subset of all
+            will cause this method to fail.
 
-            Args:
-                private_keys (:obj:`list` of :obj:`str`): A complete list of
-                    all private keys needed to sign all Fulfillments of this
-                    Transaction.
+        Args:
+            private_keys (:obj:`list` of :obj:`str`): A complete list of
+                all private keys needed to sign all Fulfillments of this
+                Transaction.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.Transaction`
+        Returns:
+            :class:`~bigchaindb.common.transaction.Transaction`
         """
         # TODO: Singing should be possible with at least one of all private
         #       keys supplied to this method.
@@ -940,17 +943,17 @@ class Transaction(object):
     def _sign_input(cls, input_, message, key_pairs):
         """Signs a single Input.
 
-            Note:
-                This method works only for the following Cryptoconditions
-                currently:
-                    - Ed25519Fulfillment
-                    - ThresholdSha256.
+        Note:
+            This method works only for the following Cryptoconditions
+            currently:
+                - Ed25519Fulfillment
+                - ThresholdSha256.
 
-            Args:
-                input_ (:class:`~bigchaindb.common.transaction.
-                    Input`) The Input to be signed.
-                message (str): The message to be signed
-                key_pairs (dict): The keys to sign the Transaction with.
+        Args:
+            input_ (:class:`~bigchaindb.common.transaction.
+                Input`) The Input to be signed.
+            message (str): The message to be signed
+            key_pairs (dict): The keys to sign the Transaction with.
         """
         if isinstance(input_.fulfillment, Ed25519Sha256):
             return cls._sign_simple_signature_fulfillment(input_, message, key_pairs)
@@ -966,11 +969,11 @@ class Transaction(object):
     def _sign_simple_signature_fulfillment(cls, input_, message, key_pairs):
         """Signs a Ed25519Fulfillment.
 
-            Args:
-                input_ (:class:`~bigchaindb.common.transaction.
-                    Input`) The input to be signed.
-                message (str): The message to be signed
-                key_pairs (dict): The keys to sign the Transaction with.
+        Args:
+            input_ (:class:`~bigchaindb.common.transaction.
+                Input`) The input to be signed.
+            message (str): The message to be signed
+            key_pairs (dict): The keys to sign the Transaction with.
         """
         # NOTE: To eliminate the dangers of accidentally signing a condition by
         #       reference, we remove the reference of input_ here
@@ -1001,11 +1004,11 @@ class Transaction(object):
     def _sign_threshold_signature_fulfillment(cls, input_, message, key_pairs):
         """Signs a ThresholdSha256.
 
-            Args:
-                input_ (:class:`~bigchaindb.common.transaction.
-                    Input`) The Input to be signed.
-                message (str): The message to be signed
-                key_pairs (dict): The keys to sign the Transaction with.
+        Args:
+            input_ (:class:`~bigchaindb.common.transaction.
+                Input`) The Input to be signed.
+            message (str): The message to be signed
+            key_pairs (dict): The keys to sign the Transaction with.
         """
         input_ = deepcopy(input_)
         message = sha3_256(message.encode())
@@ -1085,16 +1088,16 @@ class Transaction(object):
     def _inputs_valid(self, output_condition_uris):
         """Validates an Input against a given set of Outputs.
 
-            Note:
-                The number of `output_condition_uris` must be equal to the
-                number of Inputs a Transaction has.
+        Note:
+            The number of `output_condition_uris` must be equal to the
+            number of Inputs a Transaction has.
 
-            Args:
-                output_condition_uris (:obj:`list` of :obj:`str`): A list of
-                    Outputs to check the Inputs against.
+        Args:
+            output_condition_uris (:obj:`list` of :obj:`str`): A list of
+                Outputs to check the Inputs against.
 
-            Returns:
-                bool: If all Outputs are valid.
+        Returns:
+            bool: If all Outputs are valid.
         """
 
         if len(self.inputs) != len(output_condition_uris):
@@ -1119,20 +1122,20 @@ class Transaction(object):
     def _input_valid(self, input_, operation, message, output_condition_uri=None):
         """Validates a single Input against a single Output.
 
-            Note:
-                In case of a `CREATE` Transaction, this method
-                does not validate against `output_condition_uri`.
+        Note:
+            In case of a `CREATE` Transaction, this method
+            does not validate against `output_condition_uri`.
 
-            Args:
-                input_ (:class:`~bigchaindb.common.transaction.
-                    Input`) The Input to be signed.
-                operation (str): The type of Transaction.
-                message (str): The fulfillment message.
-                output_condition_uri (str, optional): An Output to check the
-                    Input against.
+        Args:
+            input_ (:class:`~bigchaindb.common.transaction.
+                Input`) The Input to be signed.
+            operation (str): The type of Transaction.
+            message (str): The fulfillment message.
+            output_condition_uri (str, optional): An Output to check the
+                Input against.
 
-            Returns:
-                bool: If the Input is valid.
+        Returns:
+            bool: If the Input is valid.
         """
         ccffill = input_.fulfillment
         try:
@@ -1175,8 +1178,8 @@ class Transaction(object):
     def to_dict(self):
         """Transforms the object to a Python dictionary.
 
-            Returns:
-                dict: The Transaction as an alternative serialization format.
+        Returns:
+            dict: The Transaction as an alternative serialization format.
         """
         return {
             "inputs": [input_.to_dict() for input_ in self.inputs],
@@ -1193,11 +1196,11 @@ class Transaction(object):
     def _remove_signatures(tx_dict):
         """Takes a Transaction dictionary and removes all signatures.
 
-            Args:
-                tx_dict (dict): The Transaction to remove all signatures from.
+        Args:
+            tx_dict (dict): The Transaction to remove all signatures from.
 
-            Returns:
-                dict
+        Returns:
+            dict
 
         """
         # NOTE: We remove the reference since we need `tx_dict` only for the
@@ -1280,8 +1283,8 @@ class Transaction(object):
     def validate_id(tx_body):
         """Validate the transaction ID of a transaction
 
-            Args:
-                tx_body (dict): The Transaction to be transformed.
+        Args:
+            tx_body (dict): The Transaction to be transformed.
         """
         # NOTE: Remove reference to avoid side effects
         # tx_body = deepcopy(tx_body)
@@ -1309,11 +1312,11 @@ class Transaction(object):
     def from_dict(cls, tx, skip_schema_validation=True):
         """Transforms a Python dictionary to a Transaction object.
 
-            Args:
-                tx_body (dict): The Transaction to be transformed.
+        Args:
+            tx_body (dict): The Transaction to be transformed.
 
-            Returns:
-                :class:`~bigchaindb.common.transaction.Transaction`
+        Returns:
+            :class:`~bigchaindb.common.transaction.Transaction`
         """
         operation = (
             tx.get("operation", Transaction.CREATE)
@@ -1406,7 +1409,75 @@ class Transaction(object):
     def validate_schema(cls, tx):
         pass
 
+    def validate_transfer_inputs(self, bigchain, current_transactions=[]):
+        # store the inputs so that we can check if the asset ids match
+        input_txs = []
+        input_conditions = []
+        for input_ in self.inputs:
+            input_txid = input_.fulfills.txid
+            input_tx = bigchain.get_transaction(input_txid)
+
+            if input_tx is None:
+                for ctxn in current_transactions:
+                    if ctxn.id == input_txid:
+                        input_tx = ctxn
+
+            if input_tx is None:
+                raise InputDoesNotExist("input `{}` doesn't exist".format(input_txid))
+
+            spent = bigchain.get_spent(
+                input_txid, input_.fulfills.output, current_transactions
+            )
+            if spent:
+                raise DoubleSpend("input `{}` was already spent".format(input_txid))
+
+            output = input_tx.outputs[input_.fulfills.output]
+            input_conditions.append(output)
+            input_txs.append(input_tx)
+
+        # Validate that all inputs are distinct
+        links = [i.fulfills.to_uri() for i in self.inputs]
+        if len(links) != len(set(links)):
+            raise DoubleSpend('tx "{}" spends inputs twice'.format(self.id))
+
+        # validate asset id
+        asset_id = self.get_asset_id(input_txs)
+
+        tx_asset_id = (
+            self.asset["data"]["id"] if self.operation == self.BID else self.asset["id"]
+        )
+        if asset_id != tx_asset_id:
+            raise AssetIdMismatch(
+                (
+                    "The asset id of the input does not"
+                    " match the asset id of the"
+                    " transaction"
+                )
+            )
+
+        input_amount = sum(
+            [input_condition.amount for input_condition in input_conditions]
+        )
+        output_amount = sum(
+            [output_condition.amount for output_condition in self.outputs]
+        )
+
+        if output_amount != input_amount:
+            raise AmountError(
+                (
+                    "The amount used in the inputs `{}`"
+                    " needs to be same as the amount used"
+                    " in the outputs `{}`"
+                ).format(input_amount, output_amount)
+            )
+
+        if not self.inputs_valid(input_conditions):
+            raise InvalidSignature("Transaction signature is invalid.")
+
+        return True
+
     def __match_capabilities(self, bigchain, requested_cap, input_tx_id) -> bool:
+        # TODO: Change input_tx_id to fulfill_tx_id
         input_tx = bigchain.get_transaction(input_tx_id)
         if input_tx is None:
             raise InputDoesNotExist("input `{}` doesn't exist".format(input_tx_id))
@@ -1491,6 +1562,54 @@ class Transaction(object):
 
         return self.validate_transfer_inputs(bigchain, current_transactions)
 
+    @classmethod
+    def build_return_tx(asset_id, fulfilled_tx, recepient_pub_key):
+        output_index = 0
+        output = fulfilled_tx.outputs[output_index]
+
+        return_input = Input(
+            _fulfillment_to_details(output.fulfillment),
+            output.public_keys,
+            TransactionLink(asset_id, output_index),
+        )
+
+        return_output = Output.generate(recepient_pub_key, output.amount)
+        return_tx = Transaction(
+            Transaction.RETURN,
+            {"id": asset_id},
+            inputs=[return_input],
+            outputs=[return_output],
+        )
+
+        return return_tx
+
+    @classmethod
+    def determine_returns(bigchain, rfq_tx_id, winning_bid_id):
+        input_index = 0
+        return_txs = list()
+
+        rfq_tx = bigchain.get_transaction(rfq_tx_id)
+        winning_bid_tx = bigchain.get_transaction(winning_bid_id)
+        owned_bid_ids = bigchain.get_locked_bid_txids_for_rfq(rfq_tx_id)
+
+        requestor_pub_key = rfq_tx.inputs[input_index].owners_before[-1]
+        return_tx = Transaction.build_return_tx(
+            winning_bid_id, winning_bid_tx, requestor_pub_key
+        )
+        return_txs.append(return_tx)
+
+        for bid_id in owned_bid_ids:
+            if bid_id != winning_bid_id:
+                bid_tx = bigchain.get_transaction(bid_id)
+
+                # NOTE: Supports only one bidder and one input asset
+                # (i.e. incompatible with divisible asset tokens)
+                bidder_pub_key = bid_tx.inputs[input_index].owners_before[-1]
+                return_tx = Transaction.build_return_tx(bid_id, bid_tx, bidder_pub_key)
+                return_txs.append(return_tx)
+
+        return return_txs
+
     def validate_accept(self, bigchain, current_transactions=[]):
         rfq_tx_id = self.asset["data"]["rfq_id"]
         winning_bid_id = self.asset["data"]["winner_bid_id"]
@@ -1535,121 +1654,8 @@ class Transaction(object):
 
         return True
 
-    def validate_transfer_inputs(self, bigchain, current_transactions=[]):
-        # store the inputs so that we can check if the asset ids match
-        input_txs = []
-        input_conditions = []
-        for input_ in self.inputs:
-            input_txid = input_.fulfills.txid
-            input_tx = bigchain.get_transaction(input_txid)
-
-            if input_tx is None:
-                for ctxn in current_transactions:
-                    if ctxn.id == input_txid:
-                        input_tx = ctxn
-
-            if input_tx is None:
-                raise InputDoesNotExist("input `{}` doesn't exist".format(input_txid))
-
-            spent = bigchain.get_spent(
-                input_txid, input_.fulfills.output, current_transactions
-            )
-            if spent:
-                raise DoubleSpend("input `{}` was already spent".format(input_txid))
-
-            output = input_tx.outputs[input_.fulfills.output]
-            input_conditions.append(output)
-            input_txs.append(input_tx)
-
-        # Validate that all inputs are distinct
-        links = [i.fulfills.to_uri() for i in self.inputs]
-        if len(links) != len(set(links)):
-            raise DoubleSpend('tx "{}" spends inputs twice'.format(self.id))
-
-        # validate asset id
-        asset_id = self.get_asset_id(input_txs)
-
-        tx_asset_id = (
-            self.asset["data"]["id"] if self.operation == self.BID else self.asset["id"]
-        )
-        if asset_id != tx_asset_id:
-            raise AssetIdMismatch(
-                (
-                    "The asset id of the input does not"
-                    " match the asset id of the"
-                    " transaction"
-                )
-            )
-
-        input_amount = sum(
-            [input_condition.amount for input_condition in input_conditions]
-        )
-        output_amount = sum(
-            [output_condition.amount for output_condition in self.outputs]
-        )
-
-        if output_amount != input_amount:
-            raise AmountError(
-                (
-                    "The amount used in the inputs `{}`"
-                    " needs to be same as the amount used"
-                    " in the outputs `{}`"
-                ).format(input_amount, output_amount)
-            )
-
-        if not self.inputs_valid(input_conditions):
-            raise InvalidSignature("Transaction signature is invalid.")
-
-        return True
-
-    def trigger_transfers(self, bigchain, current_transactions=[]):
-        """Triggers TRANSFER transactions for this/self ACCEPT transaction
-        """
-        logger.debug("Triggering transfer txs for ACCECPT tx(%s)", self.tx_dict["id"])
-
-        rfq_tx_id = self.asset["data"]["rfq_id"]
-        rfq_tx = bigchain.get_transaction(rfq_tx_id)
-
-        winning_bid_id = self.asset["data"]["winner_bid_id"]
-        owned_bid_ids = bigchain.get_locked_bid_txids_for_rfq(rfq_tx_id)
-
-        if not owned_bid_ids:
-            return
-
-        # NOTE: Support one output
-        output_index = 0
-        selected_bids, rejected_bids = [], []
-
-        if winning_bid_id in owned_bid_ids:
-            spent = bigchain.get_spent(
-                winning_bid_id, output_index, current_transactions
-            )
-            if not spent:
-                selected_bids.append(winning_bid_id)
-
-        for tx_id in owned_bid_ids:
-            if tx_id not in selected_bids:
-                spent = bigchain.get_spent(tx_id, output_index, current_transactions)
-                if not spent:
-                    rejected_bids.append(tx_id)
-
-        for bid_id in selected_bids:
-            bid_tx = bigchain.get_transaction(bid_id)
-            create_tx_id = bid_tx.asset["data"]["id"]
-
-            # NOTE: Supports only one requestor
-            input_index = 0
-            requestor_pub_key = rfq_tx.inputs[input_index].owners_before[-1]
-            Transaction.send_transfer(bid_id, bid_tx, requestor_pub_key)
-
-        for bid_id in rejected_bids:
-            bid_tx = bigchain.get_transaction(bid_id)
-            create_tx_id = bid_tx.asset["data"]["id"]
-
-            # NOTE: Supports only one bidder and one input(i.e. incompatible with divisible asset tokens)
-            input_index = 0
-            bidder_pub_key = bid_tx.inputs[input_index].owners_before[-1]
-            Transaction.send_transfer(bid_id, bid_tx, bidder_pub_key)
+    def validate_return(self, bigchain, current_transactions=[]):
+        pass
 
     @classmethod
     def send_transfer(cls, asset_id, fulfilled_tx, recipient_pub_key):
@@ -1677,7 +1683,10 @@ class Transaction(object):
         # - `owners_before`.
         transfer_input = {
             "fulfillment": _fulfillment_to_details(output.fulfillment),
-            "fulfills": {"output_index": output_index, "transaction_id": asset_id,},
+            "fulfills": {
+                "output_index": output_index,
+                "transaction_id": asset_id,
+            },
             "owners_before": output.public_keys,
         }
         transfer_metadata = {

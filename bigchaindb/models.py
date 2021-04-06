@@ -34,6 +34,7 @@ class Transaction(Transaction):
             Transaction.INTEREST,
             Transaction.REQUEST_FOR_QUOTE,
             Transaction.ACCEPT,
+            Transaction.RETURN,
         ]:
             duplicates = any(txn for txn in current_transactions if txn.id == self.id)
             if bigchain.is_committed(self.id) or duplicates:
@@ -54,7 +55,8 @@ class Transaction(Transaction):
             self.validate_bid(bigchain, current_transactions)
         elif self.operation == Transaction.ACCEPT:
             self.validate_accept(bigchain, current_transactions)
-            # self.trigger_transfers(bigchain, current_transactions)
+        elif self.operation == Transaction.RETURN:
+            self.validate_return(bigchain, current_transactions)
 
         return self
 

@@ -6,6 +6,7 @@
 """This module contains all the goodness to integrate BigchainDB
 with Tendermint.
 """
+from bigchaindb.common.transaction import Transaction
 import logging
 import sys
 
@@ -35,7 +36,10 @@ class App(BaseApplication):
     """
 
     def __init__(
-        self, abci, bigchaindb=None, events_queue=None,
+        self,
+        abci,
+        bigchaindb=None,
+        events_queue=None,
     ):
         super().__init__(abci)
         self.events_queue = events_queue
@@ -291,7 +295,15 @@ class App(BaseApplication):
             )
             self.events_queue.put(event)
 
+        # Log all txs; Enqueue return txs for ACCEPT-BID txs
         for tx in self.block_transactions:
+            if tx.operation == Transaction.ACCEPT:
+                rfq_tx_id = tx.asset["data"]["rfq_id"]
+                winning_bid_id = tx.asset["data"]["winner_bid_id"]
+                return_txs = Transaction.determine_returns(
+                    self.bigchaindb, rfq_tx_id, winning_bid_id
+                )
+
             log_metric(
                 "commit_tx",
                 tx.metadata["requestCreationTimestamp"],
@@ -318,4 +330,3 @@ def rollback(b):
     if latest_block["height"] < pre_commit["height"]:
         Election.rollback(b, pre_commit["height"], pre_commit["transactions"])
         b.delete_transactions(pre_commit["transactions"])
-
