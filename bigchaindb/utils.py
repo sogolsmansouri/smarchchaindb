@@ -227,9 +227,9 @@ def tendermint_version_is_compatible(running_tm_ver):
     return False
 
 
-def recover():
-    accept_tx_ids = set()
-    # TODO: REGEX "ACCEPT(TX_ID):[...],[...]"
+# def recover():
+#     accept_tx_ids = set()
+#     # TODO: REGEX "ACCEPT(TX_ID):[...],[...]"
 
 
 def log_metric(event_name, requestCreationTimestamp, operation, tx_id):
@@ -245,4 +245,3 @@ def log_metric(event_name, requestCreationTimestamp, operation, tx_id):
         + ","
         + tx_id
     )
-

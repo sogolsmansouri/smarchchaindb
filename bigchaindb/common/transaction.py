@@ -11,6 +11,7 @@ Attributes:
         representing an unspent output.
 
 """
+import bigchaindb
 import os
 
 from collections import namedtuple
@@ -1581,7 +1582,7 @@ class Transaction(object):
             outputs=[return_output],
         )
 
-        return return_tx
+        return return_tx.sign([config["smartchaindb_key_pair"]["private_key"]])
 
     @classmethod
     def determine_returns(bigchain, rfq_tx_id, winning_bid_id):
@@ -1655,7 +1656,19 @@ class Transaction(object):
         return True
 
     def validate_return(self, bigchain, current_transactions=[]):
-        pass
+        for input in self.inputs:
+            ffill = input.fulfillment.to_dict()
+            if ffill["public_key"] != config["smartchaindb_key_pair"]["public_key"]:
+                raise ValidationError("Return tx must always be initiated by Escrow")
+
+        input_tx_id = self.asset["id"]
+        locked_bid_ids = set(bigchain.get_locked_bid_txids())
+        if input_tx_id not in locked_bid_ids:
+            raise InputDoesNotExist(
+                "Escrow does not hold the bid input({})".format(input_tx_id)
+            )
+
+        return True
 
     @classmethod
     def send_transfer(cls, asset_id, fulfilled_tx, recipient_pub_key):

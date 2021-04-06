@@ -279,8 +279,7 @@ class BigchainDB(object):
         return backend.query.get_transactions(self.connection, txn_ids)
 
     def get_transactions_filtered(self, asset_id, operation=None, last_tx=None):
-        """Get a list of transactions filtered on some criteria
-        """
+        """Get a list of transactions filtered on some criteria"""
         txids = backend.query.get_txids_filtered(
             self.connection, asset_id, operation, last_tx
         )
@@ -288,14 +287,14 @@ class BigchainDB(object):
             yield self.get_transaction(txid)
 
     def get_transactions_by_operation(self, operation):
-        """Get a list of transaction filtered by operation
-        """
+        """Get a list of transaction filtered by operation"""
         txids = backend.query.get_txids_by_operation(self.connection, operation)
         for txid in txids:
             yield self.get_transaction(txid)
 
     def get_locked_bid_txids_for_rfq(self, rfq_tx_id):
-        """Get a list of bid transactions for a RFQ transaction locked by the special smartchaindb account.
+        """Get a list of bid transactions for a RFQ transaction
+        locked by the special smartchaindb account.
         """
         txids = backend.query.get_locked_bid_txids_by_rfq(self.connection, rfq_tx_id)
         # for txid in txids:
@@ -303,9 +302,14 @@ class BigchainDB(object):
 
         return list(txids)
 
+    def get_locked_bid_txids(self):
+        """Get a list of bid transactions locked by the special smartchaindb account."""
+        txids = backend.query.get_locked_bid_txids(self.connection)
+
+        return list(txids)
+
     def get_accept_tx_for_rfq(self, rfq_tx_id):
-        """Get Accept Bid tx(if any) for a RFQ transaction.
-        """
+        """Get Accept Bid tx(if any) for a RFQ transaction."""
         return backend.query.get_accept_tx_for_rfq(self.connection, rfq_tx_id)
 
     def get_outputs_filtered(self, owner, spent=None):
@@ -501,8 +505,8 @@ class BigchainDB(object):
 
     def store_validator_set(self, height, validators):
         """Store validator set at a given `height`.
-           NOTE: If the validator set already exists at that `height` then an
-           exception will be raised.
+        NOTE: If the validator set already exists at that `height` then an
+        exception will be raised.
         """
         return backend.query.store_validator_set(
             self.connection, {"height": height, "validators": validators}
@@ -559,4 +563,3 @@ class BigchainDB(object):
 
 
 Block = namedtuple("Block", ("app_hash", "height", "transactions"))
-

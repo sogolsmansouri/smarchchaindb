@@ -165,8 +165,27 @@ def get_locked_bid_txids_by_rfq(conn, rfq_tx_id):
 
 
 @register_query(LocalMongoDBConnection)
+def get_locked_bid_txids(conn):
+
+    query = {
+        "$and": [
+            {"operation": "BID"},
+            {"outputs.public_keys": config["smartchaindb_key_pair"]["public_key"]},
+        ]
+    }
+    cursor = conn.run(conn.collection("transactions").find(query))
+
+    return (elem["id"] for elem in cursor)
+
+
+@register_query(LocalMongoDBConnection)
 def get_accept_tx_for_rfq(conn, rfq_tx_id):
-    query = {"$and": [{"operation": "ACCEPT"}, {"asset.data.rfq_id": rfq_tx_id},]}
+    query = {
+        "$and": [
+            {"operation": "ACCEPT"},
+            {"asset.data.rfq_id": rfq_tx_id},
+        ]
+    }
     return conn.run(conn.collection("transactions").find_one(query))
 
 
@@ -269,7 +288,10 @@ def store_unspent_outputs(conn, *unspent_outputs):
     if unspent_outputs:
         try:
             return conn.run(
-                conn.collection("utxos").insert_many(unspent_outputs, ordered=False,)
+                conn.collection("utxos").insert_many(
+                    unspent_outputs,
+                    ordered=False,
+                )
             )
         except DuplicateKeyError:
             # TODO log warning at least

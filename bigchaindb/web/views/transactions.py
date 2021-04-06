@@ -117,17 +117,22 @@ class TransactionListApi(Resource):
         if error is not None:
             return error
 
-        if tx_obj.operation in [Transaction.ACCEPT]:
-            # NOTE: log format "ACCEPT(TX_ID):[rfq_id],[winner_bid_id]"
-            recovery_logger.info(
-                tx_obj.operation
-                + "("
-                + str(tx_obj._id)
-                + "):"
-                + str(tx_obj.asset["data"]["rfq_id"])
-                + ","
-                + str(tx_obj.asset["data"]["winner_bid_id"])
+        if tx_obj.operation == Transaction.RETURN:
+            return make_error(
+                400, "Invalid transaction type ({})".format(tx_obj.operation)
             )
+
+        # if tx_obj.operation in [Transaction.ACCEPT]:
+        #     # NOTE: log format "ACCEPT(TX_ID):[rfq_id],[winner_bid_id]"
+        #     recovery_logger.info(
+        #         tx_obj.operation
+        #         + "("
+        #         + str(tx_obj._id)
+        #         + "):"
+        #         + str(tx_obj.asset["data"]["rfq_id"])
+        #         + ","
+        #         + str(tx_obj.asset["data"]["winner_bid_id"])
+        #     )
 
         with pool() as bigchain:
             try:

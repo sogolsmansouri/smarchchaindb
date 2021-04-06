@@ -237,6 +237,17 @@ def get_locked_bid_txids_by_rfq(connection, rfq_tx_id):
 
 
 @singledispatch
+def get_locked_bid_txids(conn):
+    """Return all Bid transactions locked by the
+    special smartchaindb account.
+
+    Args:
+        rfq_tx_id (str): ID of RFQ transaction
+    """
+    raise NotImplementedError
+
+
+@singledispatch
 def get_accept_tx_for_rfq(connection, rfq_tx_id):
     """Return Accept Bid tx(if any) for a particular RFQ transaction id.
 
@@ -427,8 +438,7 @@ def get_validator_set(conn, height):
 
 @singledispatch
 def get_election(conn, election_id):
-    """Return the election record
-    """
+    """Return the election record"""
 
     raise NotImplementedError
 
