@@ -103,7 +103,6 @@ class TransactionListApi(Resource):
         )
         args = parser.parse_args()
         mode = str(args["mode"])
-
         pool = current_app.config["bigchain_pool"]
         tx = request.get_json(force=True)
 
@@ -113,26 +112,14 @@ class TransactionListApi(Resource):
             tx["operation"],
             tx["id"],
         )
+
         error, tx, tx_obj = validate_schema_definition(tx)
         if error is not None:
             return error
-
         if tx_obj.operation == Transaction.RETURN:
             return make_error(
                 400, "Invalid transaction type ({})".format(tx_obj.operation)
             )
-
-        # if tx_obj.operation in [Transaction.ACCEPT]:
-        #     # NOTE: log format "ACCEPT(TX_ID):[rfq_id],[winner_bid_id]"
-        #     recovery_logger.info(
-        #         tx_obj.operation
-        #         + "("
-        #         + str(tx_obj._id)
-        #         + "):"
-        #         + str(tx_obj.asset["data"]["rfq_id"])
-        #         + ","
-        #         + str(tx_obj.asset["data"]["winner_bid_id"])
-        #     )
 
         with pool() as bigchain:
             try:

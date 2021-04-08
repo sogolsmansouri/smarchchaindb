@@ -71,6 +71,7 @@ definitions:
       - INTEREST
       - BID
       - ACCEPT
+      - RETURN
   asset:
     type: object
     additionalProperties: false

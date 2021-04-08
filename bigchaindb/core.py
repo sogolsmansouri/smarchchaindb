@@ -40,9 +40,11 @@ class App(BaseApplication):
         abci,
         bigchaindb=None,
         events_queue=None,
+        return_queue=None,
     ):
         super().__init__(abci)
         self.events_queue = events_queue
+        self.return_queue = return_queue
         self.bigchaindb = bigchaindb or BigchainDB()
         self.block_txn_ids = []
         self.block_txn_hash = ""
@@ -300,9 +302,13 @@ class App(BaseApplication):
             if tx.operation == Transaction.ACCEPT:
                 rfq_tx_id = tx.asset["data"]["rfq_id"]
                 winning_bid_id = tx.asset["data"]["winner_bid_id"]
+
                 return_txs = Transaction.determine_returns(
                     self.bigchaindb, rfq_tx_id, winning_bid_id
                 )
+
+                for return_tx in return_txs:
+                    self.return_queue.put(return_tx)
 
             log_metric(
                 "commit_tx",

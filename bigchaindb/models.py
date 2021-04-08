@@ -27,6 +27,11 @@ class Transaction(Transaction):
             ValidationError: If the transaction is invalid
         """
         input_conditions = []
+        duplicates = any(txn for txn in current_transactions if txn.id == self.id)
+        if bigchain.is_committed(self.id) or duplicates:
+            raise DuplicateTransaction(
+                "transaction `{}` already exists".format(self.id)
+            )
 
         if self.operation in [
             Transaction.CREATE,
@@ -34,15 +39,7 @@ class Transaction(Transaction):
             Transaction.INTEREST,
             Transaction.REQUEST_FOR_QUOTE,
             Transaction.ACCEPT,
-            Transaction.RETURN,
-        ]:
-            duplicates = any(txn for txn in current_transactions if txn.id == self.id)
-            if bigchain.is_committed(self.id) or duplicates:
-                raise DuplicateTransaction(
-                    "transaction `{}` already exists".format(self.id)
-                )
-
-            if not self.inputs_valid(input_conditions):
+        ] and not self.inputs_valid(input_conditions):
                 raise InvalidSignature("Transaction signature is invalid.")
 
         if self.operation == Transaction.TRANSFER:

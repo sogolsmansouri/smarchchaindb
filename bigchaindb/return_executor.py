@@ -9,22 +9,21 @@ from bigchaindb.common.transaction_mode_types import (
 
 
 class ReturnExecutor(object):
+    bigchain = BigchainDB()
+
     def __execute(tx):
-        bigchain = BigchainDB()
-        status_code, _ = bigchain.write_transaction(tx, BROADCAST_TX_SYNC)
+        status_code, _ = ReturnExecutor.bigchain.write_transaction(
+            tx, BROADCAST_TX_SYNC
+        )
         # while status_code != 202:
         #     status_code, _ = bigchain.write_transaction(tx, BROADCAST_TX_SYNC)
 
     @classmethod
     def worker(cls, pool, return_queue):
-        timeout = 1
+        timeout = 5
         while True:
             if not return_queue.empty():
-                timeout = 1
                 return_tx = return_queue.get()
                 _future = pool.submit(cls.__execute, return_tx)
             else:
-                # timeout = timeout * 2
-                timeout = 5
-
-            time.sleep(timeout)
+                time.sleep(timeout)

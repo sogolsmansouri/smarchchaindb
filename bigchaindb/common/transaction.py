@@ -11,8 +11,8 @@ Attributes:
         representing an unspent output.
 
 """
-import bigchaindb
 import os
+from datetime import datetime
 
 from collections import namedtuple
 from copy import deepcopy
@@ -1078,7 +1078,7 @@ class Transaction(object):
             #       values to the actual method. This simplifies it's logic
             #       greatly, as we do not have to check against `None` values.
             return self._inputs_valid(["dummyvalue" for _ in self.inputs])
-        elif self.operation in [self.TRANSFER, self.BID]:
+        elif self.operation in [self.TRANSFER, self.BID, self.RETURN]:
             return self._inputs_valid(
                 [output.fulfillment.condition_uri for output in outputs]
             )
@@ -1262,10 +1262,8 @@ class Transaction(object):
         # create a set of the transactions' asset ids
         asset_ids = set()
         for tx in transactions:
-            if tx.operation == tx.CREATE:
+            if tx.operation in [tx.CREATE, tx.BID]:
                 asset_id = tx.id
-            elif tx.operation == tx.BID:
-                asset_id = tx.asset["data"]["id"]
             else:
                 asset_id = tx.asset["id"]
             asset_ids.add(asset_id)
@@ -1564,28 +1562,34 @@ class Transaction(object):
         return self.validate_transfer_inputs(bigchain, current_transactions)
 
     @classmethod
-    def build_return_tx(asset_id, fulfilled_tx, recepient_pub_key):
+    def build_return_tx(cls, asset_id, fulfilled_tx, recepient_pub_key):
         output_index = 0
         output = fulfilled_tx.outputs[output_index]
 
         return_input = Input(
-            _fulfillment_to_details(output.fulfillment),
-            output.public_keys,
-            TransactionLink(asset_id, output_index),
+            fulfillment=output.fulfillment,
+            owners_before=output.public_keys,
+            fulfills=TransactionLink(asset_id, output_index),
         )
 
-        return_output = Output.generate(recepient_pub_key, output.amount)
+        return_output = Output.generate(
+            public_keys=[recepient_pub_key], amount=output.amount
+        )
+
+        metadata = dict()
+        metadata["requestCreationTimestamp"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
         return_tx = Transaction(
-            Transaction.RETURN,
-            {"id": asset_id},
+            operation=Transaction.RETURN,
+            asset={"id": asset_id},
             inputs=[return_input],
             outputs=[return_output],
+            metadata=metadata,
         )
 
         return return_tx.sign([config["smartchaindb_key_pair"]["private_key"]])
 
     @classmethod
-    def determine_returns(bigchain, rfq_tx_id, winning_bid_id):
+    def determine_returns(cls, bigchain, rfq_tx_id, winning_bid_id):
         input_index = 0
         return_txs = list()
 
@@ -1658,7 +1662,7 @@ class Transaction(object):
     def validate_return(self, bigchain, current_transactions=[]):
         for input in self.inputs:
             ffill = input.fulfillment.to_dict()
-            if ffill["public_key"] != config["smartchaindb_key_pair"]["public_key"]:
+            if input.owners_before[-1] != config["smartchaindb_key_pair"]["public_key"]:
                 raise ValidationError("Return tx must always be initiated by Escrow")
 
         input_tx_id = self.asset["id"]
@@ -1668,7 +1672,7 @@ class Transaction(object):
                 "Escrow does not hold the bid input({})".format(input_tx_id)
             )
 
-        return True
+        return self.validate_transfer_inputs(bigchain, current_transactions)
 
     @classmethod
     def send_transfer(cls, asset_id, fulfilled_tx, recipient_pub_key):

@@ -94,6 +94,7 @@ def start(args):
             app=ParallelValidationApp(
                 abci=abci.types,
                 events_queue=exchange.get_publisher_queue(),
+                return_queue=return_queue,
             )
         )
     else:
@@ -101,6 +102,7 @@ def start(args):
             app=App(
                 abci=abci.types,
                 events_queue=exchange.get_publisher_queue(),
+                return_queue=return_queue,
             )
         )
     app.run()
