@@ -437,3 +437,14 @@ def get_latest_abci_chain(conn):
             projection={"_id": False}, sort=[("height", DESCENDING)]
         )
     )
+
+
+@register_query(LocalMongoDBConnection)
+def store_accept_updates(conn, accept_id, update):
+    return conn.run(
+        conn.collection("accept_tx_recovery").replace_one(
+            {"accept_id": accept_id},
+            update,
+            upsert=True,
+        )
+    )

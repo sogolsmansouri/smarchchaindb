@@ -1442,9 +1442,14 @@ class Transaction(object):
         # validate asset id
         asset_id = self.get_asset_id(input_txs)
 
-        tx_asset_id = (
-            self.asset["data"]["id"] if self.operation == self.BID else self.asset["id"]
-        )
+        tx_asset_id = ""
+        if self.operation == self.BID:
+            tx_asset_id = self.asset["data"]["id"]
+        elif self.operation == self.RETURN:
+            tx_asset_id = self.asset["data"]["bid_id"]
+        else:
+            tx_asset_id = self.asset["id"]
+
         if asset_id != tx_asset_id:
             raise AssetIdMismatch(
                 (
@@ -1562,7 +1567,7 @@ class Transaction(object):
         return self.validate_transfer_inputs(bigchain, current_transactions)
 
     @classmethod
-    def build_return_tx(cls, asset_id, fulfilled_tx, recepient_pub_key):
+    def build_return_tx(cls, accept_id, asset_id, fulfilled_tx, recepient_pub_key):
         output_index = 0
         output = fulfilled_tx.outputs[output_index]
 
@@ -1571,16 +1576,22 @@ class Transaction(object):
             owners_before=output.public_keys,
             fulfills=TransactionLink(asset_id, output_index),
         )
-
         return_output = Output.generate(
             public_keys=[recepient_pub_key], amount=output.amount
         )
 
-        metadata = dict()
-        metadata["requestCreationTimestamp"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+        metadata = {
+            "requestCreationTimestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
+        }
+        asset = {
+            "data": {
+                "bid_id": asset_id,
+                "accept_id": accept_id,
+            }
+        }
         return_tx = Transaction(
             operation=Transaction.RETURN,
-            asset={"id": asset_id},
+            asset=asset,
             inputs=[return_input],
             outputs=[return_output],
             metadata=metadata,
@@ -1589,9 +1600,16 @@ class Transaction(object):
         return return_tx.sign([config["smartchaindb_key_pair"]["private_key"]])
 
     @classmethod
-    def determine_returns(cls, bigchain, rfq_tx_id, winning_bid_id):
+    def determine_returns(
+        cls, bigchain, accept_id, rfq_tx_id=None, winning_bid_id=None
+    ):
         input_index = 0
         return_txs = list()
+
+        if rfq_tx_id is None or winning_bid_id is None:
+            accept_tx = bigchain.get_transaction(accept_id)
+            rfq_tx_id = accept_tx.asset["data"]["rfq_id"]
+            winning_bid_id = accept_tx.asset["data"]["winner_bid_id"]
 
         rfq_tx = bigchain.get_transaction(rfq_tx_id)
         winning_bid_tx = bigchain.get_transaction(winning_bid_id)
@@ -1599,7 +1617,7 @@ class Transaction(object):
 
         requestor_pub_key = rfq_tx.inputs[input_index].owners_before[-1]
         return_tx = Transaction.build_return_tx(
-            winning_bid_id, winning_bid_tx, requestor_pub_key
+            accept_id, winning_bid_id, winning_bid_tx, requestor_pub_key
         )
         return_txs.append(return_tx)
 
@@ -1610,7 +1628,9 @@ class Transaction(object):
                 # NOTE: Supports only one bidder and one input asset
                 # (i.e. incompatible with divisible asset tokens)
                 bidder_pub_key = bid_tx.inputs[input_index].owners_before[-1]
-                return_tx = Transaction.build_return_tx(bid_id, bid_tx, bidder_pub_key)
+                return_tx = Transaction.build_return_tx(
+                    accept_id, bid_id, bid_tx, bidder_pub_key
+                )
                 return_txs.append(return_tx)
 
         return return_txs
@@ -1665,7 +1685,7 @@ class Transaction(object):
             if input.owners_before[-1] != config["smartchaindb_key_pair"]["public_key"]:
                 raise ValidationError("Return tx must always be initiated by Escrow")
 
-        input_tx_id = self.asset["id"]
+        input_tx_id = self.asset["data"]["bid_id"]
         locked_bid_ids = set(bigchain.get_locked_bid_txids())
         if input_tx_id not in locked_bid_ids:
             raise InputDoesNotExist(

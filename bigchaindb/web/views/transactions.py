@@ -22,7 +22,6 @@ from bigchaindb.web.views.base import make_error, validate_schema_definition
 from bigchaindb.web.views import parameters
 from bigchaindb.models import Transaction
 from bigchaindb.utils import log_metric
-import time
 
 
 logger = logging.getLogger(__name__)

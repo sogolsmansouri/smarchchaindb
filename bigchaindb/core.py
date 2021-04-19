@@ -164,6 +164,17 @@ class App(BaseApplication):
                 transaction["operation"],
                 transaction["id"],
             )
+
+            if transaction["operation"] == Transaction.ACCEPT:
+                self.bigchaindb.store_accept_updates(
+                    accept_id=transaction["id"],
+                    update={
+                        "accept_id": transaction["id"],
+                        "rfq_id": transaction["asset"]["data"]["rfq_id"],
+                        "winning_bid_id": transaction["asset"]["data"]["winner_bid_id"],
+                        "status": "check_tx",
+                    },
+                )
             return self.abci.ResponseCheckTx(code=CodeTypeOk)
         else:
             logger.debug("check_tx: INVALID")
@@ -199,13 +210,14 @@ class App(BaseApplication):
         self.abort_if_abci_chain_is_not_synced()
 
         logger.debug("deliver_tx: %s", raw_transaction)
+        status = "deliver_tx"
         transaction = self.bigchaindb.is_valid_transaction(
             decode_transaction(raw_transaction), self.block_transactions
         )
 
         if not transaction:
             logger.debug("deliver_tx: INVALID")
-            return self.abci.ResponseDeliverTx(code=CodeTypeError)
+            status = "INVALID"
         else:
             logger.debug("storing tx")
             self.block_txn_ids.append(transaction.id)
@@ -216,7 +228,19 @@ class App(BaseApplication):
                 transaction.operation,
                 transaction._id,
             )
-            return self.abci.ResponseDeliverTx(code=CodeTypeOk)
+
+        if transaction.operation == Transaction.ACCEPT:
+            self.bigchaindb.store_accept_updates(
+                accept_id=transaction._id,
+                update={
+                    "accept_id": transaction._id,
+                    "rfq_id": transaction.asset["data"]["rfq_id"],
+                    "winning_bid_id": transaction.asset["data"]["winner_bid_id"],
+                    "status": status,
+                },
+            )
+        code = CodeTypeError if status == "INVALID" else CodeTypeOk
+        return self.abci.ResponseDeliverTx(code=code)
 
     def end_block(self, request_end_block):
         """Calculate block hash using transaction ids and previous block
@@ -260,7 +284,18 @@ class App(BaseApplication):
                 tx.operation,
                 tx._id,
             )
+            if tx.operation == Transaction.ACCEPT:
+                self.bigchaindb.store_accept_updates(
+                    accept_id=tx._id,
+                    update={
+                        "accept_id": tx._id,
+                        "rfq_id": tx.asset["data"]["rfq_id"],
+                        "winning_bid_id": tx.asset["data"]["winner_bid_id"],
+                        "status": "end_block",
+                    },
+                )
 
+        logger.debug(f"Validator updates: {validator_update}")
         return self.abci.ResponseEndBlock(validator_updates=validator_update)
 
     def commit(self):
@@ -304,11 +339,20 @@ class App(BaseApplication):
                 winning_bid_id = tx.asset["data"]["winner_bid_id"]
 
                 return_txs = Transaction.determine_returns(
-                    self.bigchaindb, rfq_tx_id, winning_bid_id
+                    self.bigchaindb, tx._id, rfq_tx_id, winning_bid_id
                 )
 
                 for return_tx in return_txs:
                     self.return_queue.put(return_tx)
+                self.bigchaindb.store_accept_updates(
+                    accept_id=tx._id,
+                    update={
+                        "accept_id": tx._id,
+                        "rfq_id": tx.asset["data"]["rfq_id"],
+                        "winning_bid_id": tx.asset["data"]["winner_bid_id"],
+                        "status": "commit",
+                    },
+                )
 
             log_metric(
                 "commit_tx",

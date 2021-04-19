@@ -481,3 +481,9 @@ def get_latest_abci_chain(conn):
     None otherwise.
     """
     raise NotImplementedError
+
+
+@singledispatch
+def store_accept_updates(conn, accept_id, update):
+    """Update Accept-Bid log with consensus updates for recovery purposes."""
+    raise NotImplementedError

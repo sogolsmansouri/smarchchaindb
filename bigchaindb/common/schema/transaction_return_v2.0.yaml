@@ -11,12 +11,19 @@ required:
 - asset
 properties:
   asset:
+    type: object
     additionalProperties: false
     properties:
-      id:
-        "$ref": "#/definitions/sha3_hexdigest"
-    required:
-    - id
+      data:
+        additionalProperties: false
+        properties:
+          bid_id:
+            "$ref": "#/definitions/sha3_hexdigest"
+          accept_id:
+            "$ref": "#/definitions/sha3_hexdigest"
+        required:
+          - bid_id
+          - accept_id
   inputs:
     type: array
     title: "Transaction inputs"
