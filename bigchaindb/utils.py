@@ -16,7 +16,7 @@ from packaging import version
 from bigchaindb.version import __tm_supported_versions__
 from bigchaindb.tendermint_utils import key_from_base64
 from bigchaindb.common.crypto import key_pair_from_ed25519_key
-from bigchaindb.lib import BigchainDB
+from bigchaindb import BigchainDB
 from bigchaindb.common.transaction import Transaction
 
 metric_logger = logging.getLogger("metrics")
