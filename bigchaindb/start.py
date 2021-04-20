@@ -83,7 +83,10 @@ def start(args):
 
     recovery_daemon = multiprocessing.Process(
         target=utils.recover,
-        args=(return_queue,),
+        args=(
+            BigchainDB(),
+            return_queue,
+        ),
     )
     recovery_daemon.start()
 

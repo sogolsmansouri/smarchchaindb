@@ -16,7 +16,6 @@ from packaging import version
 from bigchaindb.version import __tm_supported_versions__
 from bigchaindb.tendermint_utils import key_from_base64
 from bigchaindb.common.crypto import key_pair_from_ed25519_key
-from bigchaindb import BigchainDB
 from bigchaindb.common.transaction import Transaction
 
 metric_logger = logging.getLogger("metrics")
@@ -229,8 +228,7 @@ def tendermint_version_is_compatible(running_tm_ver):
     return False
 
 
-def recover(return_queue):
-    bigchain = BigchainDB()
+def recover(bigchain, return_queue):
     uncompleted_txs = bigchain.get_uncompleted_accept_tx()
     uncompleted_txs = list(uncompleted_txs) if uncompleted_txs else []
 
@@ -240,7 +238,7 @@ def recover(return_queue):
         )
         for return_tx in return_txs:
             return_queue.put(return_tx)
-            
+
         bigchain.store_accept_tx_updates(
             accept_id=tx["accept_id"],
             update={
