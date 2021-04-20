@@ -561,8 +561,11 @@ class BigchainDB(object):
     def delete_elections(self, height):
         return backend.query.delete_elections(self.connection, height)
 
-    def store_accept_updates(self, accept_id, update):
-        return backend.query.store_accept_updates(self.connection, accept_id, update)
+    def store_accept_tx_updates(self, accept_id, update):
+        return backend.query.store_accept_tx_updates(self.connection, accept_id, update)
+
+    def get_uncompleted_accept_tx(self):
+        return backend.query.get_uncompleted_accept_tx(self.connection)
 
 
 Block = namedtuple("Block", ("app_hash", "height", "transactions"))

@@ -6,6 +6,7 @@
 import logging
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
+from bigchaindb import utils
 
 import setproctitle
 
@@ -17,7 +18,7 @@ from bigchaindb.core import App
 from bigchaindb.parallel_validation import ParallelValidationApp
 from bigchaindb.web import server, websocket_server
 from bigchaindb.events import Exchange, EventTypes
-from bigchaindb.utils import Process
+from bigchaindb.utils import Process, recover
 from bigchaindb.return_executor import ReturnExecutor
 
 
@@ -79,6 +80,12 @@ def start(args):
         ),
     )
     return_executor.start()
+
+    recovery_daemon = multiprocessing.Process(
+        target=utils.recover,
+        args=(return_queue,),
+    )
+    recovery_daemon.start()
 
     # We need to import this after spawning the web server
     # because import ABCIServer will monkeypatch all sockets

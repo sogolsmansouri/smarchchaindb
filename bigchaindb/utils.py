@@ -16,6 +16,8 @@ from packaging import version
 from bigchaindb.version import __tm_supported_versions__
 from bigchaindb.tendermint_utils import key_from_base64
 from bigchaindb.common.crypto import key_pair_from_ed25519_key
+from bigchaindb.lib import BigchainDB
+from bigchaindb.common.transaction import Transaction
 
 metric_logger = logging.getLogger("metrics")
 
@@ -227,9 +229,27 @@ def tendermint_version_is_compatible(running_tm_ver):
     return False
 
 
-# def recover():
-#     accept_tx_ids = set()
-#     # TODO: REGEX "ACCEPT(TX_ID):[...],[...]"
+def recover(return_queue):
+    bigchain = BigchainDB()
+    uncompleted_txs = bigchain.get_uncompleted_accept_tx()
+    uncompleted_txs = list(uncompleted_txs) if uncompleted_txs else []
+
+    for tx in uncompleted_txs:
+        return_txs = Transaction.determine_returns(
+            bigchain, tx["accept_id"], tx["rfq_id"], tx["winning_bid_id"]
+        )
+        for return_tx in return_txs:
+            return_queue.put(return_tx)
+            
+        bigchain.store_accept_tx_updates(
+            accept_id=tx["accept_id"],
+            update={
+                "accept_id": tx["accept_id"],
+                "rfq_id": tx["rfq_id"],
+                "winning_bid_id": tx["winning_bid_id"],
+                "status": "commit",
+            },
+        )
 
 
 def log_metric(event_name, requestCreationTimestamp, operation, tx_id):

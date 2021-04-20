@@ -166,7 +166,7 @@ class App(BaseApplication):
             )
 
             if transaction["operation"] == Transaction.ACCEPT:
-                self.bigchaindb.store_accept_updates(
+                self.bigchaindb.store_accept_tx_updates(
                     accept_id=transaction["id"],
                     update={
                         "accept_id": transaction["id"],
@@ -230,7 +230,7 @@ class App(BaseApplication):
             )
 
         if transaction.operation == Transaction.ACCEPT:
-            self.bigchaindb.store_accept_updates(
+            self.bigchaindb.store_accept_tx_updates(
                 accept_id=transaction._id,
                 update={
                     "accept_id": transaction._id,
@@ -285,7 +285,7 @@ class App(BaseApplication):
                 tx._id,
             )
             if tx.operation == Transaction.ACCEPT:
-                self.bigchaindb.store_accept_updates(
+                self.bigchaindb.store_accept_tx_updates(
                     accept_id=tx._id,
                     update={
                         "accept_id": tx._id,
@@ -344,7 +344,7 @@ class App(BaseApplication):
 
                 for return_tx in return_txs:
                     self.return_queue.put(return_tx)
-                self.bigchaindb.store_accept_updates(
+                self.bigchaindb.store_accept_tx_updates(
                     accept_id=tx._id,
                     update={
                         "accept_id": tx._id,

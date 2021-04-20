@@ -440,11 +440,20 @@ def get_latest_abci_chain(conn):
 
 
 @register_query(LocalMongoDBConnection)
-def store_accept_updates(conn, accept_id, update):
+def store_accept_tx_updates(conn, accept_id, update):
     return conn.run(
         conn.collection("accept_tx_recovery").replace_one(
             {"accept_id": accept_id},
             update,
             upsert=True,
+        )
+    )
+
+
+@register_query(LocalMongoDBConnection)
+def get_uncompleted_accept_tx(conn):
+    return conn.run(
+        conn.collection("accept_tx_recovery").find(
+            {"status": "end_block"}
         )
     )

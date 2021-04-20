@@ -484,6 +484,12 @@ def get_latest_abci_chain(conn):
 
 
 @singledispatch
-def store_accept_updates(conn, accept_id, update):
+def store_accept_tx_updates(conn, accept_id, update):
     """Update Accept-Bid log with consensus updates for recovery purposes."""
+    raise NotImplementedError
+
+
+@singledispatch
+def get_uncompleted_accept_tx(conn):
+    """Returns not-committed accept tx information through recovery logs."""
     raise NotImplementedError
