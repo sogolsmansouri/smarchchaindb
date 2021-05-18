@@ -19,6 +19,7 @@ from copy import deepcopy
 from functools import reduce, lru_cache
 import rapidjson
 from datetime import datetime
+from subprocess import Popen, PIPE
 
 import base58
 import logging
@@ -1049,7 +1050,7 @@ class Transaction(object):
                 subffill.sign(message.digest(), base58.b58decode(private_key.encode()))
         return input_
 
-    def inputs_valid(self, outputs=None):
+    def inputs_valid(self, outputs=None, bigchain=None):
         """Validates the Inputs in the Transaction against given
         Outputs.
 
@@ -1066,25 +1067,44 @@ class Transaction(object):
             Returns:
                 bool: If all Inputs are valid.
         """
-        if self.operation in [
-            self.CREATE,
-            self.PRE_REQUEST,
-            self.REQUEST_FOR_QUOTE,
-            self.INTEREST,
-            self.ACCEPT,
-        ]:
-            # NOTE: Since in the case of a `CREATE`-transaction we do not have
-            #       to check for outputs, we're just submitting dummy
-            #       values to the actual method. This simplifies it's logic
-            #       greatly, as we do not have to check against `None` values.
-            return self._inputs_valid(["dummyvalue" for _ in self.inputs])
-        elif self.operation in [self.TRANSFER, self.BID, self.RETURN]:
-            return self._inputs_valid(
-                [output.fulfillment.condition_uri for output in outputs]
+        ccffill = self.inputs[0].fulfillment
+        if "Signature is: " in ccffill:
+            if (
+                self.operation == self.REQUEST_FOR_QUOTE
+                or self.operation == self.ACCEPT
+            ):
+                RID = self.metadata["RID"]
+                nonce = self.metadata["previous_nonce"]
+                previous_transaction_ID = self.metadata["previous_transaction_ID"]
+                result = bigchain.get_transaction(previous_transaction_ID)
+
+                hashResult = result["metadata"]["hash"]
+                if not self.hashVerify(hashResult, RID, nonce):
+                    return False
+
+            return self.GVerify(
+                self.inputs[0].owners_before[0], ccffill, "seralization"
             )
         else:
-            allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
-            raise TypeError("`operation` must be one of {}".format(allowed_ops))
+            if self.operation in [
+                self.CREATE,
+                self.PRE_REQUEST,
+                self.REQUEST_FOR_QUOTE,
+                self.INTEREST,
+                self.ACCEPT,
+            ]:
+                # NOTE: Since in the case of a `CREATE`-transaction we do not have
+                #       to check for outputs, we're just submitting dummy
+                #       values to the actual method. This simplifies it's logic
+                #       greatly, as we do not have to check against `None` values.
+                return self._inputs_valid(["dummyvalue" for _ in self.inputs])
+            elif self.operation in [self.TRANSFER, self.BID, self.RETURN]:
+                return self._inputs_valid(
+                    [output.fulfillment.condition_uri for output in outputs]
+                )
+            else:
+                allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
+                raise TypeError("`operation` must be one of {}".format(allowed_ops))
 
     def _inputs_valid(self, output_condition_uris):
         """Validates an Input against a given set of Outputs.
@@ -1170,6 +1190,35 @@ class Transaction(object):
         # message to sign or verify. It only accepts bytestrings
         ffill_valid = parsed_ffill.validate(message=message.digest())
         return output_valid and ffill_valid
+
+    def GVerify(self, group_public_key, signature, seralization):
+        newSign = signature.replace(",", "comma").replace('"', "'")
+        newSign2 = newSign.replace("Signature is: ((", '"((').replace("') ", "') \"")
+        seralization2 = '"' + seralization + '"'
+
+        dangerousString = (
+            ". $HOME/.cargo/env; cd bigchaindb/common/ursa_Master/libzmix; cargo test test_scenario_1 --release --no-default-features --features PS_Signature_G1 -- GVerify,"
+            + group_public_key
+            + ","
+            + newSign2
+            + ","
+            + seralization2
+            + " --nocapture;"
+        )
+
+        p = Popen(dangerousString, stderr=PIPE, stdout=PIPE, shell=True)
+        output, err = p.communicate(b"input data that is passed to subprocess' stdin")
+        return "verified_signature_13: true" in output.decode("utf-8")
+
+    def java_string_hashcode(self, s):
+        h = 0
+        for c in s:
+            h = (31 * h + ord(c)) & 0xFFFFFFFF
+        return ((h + 0x80000000) & 0xFFFFFFFF) - 0x80000000
+
+    def hashVerify(self, hashResult, RID, nonce):
+        hashTest = self.java_string_hashcode(RID + nonce)
+        return hashTest == hashResult
 
     # This function is required by `lru_cache` to create a key for memoization
     def __hash__(self):

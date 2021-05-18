@@ -33,14 +33,18 @@ class Transaction(Transaction):
                 "transaction `{}` already exists".format(self.id)
             )
 
-        if self.operation in [
-            Transaction.CREATE,
-            Transaction.PRE_REQUEST,
-            Transaction.INTEREST,
-            Transaction.REQUEST_FOR_QUOTE,
-            Transaction.ACCEPT,
-        ] and not self.inputs_valid(input_conditions):
-                raise InvalidSignature("Transaction signature is invalid.")
+        if (
+            self.operation
+            in [
+                Transaction.CREATE,
+                Transaction.PRE_REQUEST,
+                Transaction.INTEREST,
+                Transaction.REQUEST_FOR_QUOTE,
+                Transaction.ACCEPT,
+            ]
+            and not self.inputs_valid(input_conditions, bigchain)
+        ):
+            raise InvalidSignature("Transaction signature is invalid.")
 
         if self.operation == Transaction.TRANSFER:
             self.validate_transfer_inputs(bigchain, current_transactions)

@@ -1,0 +1,41 @@
+language: rust
+cache: cargo
+
+branches:
+  only:
+    - master
+
+rust:
+  - stable
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+      - libssl1.0.0
+      - libssl-dev
+
+before_install:
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update ; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew link --force openssl  ; fi
+
+env:
+  - SODIUM_BUILD_STATIC=1
+
+install:
+  - rustup component add rustfmt
+  - rustup component add clippy
+  - rustup target add wasm32-unknown-unknown
+  - command -v cargo-audit >/dev/null 2>&1 || cargo install cargo-audit
+
+script:
+  - cargo fmt --all -- --check
+  - cargo clippy --all -- -W clippy::not_unsafe_ptr_arg_deref -A clippy::many_single_char_names
+  - cargo check && cargo audit
+  - cargo build
+  - cargo build --no-default-features --features=portable
+  - cargo test
+  - cargo doc --no-deps
