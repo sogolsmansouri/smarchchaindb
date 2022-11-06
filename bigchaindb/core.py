@@ -163,6 +163,7 @@ class App(BaseApplication):
                 transaction["metadata"]["requestCreationTimestamp"],
                 transaction["operation"],
                 transaction["id"],
+                None
             )
 
             if transaction["operation"] == Transaction.ACCEPT:
@@ -227,6 +228,7 @@ class App(BaseApplication):
                 transaction.metadata["requestCreationTimestamp"],
                 transaction.operation,
                 transaction._id,
+                None
             )
 
         if transaction.operation == Transaction.ACCEPT:
@@ -283,6 +285,7 @@ class App(BaseApplication):
                 tx.metadata["requestCreationTimestamp"],
                 tx.operation,
                 tx._id,
+                None
             )
             if tx.operation == Transaction.ACCEPT:
                 self.bigchaindb.store_accept_tx_updates(
@@ -354,12 +357,23 @@ class App(BaseApplication):
                     },
                 )
 
-            log_metric(
+            if tx.operation == Transaction.RETURN:
+                log_metric(
                 "commit_tx",
                 tx.metadata["requestCreationTimestamp"],
                 tx.operation,
                 tx._id,
-            )
+                tx.asset["data"]["accept_id"]
+            ) 
+            
+            else:
+                log_metric(
+                    "commit_tx",
+                    tx.metadata["requestCreationTimestamp"],
+                    tx.operation,
+                    tx._id,
+                    None
+                )
 
         return self.abci.ResponseCommit(data=data)
 

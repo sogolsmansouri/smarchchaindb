@@ -110,6 +110,7 @@ class TransactionListApi(Resource):
             tx["metadata"]["requestCreationTimestamp"],
             tx["operation"],
             tx["id"],
+            None
         )
 
         error, tx, tx_obj = validate_schema_definition(tx)
@@ -133,6 +134,7 @@ class TransactionListApi(Resource):
                     tx_obj.metadata["requestCreationTimestamp"],
                     tx_obj.operation,
                     tx_obj._id,
+                    None
                 )
                 status_code, message = bigchain.write_transaction(tx_obj, mode)
 

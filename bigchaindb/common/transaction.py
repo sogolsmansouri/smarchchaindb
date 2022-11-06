@@ -1066,7 +1066,7 @@ class Transaction(object):
 
             Returns:
                 bool: If all Inputs are valid.
-        """
+        
         ccffill = self.inputs[0].fulfillment
         if "Signature is: " in ccffill:
             if (
@@ -1085,26 +1085,26 @@ class Transaction(object):
             return self.GVerify(
                 self.inputs[0].owners_before[0], ccffill, "seralization"
             )
+        else:"""
+        if self.operation in [
+            self.CREATE,
+            self.PRE_REQUEST,
+            self.REQUEST_FOR_QUOTE,
+            self.INTEREST,
+            self.ACCEPT,
+        ]:
+            # NOTE: Since in the case of a `CREATE`-transaction we do not have
+            #       to check for outputs, we're just submitting dummy
+            #       values to the actual method. This simplifies it's logic
+            #       greatly, as we do not have to check against `None` values.
+            return self._inputs_valid(["dummyvalue" for _ in self.inputs])
+        elif self.operation in [self.TRANSFER, self.BID, self.RETURN]:
+            return self._inputs_valid(
+                [output.fulfillment.condition_uri for output in outputs]
+            )
         else:
-            if self.operation in [
-                self.CREATE,
-                self.PRE_REQUEST,
-                self.REQUEST_FOR_QUOTE,
-                self.INTEREST,
-                self.ACCEPT,
-            ]:
-                # NOTE: Since in the case of a `CREATE`-transaction we do not have
-                #       to check for outputs, we're just submitting dummy
-                #       values to the actual method. This simplifies it's logic
-                #       greatly, as we do not have to check against `None` values.
-                return self._inputs_valid(["dummyvalue" for _ in self.inputs])
-            elif self.operation in [self.TRANSFER, self.BID, self.RETURN]:
-                return self._inputs_valid(
-                    [output.fulfillment.condition_uri for output in outputs]
-                )
-            else:
-                allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
-                raise TypeError("`operation` must be one of {}".format(allowed_ops))
+            allowed_ops = ", ".join(self.__class__.ALLOWED_OPERATIONS)
+            raise TypeError("`operation` must be one of {}".format(allowed_ops))
 
     def _inputs_valid(self, output_condition_uris):
         """Validates an Input against a given set of Outputs.

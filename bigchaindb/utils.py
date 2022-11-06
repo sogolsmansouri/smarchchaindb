@@ -10,6 +10,7 @@ import multiprocessing as mp
 import json
 import logging
 from datetime import datetime
+import time
 
 import setproctitle
 from packaging import version
@@ -250,7 +251,7 @@ def recover(bigchain, return_queue):
         )
 
 
-def log_metric(event_name, requestCreationTimestamp, operation, tx_id):
+def log_metric(event_name, requestCreationTimestamp, operation, tx_id, accept_id):
     delta = datetime.now() - datetime.strptime(
         requestCreationTimestamp, "%Y-%m-%dT%H:%M:%S.%f"
     )
@@ -262,4 +263,8 @@ def log_metric(event_name, requestCreationTimestamp, operation, tx_id):
         + str(operation)
         + ","
         + tx_id
+        + ","
+        + str(accept_id)
+        + ","
+        + str(time.time())
     )

@@ -71,7 +71,7 @@ config = {
         "advertised_port": 9985,
     },
     "tendermint": {
-        "host": "localhost",
+        "host": "157.230.238.183",
         "port": 26657,
         "version": "v0.31.5",  # look for __tm_supported_versions__
     },
