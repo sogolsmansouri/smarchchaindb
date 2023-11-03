@@ -11,6 +11,9 @@ Attributes:
         representing an unspent output.
 
 """
+import json
+#from rdflib import Graph, Namespace, Literal, RDF, URIRef
+#from pyshacl import validate
 import os
 from datetime import datetime
 
@@ -532,6 +535,8 @@ class Transaction(object):
     BID = "BID"
     ACCEPT = "ACCEPT"
     RETURN = "RETURN"
+    BUY = "BUY"
+    ADV = "ADV"
     ALLOWED_OPERATIONS = (
         CREATE,
         TRANSFER,
@@ -541,6 +546,8 @@ class Transaction(object):
         BID,
         ACCEPT,
         RETURN,
+        BUY,
+        ADV
     )
     VERSION = "2.0"
 
@@ -606,6 +613,7 @@ class Transaction(object):
                 operation == self.PRE_REQUEST
                 or operation == self.REQUEST_FOR_QUOTE
                 or operation == self.ACCEPT
+                or operation == self.ADV
             )
             and asset is not None
             and not (isinstance(asset, dict))
@@ -1092,6 +1100,7 @@ class Transaction(object):
             self.REQUEST_FOR_QUOTE,
             self.INTEREST,
             self.ACCEPT,
+            self.ADV,
         ]:
             # NOTE: Since in the case of a `CREATE`-transaction we do not have
             #       to check for outputs, we're just submitting dummy
@@ -1170,6 +1179,7 @@ class Transaction(object):
             self.REQUEST_FOR_QUOTE,
             self.INTEREST,
             self.ACCEPT,
+            self.ADV,
         ]:
             # NOTE: In the case of a `CREATE` transaction, the
             #       output is always valid.
@@ -1582,8 +1592,106 @@ class Transaction(object):
         #     )
 
         return True
+    
+
+    # def shacl_validation():
+    #     logger.debug("!!!shacl1!!!!")
+    #     ex = Namespace("http://example.org/")
+    #     logger.debug("!!!shacl2!!!!")
+    #     schema = Namespace("http://schema.org/")
+    #     logger.debug("!!!shacl3!!!!")
+    #     g = Graph()
+
+    #     json_data = [{
+    #         "asset": {
+    #             "data": {
+    #                 "id": "e662eed5dfc794fb8d57bd327e6c7f2f1aacee77be3fcb7ec35acaaee738b4ab",
+    #                 "rfq_id": "08cff6fbc0ec876edda24a6f306cdc96df31719d24ef059ed2d7916536d3c6f9"
+    #             }
+    #         },
+    #         "id": "a624211e50ebb50f4874dedfff7a7a7aa77d77458ce5ec606c09ff0236a4ab54"
+    #     }]
+
+
+    #     # Iterate over the JSON data and extract the rfq_id
+    #     for item in json_data:
+    #         if "asset" in item and "data" in item["asset"]:
+    #             rfq_id = item["asset"]["data"].get("rfq_id")
+    #             if rfq_id:
+    #                 # Convert rfq_id to RDF
+    #                 resource_uri = ex[item["id"]]
+    #                 g.add((resource_uri, RDF.type, schema["Bid"]))
+    #                 g.add((resource_uri, schema["rfq_id"], Literal(rfq_id)))
+    #                 # Adding isOpen property with a boolean value
+    #                 g.add((resource_uri, schema["isOpen"], Literal(True, datatype=schema["Boolean"])))
+
+
+       
+    #     logger.debug("!!!shacl!!!!",g.serialize(format="turtle"))
+
+    def validate_buy(self, bigchain, current_transactions=[]):
+        return True
+    def validate_adv(self, bigchain, current_transactions=[]):
+        return True
 
     def validate_bid(self, bigchain, current_transactions=[]):
+        
+        # ex = Namespace("http://example.org/")
+        # schema = Namespace("http://schema.org/")
+        
+        # g = Graph()
+        
+        # json_data = [{
+        #     "asset": {
+        #         "data": {
+        #             "id": "e662eed5dfc794fb8d57bd327e6c7f2f1aacee77be3fcb7ec35acaaee738b4ab",
+        #             "rfq_id": "08cff6fbc0ec876edda24a6f306cdc96df31719d24ef059ed2d7916536d3c6f9"
+        #         }
+        #     },
+        #     "id": "a624211e50ebb50f4874dedfff7a7a7aa77d77458ce5ec606c09ff0236a4ab54"
+        # }]
+        # # Iterate over the JSON data and extract the rfq_id
+        # for item in json_data:
+        #     if "asset" in item and "data" in item["asset"]:
+        #         rfq_id = item["asset"]["data"].get("rfq_id")
+        #         if rfq_id:
+        #             # Convert rfq_id to RDF
+        #             resource_uri = ex[item["id"]]
+        #             g.add((resource_uri, RDF.type, schema["Bid"]))
+        #             g.add((resource_uri, schema["rfq_id"], Literal(rfq_id)))
+        #             # Adding isOpen property with a boolean value
+        #             g.add((resource_uri, schema["isOpen"], Literal(True, datatype=schema["Boolean"])))
+        # #project_folder = '/home/smansou2/smartchaindb'
+        # #ttl_file_path = os.path.join(project_folder, 'books.ttl')
+        # script_dir = os.path.dirname(os.path.abspath(__file__))
+
+        # # Create the books.ttl path
+        # ttl_file_path = os.path.join(script_dir, 'books.ttl')
+        # # Write the .ttl file
+        # if not os.path.exists(ttl_file_path):
+        #     logger.debug("!!!1!!")
+        #     with open(ttl_file_path, 'wb') as turtle_file:
+        #         turtle_file.write(g.serialize(format='turtle'))
+
+        # # Read the .ttl file in binary mode and write it back in text mode
+        # with open(ttl_file_path, 'rb') as file:
+        #     turtle_data = file.read()
+
+        # with open(ttl_file_path, 'w', encoding='utf-8') as file:
+        #     file.write(turtle_data.decode('utf-8'))
+
+        # #data_file = "books.ttl"
+       
+        # shape_file = os.path.join(script_dir, 'shacl_shape.ttl')
+        # # Perform SHACL validation
+        # conforms, v_graph, v_text = validate(ttl_file_path, shacl_graph=shape_file, inference='rdfs', abort_on_error=False)
+
+        # if conforms:
+        #     logger.debug("Data conforms to the SHACL shape.")
+        # else:
+        #     logger.debug("Data does not conform to the SHACL shape.")
+        #logger.info("RDFLib Version: %s" % g.serialize(format="turtle"))
+        #shacl_validation()
         # FIXME: BID received for stale RFQ(timeout or fulfilled)
         rfq_tx_id = self.asset["data"]["rfq_id"]
         rfq_tx = bigchain.get_transaction(rfq_tx_id)

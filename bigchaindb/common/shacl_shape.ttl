@@ -1,0 +1,165 @@
+@prefix : <http://example.org/> .
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix schema: <http://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+:UserShape a sh:NodeShape;
+   sh:targetClass :User ;
+   sh:property [                  # Blank node 1
+    sh:path     schema:name ;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:string ;
+  ] ;
+  sh:property [                   # Blank node 2
+   sh:path schema:gender ;
+   sh:minCount 1;
+   sh:maxCount 1;
+   sh:or (
+    [ sh:in (schema:Male schema:Female) ]
+    [ sh:datatype xsd:string]
+   )
+  ] ;
+  sh:property [                   # Blank node 3  
+   sh:path     schema:birthDate ;
+   sh:maxCount 1;
+   sh:datatype xsd:date ;
+  ] ;
+  sh:property [                   # Blank node 4 
+   sh:path     schema:knows ;
+   sh:nodeKind sh:IRI ;
+   sh:class    :User ;
+  ] .
+
+:AssetShape a sh:NodeShape;
+   sh:targetClass :Asset ;
+   sh:property [                  # Blank node 1
+    sh:path     schema:id ;
+    sh:minCount 1;
+    sh:maxCount 1;
+    sh:datatype xsd:integer ;
+    sh:unique true;
+  ] .
+
+:TxnInputShape a sh:NodeShape ;
+    sh:targetClass :TxnInput ;
+    sh:property [
+        sh:path schema:txnInputId ;
+        sh:datatype xsd:integer ; 
+        sh:unique true; 
+    ] ;
+    sh:property [
+        sh:path schema:spends ;
+        
+        sh:class :TxnOutput ; 
+    ] .   
+    
+:TxnOutputShape a sh:NodeShape ;
+    sh:targetClass :TxnOutput ;
+    sh:property [
+        sh:path schema:txnOutputId ;
+        sh:datatype xsd:integer ;  
+        sh:unique true;
+    ] ;
+    sh:property [
+        sh:path  schema:distributes ;
+        sh:class :Asset ;
+        sh:minCount 1 ;
+    ] .
+
+:MKTxnShape a sh:NodeShape ;
+    sh:targetClass :MKTxn ;
+    sh:property [
+        sh:path  schema:hasAsset ;
+        sh:class :Asset ;
+        sh:minCount 1 ;  # Minimum of 1 asset required for each Marketplace Transaction
+    ] ;
+
+   sh:property [
+        sh:path  schema:hasInput ;
+        sh:class :TxnInput ;   
+        sh:minCount 1 ;  
+    ] ;
+    sh:property [
+        sh:path  schema:hasOutput ; 
+        sh:class :TxnOutput ;
+        sh:minCount 1 ; 
+    ] .
+
+:AdvertiseShape a sh:NodeShape ;
+    sh:targetClass :Advertise ;
+    sh:property [
+        sh:path  schema:hasAsset ;  # Update the path
+        sh:class :Asset ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path schema:hasInput ;  # Update the path
+        sh:class :TxnInput ;
+        sh:minCount 1 ;
+    ] ;
+    sh:property [
+        sh:path schema:hasOutput ;  # Update the path
+        sh:class :TxnOutput ;
+        sh:minCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:refTxn ;  # Update the path
+        sh:class :Create ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+    ] ;
+
+    sh:property [
+        sh:path schema:price ;  # Update the path
+        sh:datatype xsd:string ;
+    ] ;
+
+    sh:property [
+        sh:path schema:status ;  # Update the path   
+        [ sh:in (schema:Open schema:Close) ]
+        [ sh:datatype xsd:string]
+   
+    ] .
+
+
+:CreateShape a sh:NodeShape ;
+    sh:targetClass :Create ;
+    sh:property [
+        sh:path  schema:hasAsset ;
+        sh:class :Asset;
+        sh:minCount 1 ;  # Minimum of 1 asset required for each Marketplace Transaction
+    ] ;
+    sh:property [
+        sh:path schema:hasOutput ;
+        sh:class :TxnOutput ;
+        sh:minCount 1 ; 
+    ] .
+
+:BuyShape a sh:NodeShape ;
+    sh:targetClass :Buy ;
+    sh:property [
+        sh:path  schema:refTxn ;
+        sh:node  schema:AdvertiseShape ;
+        sh:minCount 1 ;  
+        sh:maxCount 1 ;
+        sh:node [
+            sh:property [
+                sh:path schema:status ;
+                sh:in (schema:Open) ;  # Check that the value is "Open"
+            ]
+        ]
+    ].
+
+:AdvertiseShape a sh:NodeShape ;
+    sh:targetClass :Advertise ;
+    sh:property [
+        sh:path  schema:status ;
+        sh:hasValue  schema:Open ;
+    ].
+   
+      
+    
+
+   
+    

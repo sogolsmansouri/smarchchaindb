@@ -1,0 +1,6 @@
+@prefix ns1: <http://schema.org/> .
+
+<http://example.org/a624211e50ebb50f4874dedfff7a7a7aa77d77458ce5ec606c09ff0236a4ab54> a ns1:Bid ;
+    ns1:isOpen "true"^^ns1:Boolean ;
+    ns1:rfq_id "08cff6fbc0ec876edda24a6f306cdc96df31719d24ef059ed2d7916536d3c6f9" .
+

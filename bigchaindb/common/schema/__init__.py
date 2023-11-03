@@ -56,6 +56,11 @@ _, TX_SCHEMA_ACCEPT = _load_schema("transaction_accept_" + TX_SCHEMA_VERSION)
 
 _, TX_SCHEMA_RETURN = _load_schema("transaction_return_" + TX_SCHEMA_VERSION)
 
+_, TX_SCHEMA_ADV = _load_schema("transaction_adv_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_BUY = _load_schema("transaction_buy_" + TX_SCHEMA_VERSION)
+
+
+
 
 def _validate_schema(schema, body):
     """Validate data against a schema"""
@@ -106,5 +111,9 @@ def validate_transaction_schema(tx):
         _validate_schema(TX_SCHEMA_ACCEPT, tx)
     elif tx["operation"] == "RETURN":
         _validate_schema(TX_SCHEMA_RETURN, tx)
+    elif tx["operation"] == "BUY":
+        _validate_schema(TX_SCHEMA_BUY, tx)
+    elif tx["operation"] == "ADV":
+        _validate_schema(TX_SCHEMA_ADV, tx)
     else:
         _validate_schema(TX_SCHEMA_CREATE, tx)

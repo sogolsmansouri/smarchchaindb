@@ -72,6 +72,8 @@ definitions:
       - BID
       - ACCEPT
       - RETURN
+      - ADV
+      - BUY
   asset:
     type: object
     additionalProperties: false
