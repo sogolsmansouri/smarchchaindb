@@ -5,7 +5,8 @@ LABEL maintainer "devs@bigchaindb.com"
 RUN apt-get update \
     && apt-get install -y vim \
     && pip install -U pip \
-    && pip install pynacl \
+    && pip install pyshacl \
+    && pip install rdflib  \
     && apt-get autoremove \
     && apt-get clean
 

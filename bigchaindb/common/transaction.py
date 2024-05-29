@@ -12,8 +12,8 @@ Attributes:
 
 """
 import json
-#from rdflib import Graph, Namespace, Literal, RDF, URIRef
-#from pyshacl import validate
+from rdflib import Graph, Namespace, Literal, RDF, URIRef
+from pyshacl import validate
 import os
 from datetime import datetime
 
