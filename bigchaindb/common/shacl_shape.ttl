@@ -151,12 +151,12 @@
         ]
     ].
 
-:AdvertiseShape a sh:NodeShape ;
-    sh:targetClass :Advertise ;
-    sh:property [
-        sh:path  schema:status ;
-        sh:hasValue  schema:Open ;
-    ].
+#:AdvertiseShape a sh:NodeShape ;
+#    sh:targetClass :Advertise ;
+#    sh:property [
+#        sh:path  schema:status ;
+#        sh:hasValue  schema:Open ;
+#    ].
    
       
     

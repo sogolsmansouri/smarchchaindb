@@ -12,8 +12,12 @@ Attributes:
 
 """
 import json
-from rdflib import Graph, Namespace, Literal, RDF, URIRef
+#import rdflib_jsonld
+from rdflib import Graph, Namespace, Literal, RDF, URIRef, XSD
 from pyshacl import validate
+#from pyld import jsonld
+# from rdflib import plugin
+# from rdflib.serializer import Serializer
 import os
 from datetime import datetime
 
@@ -1594,75 +1598,226 @@ class Transaction(object):
         return True
     
 
-    # def shacl_validation():
-    #     logger.debug("!!!shacl1!!!!")
-    #     ex = Namespace("http://example.org/")
-    #     logger.debug("!!!shacl2!!!!")
-    #     schema = Namespace("http://schema.org/")
-    #     logger.debug("!!!shacl3!!!!")
-    #     g = Graph()
-
-    #     json_data = [{
-    #         "asset": {
-    #             "data": {
-    #                 "id": "e662eed5dfc794fb8d57bd327e6c7f2f1aacee77be3fcb7ec35acaaee738b4ab",
-    #                 "rfq_id": "08cff6fbc0ec876edda24a6f306cdc96df31719d24ef059ed2d7916536d3c6f9"
-    #             }
-    #         },
-    #         "id": "a624211e50ebb50f4874dedfff7a7a7aa77d77458ce5ec606c09ff0236a4ab54"
-    #     }]
-
-
-    #     # Iterate over the JSON data and extract the rfq_id
-    #     for item in json_data:
-    #         if "asset" in item and "data" in item["asset"]:
-    #             rfq_id = item["asset"]["data"].get("rfq_id")
-    #             if rfq_id:
-    #                 # Convert rfq_id to RDF
-    #                 resource_uri = ex[item["id"]]
-    #                 g.add((resource_uri, RDF.type, schema["Bid"]))
-    #                 g.add((resource_uri, schema["rfq_id"], Literal(rfq_id)))
-    #                 # Adding isOpen property with a boolean value
-    #                 g.add((resource_uri, schema["isOpen"], Literal(True, datatype=schema["Boolean"])))
-
-
-       
-    #     logger.debug("!!!shacl!!!!",g.serialize(format="turtle"))
 
     def validate_buy(self, bigchain, current_transactions=[]):
         return True
-    def validate_adv(self, bigchain, current_transactions=[]):
-        return True
+    logger = logging.getLogger(__name__)
 
-    def validate_bid(self, bigchain, current_transactions=[]):
+    def validate_adv(self, bigchain, current_transactions=[]):
+        
+
+
+
+        # # Setup logger
+        # logging.basicConfig(level=logging.DEBUG)
+        # logger = logging.getLogger(__name__)
+
+        # # Your JSON data
+        # json_data = {
+        #     "asset": {
+        #         "data": {
+        #             "asset_id": "866cdefc932f97be13061924d5274f7bb2e92282a6d89561e16fbe71d86d2d8a"
+        #         }
+        #     },
+        #     "id": "123cf1bc765f9c5cb0badac9cdb74590cb749313747333de57c9147e5147e8fe",
+        #     "inputs": [
+        #         {
+        #             "fulfillment": "pGSAIIjOITHtLP5Nel8VOoN-kylW6vCaXLnfa8DPj-AIVqBIgUA8d78p8cdty5rKikldm3Bnz0GHTpDS8_z7AYYZ9E5vCoOx4b3WXKm0tNmwJxOIfMhAHCdLc4K01-NANcIFsP4D",
+        #             "fulfills": {
+        #                 "output_index": 0,
+        #                 "transaction_id": "866cdefc932f97be13061924d5274f7bb2e92282a6d89561e16fbe71d86d2d8a"
+        #             },
+        #             "owners_before": ["AD2kShabKRW9auac6SX71iWCUk5JbSptxikJnuLLegwy"]
+        #         }
+        #     ],
+        #     "metadata": {
+        #         "kafkaInTimestamp": "2024-08-04T22:04:36.319",
+        #         "requestCreationTimestamp": "2024-08-05T02:04:36.319"
+        #     },
+        #     "operation": "ADV",
+        #     "outputs": [
+        #         {
+        #             "amount": "1",
+        #             "condition": {
+        #                 "details": {
+        #                     "public_key": "7EAsHUGQ15LdS2NoX9543bgEoZg7BmkVqdxSmiSda3Dv",
+        #                     "type": "ed25519-sha-256"
+        #                 },
+        #                 "uri": "ni:///sha-256;XIXUJPUhtPCZ7mm4enVXTSUeiNDZzz5kGCDRiPs6fH0?fpt=ed25519-sha-256&cost=131072"
+        #             },
+        #             "public_keys": ["7EAsHUGQ15LdS2NoX9543bgEoZg7BmkVqdxSmiSda3Dv"]
+        #         }
+        #     ],
+        #     "version": "2.0"
+        # }
+
+        # # JSON-LD context
+        # context = {
+        #     "@context": {
+        #         "asset": "http://example.org/asset",
+        #         "data": "http://example.org/data",
+        #         "asset_id": "http://example.org/asset_id",
+        #         "id": "http://example.org/id",
+        #         "inputs": "http://example.org/inputs",
+        #         "fulfillment": "http://example.org/fulfillment",
+        #         "fulfills": "http://example.org/fulfills",
+        #         "output_index": "http://example.org/output_index",
+        #         "transaction_id": "http://example.org/transaction_id",
+        #         "owners_before": "http://example.org/owners_before",
+        #         "metadata": "http://example.org/metadata",
+        #         "kafkaInTimestamp": "http://example.org/kafkaInTimestamp",
+        #         "requestCreationTimestamp": "http://example.org/requestCreationTimestamp",
+        #         "operation": "http://example.org/operation",
+        #         "outputs": "http://example.org/outputs",
+        #         "amount": "http://example.org/amount",
+        #         "condition": "http://example.org/condition",
+        #         "details": "http://example.org/details",
+        #         "public_key": "http://example.org/public_key",
+        #         "type": "http://example.org/type",
+        #         "uri": "http://example.org/uri",
+        #         "public_keys": "http://example.org/public_keys",
+        #         "version": "http://example.org/version"
+        #     }
+        # }
+
+        # json_ld_data = jsonld.compact(json_data, context)
+
+
+        # # Convert JSON-LD to RDF
+        # g = Graph().parse(data=json.dumps(json_ld_data), format='json-ld')
+
+        # # Serialize RDF graph to Turtle format
+        # turtle_data = g.serialize(format='turtle').decode('utf-8')
+        # logger.debug("RDF Turtle format: %s", turtle_data)
+        return True
+        # Convert JSON-LD to RDF
+        # g = Graph().parse(data=json.dumps(json_ld_data), format='json-ld')
+
+        # # Serialize RDF graph to Turtle format
+        # turtle_data = g.serialize(format='turtle').decode('utf-8')
+        # logger.debug("RDF Turtle format: %s", turtle_data)
+        
+        # logger.debug("@@@@@@", extra={'json_ld_data': json.dumps(json_ld_data, indent=2)})
+
+        # # And ensure your logger format includes the 'json_ld_data' key
+        # logging.basicConfig(level=logging.DEBUG,
+        #                     format='%(asctime)s %(levelname)s %(message)s %(json_ld_data)s')
+
+        # # Ensure to add 'json_ld_data' to your log record if not already present
+        # class CustomLogFilter(logging.Filter):
+        #     def filter(self, record):
+        #         if not hasattr(record, 'json_ld_data'):
+        #             record.json_ld_data = ''
+        #         return True
+
+        # logger.addFilter(CustomLogFilter())
+        # create_tx_id = self.asset["data"]["asset_id"]
+        # logger.debug(">>>>>>> asset Id: %s", create_tx_id)
+        # create_tx = bigchain.get_transaction(create_tx_id)
+        
+        # if create_tx is None:
+        #     raise InputDoesNotExist("Asset input `{}` doesn't exist".format(create_tx_id))
+
+        # if create_tx.operation != self.CREATE:
+        #     raise ValidationError("ADV transaction must be against a committed Create transaction")
         
         # ex = Namespace("http://example.org/")
         # schema = Namespace("http://schema.org/")
         
         # g = Graph()
+        # resource_uri = ex[create_tx_id]
         
-        # json_data = [{
-        #     "asset": {
-        #         "data": {
-        #             "id": "e662eed5dfc794fb8d57bd327e6c7f2f1aacee77be3fcb7ec35acaaee738b4ab",
-        #             "rfq_id": "08cff6fbc0ec876edda24a6f306cdc96df31719d24ef059ed2d7916536d3c6f9"
-        #         }
-        #     },
-        #     "id": "a624211e50ebb50f4874dedfff7a7a7aa77d77458ce5ec606c09ff0236a4ab54"
-        # }]
+        # logger.debug("Adding triples to the graph")
+        # g.add((resource_uri, RDF.type, schema["Advertise"]))
+        # g.add((resource_uri, schema["asset_id"], Literal(create_tx_id)))
+        # g.add((resource_uri, schema["isOpen"], Literal(True, datatype=XSD.boolean)))
+        
+        # script_dir = os.path.dirname(os.path.abspath(__file__))
+        # ttl_file_path = os.path.join(script_dir, 'books.ttl')
+        
+        # logger.debug("Writing the RDF graph to a .ttl file")
+        # with open(ttl_file_path, 'w', encoding='utf-8') as turtle_file:
+        #     turtle_file.write(g.serialize(format='turtle').decode('utf-8'))
+        
+        # logger.debug("Reading the RDF graph from the .ttl file")
+        # data_graph = Graph()
+        # data_graph.parse(ttl_file_path, format='turtle')
+        
+        # shape_file = os.path.join(script_dir, 'shacl_shape.ttl')
+        
+        # logger.debug("Performing SHACL validation")
+        # try:
+        #     conforms, v_graph, v_text = validate(data_graph=data_graph, shacl_graph=shape_file, inference='rdfs', abort_on_error=False)
+        # except Exception as e:
+        #     logger.error("SHACL validation failed: %s", e)
+        #     raise
+
+        # if conforms:
+        #     logger.debug("Data conforms to the SHACL shape.")
+        # else:
+        #     logger.debug("Data does not conform to the SHACL shape. Violations: %s", v_text)
+        #     raise ValidationError(f"Data does not conform to the SHACL shape. Violations: {v_text}")
+        
+        # return conforms
+
+    
+    # def validate_adv(self, bigchain, current_transactions=[]):
+    #     create_tx_id = self.asset["data"]["asset_id"]
+    #     logger.debug(">>>>>>> asset Id", create_tx_id)
+    #     create_tx = bigchain.get_transaction(create_tx_id)
+    #     #logger.debug("!!!shacl!!!!",create_tx)
+        
+    #     if create_tx is None:
+    #         raise InputDoesNotExist("Asset input `{}` doesn't exist".format(create_tx_id))
+
+    #     if create_tx.operation != self.CREATE:
+    #         raise ValidationError(
+    #             "ADV transaction must be against a commited Create transaction"
+    #         )
+    #     ex = Namespace("http://example.org/")
+    #     schema = Namespace("http://schema.org/")
+        
+    #     g = Graph()
+
+    #     resource_uri = ex[create_tx_id]
+    #     g.add((resource_uri, RDF.type, schema["Advertise"]))
+    #     g.add((resource_uri, schema["asset_id"], Literal(create_tx_id)))
+    #     g.add((resource_uri, schema["isOpen"], Literal(True, datatype=schema["Boolean"])))
+
+    #     script_dir = os.path.dirname(os.path.abspath(__file__))
+    #     ttl_file_path = os.path.join(script_dir, 'books.ttl')
+
+    #     # Write the RDF graph to a .ttl file
+    #     with open(ttl_file_path, 'w', encoding='utf-8') as turtle_file:
+    #         turtle_file.write(g.serialize(format='turtle').decode('utf-8'))
+
+    #     shape_file = os.path.join(script_dir, 'shacl_shape.ttl')
+
+    #     # Perform SHACL validation
+    #     conforms, v_graph, v_text = validate(data_graph=g, shacl_graph=shape_file, inference='rdfs', abort_on_error=False)
+
+    #     if conforms:
+    #         logger.debug("Data conforms to the SHACL shape.")
+    #     else:
+    #         logger.debug("Data does not conform to the SHACL shape. Violations: %s", v_text)
+
+    #     return conforms
+        # g = Graph()
+        
+        
         # # Iterate over the JSON data and extract the rfq_id
-        # for item in json_data:
-        #     if "asset" in item and "data" in item["asset"]:
-        #         rfq_id = item["asset"]["data"].get("rfq_id")
-        #         if rfq_id:
-        #             # Convert rfq_id to RDF
-        #             resource_uri = ex[item["id"]]
-        #             g.add((resource_uri, RDF.type, schema["Bid"]))
-        #             g.add((resource_uri, schema["rfq_id"], Literal(rfq_id)))
-        #             # Adding isOpen property with a boolean value
-        #             g.add((resource_uri, schema["isOpen"], Literal(True, datatype=schema["Boolean"])))
-        # #project_folder = '/home/smansou2/smartchaindb'
-        # #ttl_file_path = os.path.join(project_folder, 'books.ttl')
+        # # for item in json_data:
+        # #     if "asset" in item and "data" in item["asset"]:
+        
+        # # if rfq_id:
+        # # Convert rfq_id to RDF
+        # resource_uri = ex[create_tx_id]
+        # g.add((resource_uri, RDF.type, schema["ADV"]))
+        # g.add((resource_uri, schema["asset_id"], Literal(create_tx_id)))
+        # # Adding isOpen property with a boolean value
+        # g.add((resource_uri, schema["isOpen"], Literal(True, datatype=schema["Boolean"])))
+        # # # project_folder = '/home/smansou2/Desktop/smartchaindb_server_5_29/smartchaindb/bigchaindb/common'
+        # # ttl_file_path = os.path.join(project_folder, 'books.ttl')
         # script_dir = os.path.dirname(os.path.abspath(__file__))
 
         # # Create the books.ttl path
@@ -1690,8 +1845,12 @@ class Transaction(object):
         #     logger.debug("Data conforms to the SHACL shape.")
         # else:
         #     logger.debug("Data does not conform to the SHACL shape.")
-        #logger.info("RDFLib Version: %s" % g.serialize(format="turtle"))
-        #shacl_validation()
+        # logger.info("RDFLib Version: %s" % g.serialize(format="turtle"))
+        # #shacl_validation()
+        # return True
+
+    def validate_bid(self, bigchain, current_transactions=[]):
+        
         # FIXME: BID received for stale RFQ(timeout or fulfilled)
         rfq_tx_id = self.asset["data"]["rfq_id"]
         rfq_tx = bigchain.get_transaction(rfq_tx_id)
