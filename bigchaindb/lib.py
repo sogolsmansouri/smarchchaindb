@@ -300,6 +300,16 @@ class BigchainDB(object):
         # for txid in txids:
         #     yield self.get_transaction(txid)
 
+        return list(txids) 
+    
+    def get_adv_txids_for_asset(self, asset_tx_id):
+        """Get a list of bid transactions for a RFQ transaction
+        locked by the special smartchaindb account.
+        """
+        txids = backend.query.get_adv_txids_by_asset(self.connection, asset_tx_id)
+        # for txid in txids:
+        #     yield self.get_transaction(txid)
+
         return list(txids)
 
     def get_locked_bid_txids(self):
@@ -483,6 +493,50 @@ class BigchainDB(object):
         """
         return backend.query.get_metadata(self.connection, txn_ids)
 
+    def is_asset_returned(self, asset_id):
+        """
+        Check if the given asset has been returned.
+
+        Args:
+            asset_id (str): The ID of the asset to check for return status.
+
+        Returns:
+            bool: True if the asset has been returned, False otherwise.
+        """
+        return backend.query.is_asset_returned(self.connection, asset_id)
+    
+    def store_adv_status_updates(self, adv_tx_id, new_status):
+        """
+        Store the updated status for a given advertisement transaction.
+
+        Args:
+            adv_tx_id (str): The ID of the advertisement transaction to update.
+            new_status (str): The new status value (e.g., 'closed').
+
+        Returns:
+            dict: Result of the update operation.
+        """
+        # if not adv_tx_id or not isinstance(adv_tx_id, str):
+        #     raise ValidationError("Advertisement Transaction ID must be a valid string.")
+
+        # if not new_status or not isinstance(new_status, str):
+        #     raise ValidationError("New status must be a valid string (e.g., 'closed').")
+
+        update = {"status": new_status}
+        print("!!!!!!store_adv_status_updates!1, ")
+        # Store the update in the database and get the UpdateResult
+        update_result = backend.query.store_adv_status_updates(self.connection, adv_tx_id, update)
+
+        # Return a dictionary with relevant details from the UpdateResult
+        return {
+            "matched_count": update_result.matched_count,
+            "modified_count": update_result.modified_count,
+            "acknowledged": update_result.acknowledged
+        }
+
+
+
+    
     @property
     def fastquery(self):
         return fastquery.FastQuery(self.connection)
@@ -564,8 +618,21 @@ class BigchainDB(object):
     def store_accept_tx_updates(self, accept_id, update):
         return backend.query.store_accept_tx_updates(self.connection, accept_id, update)
 
+    def store_sell_tx_updates(self, tx_id, update):
+        return backend.query.store_sell_tx_updates(self.connection, tx_id, update)
+    
+    def store_accept_return_tx_updates(self, tx_id, update):
+        return backend.query.store_accept_return_tx_updates(self.connection, tx_id, update)
+
+    
     def get_uncompleted_accept_tx(self):
         return backend.query.get_uncompleted_accept_tx(self.connection)
+    
+    def get_uncompleted_sell_tx(self):
+        return backend.query.get_uncompleted_sell_tx(self.connection)
+    
+    def get_uncompleted_accept_return_tx(self):
+        return backend.query.get_uncompleted_accept_return_tx(self.connection)
 
 
 Block = namedtuple("Block", ("app_hash", "height", "transactions"))

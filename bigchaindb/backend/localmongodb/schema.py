@@ -69,6 +69,14 @@ INDEXES = {
         ("accept_id", dict(name="accept_id", unique=True)),
         ("status", dict(name="status")),
     ],
+    "sell_tx_recovery": [
+        ("tx_id", dict(name="tx_id", unique=True)),
+        ("status", dict(name="status")),
+    ],
+    "accept_return_tx_recovery": [
+        ("tx_id", dict(name="tx_id", unique=True)),
+        ("status", dict(name="status")),
+    ],
 }
 
 

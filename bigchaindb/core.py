@@ -176,6 +176,28 @@ class App(BaseApplication):
                         "status": "check_tx",
                     },
                 )
+            
+            if transaction["operation"] == Transaction.SELL :
+                self.bigchaindb.store_sell_tx_updates(
+                    tx_id=transaction["id"],
+                    update={
+                        "tx_id": transaction["id"],
+                        "ref2_id": transaction["asset"]["data"]["ref2_id"],
+                        "asset_id": transaction["asset"]["data"]["asset_id"],
+                        "status": "check_tx",
+                    },
+                )
+            if transaction["operation"] == Transaction.INTEREST:
+                self.bigchaindb.store_accept_return_tx_updates(
+                    tx_id=transaction["id"],
+                    update={
+                        "tx_id": transaction["id"],
+                        "ref2_id": transaction["asset"]["data"]["ref2_id"],
+                        "asset_id": transaction["asset"]["data"]["asset_id"],
+                        "status": "check_tx",
+                    },
+                )
+           
             return self.abci.ResponseCheckTx(code=CodeTypeOk)
         else:
             logger.debug("check_tx: INVALID")
@@ -241,6 +263,28 @@ class App(BaseApplication):
                     "status": status,
                 },
             )
+            
+        if transaction.operation == Transaction.SELL :
+            self.bigchaindb.store_sell_tx_updates(
+                tx_id=transaction._id,
+                update={
+                    "tx_id": transaction._id,
+                    "ref2_id": transaction.asset["data"]["ref2_id"],
+                    "asset_id": transaction.asset["data"]["asset_id"],
+                    "status": status,
+                },
+            )
+        if transaction.operation == Transaction.INTEREST:
+                self.bigchaindb.store_accept_return_tx_updates(
+                    tx_id=transaction._id,
+                    update={
+                        "tx_id": transaction._id,
+                        "ref2_id": transaction.asset["data"]["ref2_id"],
+                        "asset_id": transaction.asset["data"]["asset_id"],
+                        "status": "check_tx",
+                    },
+                )
+            
         code = CodeTypeError if status == "INVALID" else CodeTypeOk
         return self.abci.ResponseDeliverTx(code=code)
 
@@ -294,6 +338,30 @@ class App(BaseApplication):
                         "accept_id": tx._id,
                         "rfq_id": tx.asset["data"]["rfq_id"],
                         "winning_bid_id": tx.asset["data"]["winner_bid_id"],
+                        "status": "end_block",
+                    },
+                )
+            
+            if tx.operation == Transaction.SELL:
+                self.bigchaindb.store_sell_tx_updates(
+                    tx_id=tx._id,
+                    update={
+                        "tx_id": tx._id,
+                        "ref2_id": tx.asset["data"]["ref2_id"],
+                        "asset_id": tx.asset["data"]["asset_id"],
+                        "status": "end_block",
+                    },
+                )
+                # result = self.bigchaindb.store_adv_status_updates(tx.asset["data"]["ref1_id"], "closed")
+                # print("!!!!upate result2222 , ", result)
+                
+            if tx.operation == Transaction.INTEREST:
+                self.bigchaindb.store_accept_return_tx_updates(
+                   tx_id=tx._id,
+                   update={
+                        "tx_id": tx._id,
+                        "ref2_id": tx.asset["data"]["ref2_id"],
+                        "asset_id": tx.asset["data"]["asset_id"],
                         "status": "end_block",
                     },
                 )
@@ -365,6 +433,49 @@ class App(BaseApplication):
                 tx._id,
                 tx.asset["data"]["accept_id"]
             ) 
+            
+            if tx.operation == Transaction.SELL:
+                
+                asset_id = tx.asset["data"]["asset_id"]
+                offer_id = tx.asset["data"]["ref2_id"]
+                adv_id = tx.asset["data"]["ref1_id"]
+                buy_txs = Transaction.determine_exchanges(
+                    self.bigchaindb, tx._id, asset_id, adv_id, offer_id
+                )
+
+                for buy_tx in buy_txs:
+                    self.return_queue.put(buy_tx)
+                self.bigchaindb.store_sell_tx_updates(
+                    tx_id=tx._id,
+                    update={
+                        "tx_id": tx._id,
+                        "ref2_id": tx.asset["data"]["ref2_id"],
+                        "ref1_id": tx.asset["data"]["asset_id"],
+                        "status": "commit",
+                    },
+                )
+                # result = self.bigchaindb.store_adv_status_updates(adv_id, "closed")
+                # print("!!!!upate result , ", result)
+            
+            if tx.operation == Transaction.INTEREST:
+                asset_id = tx.asset["data"]["asset_id"]
+                offer_id = tx.asset["data"]["ref2_id"]
+                adv_id = tx.asset["data"]["ref1_id"]
+                buy_txs = Transaction.determine_exchanges(
+                    self.bigchaindb, tx._id, asset_id, adv_id, offer_id
+                )
+
+                for buy_tx in buy_txs:
+                    self.return_queue.put(buy_tx)
+                self.bigchaindb.store_accept_return_tx_updates(
+                    tx_id=tx._id,
+                    update={
+                        "tx_id": tx._id,
+                        "ref2_id": tx.asset["data"]["ref2_id"],
+                        "ref1_id": tx.asset["data"]["asset_id"],
+                        "status": "commit",
+                    },
+                )
             
             else:
                 log_metric(

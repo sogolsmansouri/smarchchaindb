@@ -1,0 +1,158 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix ex: <http://example.org/> .
+
+# Shape for ADV
+ex:AdvShape a sh:NodeShape ;
+    sh:targetClass ex:ADV ;
+
+    # Ensure that ex:ref points to a valid asset_id
+    sh:property [
+        sh:path ex:ref ;
+        sh:nodeKind sh:IRI ;  # Ensure that ref is an IRI, not a literal
+        sh:class ex:asset_id ;  # ref should point to a node of type asset_id
+    ] ;
+
+    # Ensure that the status is either "Open" or "Closed"
+    sh:property [
+        sh:path ex:status ;
+        sh:in ("Open" "Closed") ;
+    ] .
+    
+
+# Shape for asset_id
+ex:AssetShape a sh:NodeShape ;
+    sh:targetClass ex:asset_id ;
+
+    # Constraint to ensure that each asset_id is referenced by at most one ADV with status "Open"
+    sh:property [
+        sh:path [ sh:inversePath ex:ref ] ;  # Inverse path of ref, which points back to ADV nodes
+        sh:node ex:AdvShape ;  # Ensures the referenced node conforms to the ADV shape
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:status ;
+                sh:hasValue "Open" ;  # Ensure that only ADVs with status "Open" are considered
+            ]
+        ] ;
+        sh:qualifiedMaxCount 1 ;  # Ensures that there is at most one ADV with status "Open"
+    ] ;
+    sh:property [
+        sh:path [ sh:inversePath ex:spend ] ;
+        sh:qualifiedValueShape [
+            sh:nodeKind sh:IRI ;
+        ] ;
+        sh:qualifiedMaxCount 1 ;  # Each asset can be spent at most once
+    ] .
+
+
+# Shape for BuyOffer transactions
+ex:BuyOfferShape a sh:NodeShape ;
+    sh:targetClass ex:BUYOFFER ;
+
+    # Reference to an ADV transaction via adv_ref
+    sh:property [
+        sh:path ex:adv_ref ;  # The path where BUYOFFER references the ADV transaction
+        sh:node ex:AdvShape ;  # Ensure the referenced node conforms to the ADV shape
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:status ;
+                sh:hasValue "Open" ;  # Ensure that the referenced ADV transaction has status "Open"
+            ]
+        ] ;
+        sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
+        sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
+    ] ;
+    sh:property [
+        sh:path ex:asset_ref ;
+        sh:nodeKind sh:IRI ;  # Ensure that ref is an IRI, not a literal
+        sh:class ex:asset_id ;  # ref should point to a node of type asset_id
+    ] .
+
+
+# Shape for Sell transactions
+ex:SellShape a sh:NodeShape ;
+    sh:targetClass ex:SELL ;
+
+    # Reference to an ADV transaction via adv_ref
+    sh:property [
+        sh:path ex:adv_ref ;  
+        sh:node ex:AdvShape ;  
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:status ;
+                sh:hasValue "Open" ;  
+            ]
+        ] ;
+        sh:qualifiedMinCount 1 ;  
+        sh:qualifiedMaxCount 1 ;  
+    ] ;
+    # SPARQL constraint to update status after SELL
+    #sh:sparql [
+    #    sh:message "The referenced ADV's status will be updated to 'Closed' after the SELL transaction is confirmed." ;
+    #    sh:select """
+    #    SELECT ?this
+    #    WHERE {
+    #        ?this ex:adv_ref ?adv .
+    #        ?adv ex:status "Open" .
+    #    }
+    #    """ ;
+    #    sh:update """
+    #    DELETE { ?adv ex:status "Open" . }
+    #    INSERT { ?adv ex:status "Closed" . }
+    #    WHERE {
+    #        ?this ex:adv_ref ?adv .
+    #        ?adv ex:status "Open" .
+    #    }
+    #    """ ;
+    #] ;
+    
+    # Reference to a BuyOffer transaction via buyOffer_ref
+    sh:property [
+       sh:path ex:buyOffer_ref ;  
+       sh:node ex:BuyOfferShape ;  
+       sh:nodeKind sh:IRI ;  
+       sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
+       sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced
+    ] .
+
+# Shape for Request_Return transactions
+ex:Request_ReturnShape a sh:NodeShape ;
+    sh:targetClass ex:REQUEST_RETURN ;
+
+    # Reference to an SELL transaction via sell_ref
+    sh:property [
+        sh:path ex:sell_ref ; 
+        #sh:node ex:SellShape ;  
+        sh:nodeKind sh:IRI ;  
+        sh:minCount 1 ;  
+        sh:maxCount 1 ;  
+    ] .
+    #sh:property [
+    #    sh:path ex:asset_ref ;
+    #    sh:nodeKind sh:IRI ;  # Ensure that ref is an IRI, not a literal
+    #    sh:class ex:asset_id ;  # ref should point to a node of type asset_id
+    #] .
+
+# Shape for Accept_return transactions
+ex:Accept_ReturnShape a sh:NodeShape ;
+    sh:targetClass ex:Accept_return ;
+
+    # Reference to an SELL transaction via sell_ref
+    sh:property [
+        sh:path ex:sell_ref ;  
+        #sh:node ex:SellShape ;  
+        
+        sh:nodeKind sh:IRI ;  
+        sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
+        sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced
+    ] .
+    
+    # Reference to a Request_Return transaction via buyOffer_ref
+    #sh:property [
+    #   sh:path ex:request_return_ref ;  
+    #   sh:node ex:Request_ReturnShape ;  
+    #   sh:nodeKind sh:IRI ;  
+    #   sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
+    #   sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced
+    #] .
+
+

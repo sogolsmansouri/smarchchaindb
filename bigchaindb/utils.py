@@ -232,6 +232,12 @@ def tendermint_version_is_compatible(running_tm_ver):
 def recover(bigchain, return_queue):
     uncompleted_txs = bigchain.get_uncompleted_accept_tx()
     uncompleted_txs = list(uncompleted_txs) if uncompleted_txs else []
+    
+    uncompleted_sell_txs = bigchain.get_uncompleted_sell_tx()
+    uncompleted_sell_txs = list(uncompleted_sell_txs) if uncompleted_sell_txs else []
+    
+    uncompleted_accept_return_txs = bigchain.get_uncompleted_accept_return_tx()
+    uncompleted_accept_return_txs = list(uncompleted_accept_return_txs) if uncompleted_accept_return_txs else []
 
     for tx in uncompleted_txs:
         return_txs = Transaction.determine_returns(
@@ -246,6 +252,40 @@ def recover(bigchain, return_queue):
                 "accept_id": tx["accept_id"],
                 "rfq_id": tx["rfq_id"],
                 "winning_bid_id": tx["winning_bid_id"],
+                "status": "commit",
+            },
+        )
+        
+    for tx in uncompleted_sell_txs:
+        buy_txs = Transaction.determine_exchanges(
+            bigchain, tx["tx_id"], tx["ref1_id"], tx["ref2_id"]
+        )
+        for buy_tx in buy_txs:
+            return_queue.put(buy_tx)
+
+        bigchain.store_sell_tx_updates(
+            tx_id=tx["tx_id"],
+            update={
+                "tx_id": tx["tx_id"],
+                "ref1_id": tx["ref1_id"],
+                "ref2_id": tx["ref2_id"],
+                "status": "commit",
+            },
+        )
+        
+    for tx in uncompleted_accept_return_txs:
+        buy_txs = Transaction.determine_exchanges(
+            bigchain, tx["tx_id"], tx["ref1_id"], tx["ref2_id"]
+        )
+        for buy_tx in buy_txs:
+            return_queue.put(buy_tx)
+
+        bigchain.store_accept_return_tx_updates(
+            tx_id=tx["tx_id"],
+            update={
+                "tx_id": tx["tx_id"],
+                "ref1_id": tx["ref1_id"],
+                "ref2_id": tx["ref2_id"],
                 "status": "commit",
             },
         )

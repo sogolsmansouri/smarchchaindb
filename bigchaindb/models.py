@@ -16,6 +16,7 @@ class Transaction(Transaction):
     DATA = "data"
 
     def validate(self, bigchain, current_transactions=[]):
+        
         """Validate transaction spend
         Args:
             bigchain (BigchainDB): an instantiated bigchaindb.BigchainDB object.
@@ -37,27 +38,39 @@ class Transaction(Transaction):
             self.operation
             in [
                 Transaction.CREATE,
-                Transaction.PRE_REQUEST,
-                Transaction.INTEREST,
+                #Transaction.PRE_REQUEST,
+                #Transaction.INTEREST,
                 Transaction.REQUEST_FOR_QUOTE,
                 Transaction.ACCEPT,
+                Transaction.ADV,
+                Transaction.UPDATE_ADV,
             ]
             and not self.inputs_valid(input_conditions, bigchain)
         ):
             raise InvalidSignature("Transaction signature is invalid.")
-
+        
         if self.operation == Transaction.TRANSFER:
             self.validate_transfer_inputs(bigchain, current_transactions)
         elif self.operation == Transaction.INTEREST:
-            self.validate_interest(bigchain, current_transactions)
+            self.validate_accept_return(bigchain, current_transactions)
         elif self.operation == Transaction.REQUEST_FOR_QUOTE:
-            self.validate_rfq(bigchain, current_transactions)
+            self.validate_update_adv(bigchain, current_transactions)
         elif self.operation == Transaction.BID:
             self.validate_bid(bigchain, current_transactions)
         elif self.operation == Transaction.ACCEPT:
-            self.validate_accept(bigchain, current_transactions)
+            self.validate_update_adv(bigchain, current_transactions)
         elif self.operation == Transaction.RETURN:
             self.validate_return(bigchain, current_transactions)
+        elif self.operation == Transaction.BUYOFFER:
+            self.validate_buy_offer(bigchain, current_transactions)
+        elif self.operation == Transaction.ADV:
+            self.validate_adv(bigchain, current_transactions)
+        elif self.operation == Transaction.SELL:
+            self.validate_sell(bigchain, current_transactions)
+        elif self.operation == Transaction.PRE_REQUEST:
+            self.validate_inverse_txn(bigchain, current_transactions)
+        elif self.operation == Transaction.ACCEPT_RETURN:
+            self.validate_accept_return(bigchain, current_transactions)
 
         return self
 

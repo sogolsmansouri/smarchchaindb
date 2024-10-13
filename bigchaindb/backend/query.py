@@ -121,6 +121,25 @@ def get_spent(connection, transaction_id, condition_id):
 
 
 @singledispatch
+def is_returned(connection, transaction_id, condition_id):
+    """Check if a `txid` was already used as an input.
+
+    A transaction can be used as an input for another transaction. Bigchain
+    needs to make sure that a given `txid` is only used once.
+
+    Args:
+        transaction_id (str): The id of the transaction.
+        condition_id (int): The index of the condition in the respective
+            transaction.
+
+    Returns:
+        The transaction that used the `txid` as an input else `None`
+    """
+
+    raise NotImplementedError
+
+
+@singledispatch
 def get_spending_transactions(connection, inputs):
     """Return transactions which spend given inputs
 
@@ -227,6 +246,16 @@ def get_txids_by_operation(connection, operation):
 
 @singledispatch
 def get_locked_bid_txids_by_rfq(connection, rfq_tx_id):
+    """Return all Bid transactions for a particular RFQ transaction id,
+    locked by the special smartchaindb account.
+
+    Args:
+        rfq_tx_id (str): ID of RFQ transaction
+    """
+    raise NotImplementedError
+
+@singledispatch
+def get_adv_txids_by_asset(connection, rfq_tx_id):
     """Return all Bid transactions for a particular RFQ transaction id,
     locked by the special smartchaindb account.
 
@@ -488,8 +517,52 @@ def store_accept_tx_updates(conn, accept_id, update):
     """Update Accept-Bid log with consensus updates for recovery purposes."""
     raise NotImplementedError
 
+@singledispatch
+def store_sell_tx_updates(conn, tx_id, update):
+    """Update Accept-Bid log with consensus updates for recovery purposes."""
+    raise NotImplementedError
+
+@singledispatch
+def store_accept_return_tx_updates(conn, tx_id, update):
+    """Update Accept-Bid log with consensus updates for recovery purposes."""
+    raise NotImplementedError
 
 @singledispatch
 def get_uncompleted_accept_tx(conn):
     """Returns not-committed accept tx information through recovery logs."""
+    raise NotImplementedError
+
+@singledispatch
+def get_uncompleted_sell_tx(conn):
+    """Returns not-committed accept tx information through recovery logs."""
+    raise NotImplementedError
+
+@singledispatch
+def get_uncompleted_accept_return_tx(conn):
+    """Returns not-committed accept tx information through recovery logs."""
+    raise NotImplementedError
+
+@singledispatch
+def is_asset_returned(connection, asset_id):
+    """Return all Bid transactions for a particular RFQ transaction id,
+    locked by the special smartchaindb account.
+
+    Args:
+        rfq_tx_id (str): ID of RFQ transaction
+    """
+    raise NotImplementedError
+
+@singledispatch
+def store_adv_status_updates(connection, adv_tx_id, update):
+    """
+    Update the status of an advertisement transaction.
+
+    Args:
+        connection: The database connection object.
+        adv_tx_id (str): The transaction ID of the advertisement.
+        update (dict): Dictionary containing the new status value.
+
+    Returns:
+        dict: Update result.
+    """
     raise NotImplementedError

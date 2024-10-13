@@ -65,6 +65,7 @@ def base_ws_uri():
 def validate_schema_definition(tx):
     # `force` will try to format the body of the POST request even if the
     # `content-type` header is not set to `application/json`
+    #logger.debug(">>>>>>>>>>> in validate_schema_definition >>>>>>>>>>>>>>>>>>>>>")
     logger.debug(tx)
     tx_obj, error = None, None
     try:

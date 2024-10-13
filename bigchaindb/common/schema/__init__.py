@@ -42,9 +42,9 @@ _, TX_SCHEMA_CHAIN_MIGRATION_ELECTION = _load_schema(
 
 _, TX_SCHEMA_VOTE = _load_schema("transaction_vote_" + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_PRE_REQUEST = _load_schema("transaction_pre_request_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_PRE_REQUEST = _load_schema("transaction_update_adv_" + TX_SCHEMA_VERSION)
 
-_, TX_SCHEMA_INTEREST = _load_schema("transaction_interest_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_INTEREST = _load_schema("transaction_accept_return_" + TX_SCHEMA_VERSION)
 
 _, TX_SCHEMA_REQUEST_FOR_QUOTE = _load_schema(
     "transaction_request_for_quote_" + TX_SCHEMA_VERSION
@@ -55,6 +55,13 @@ _, TX_SCHEMA_BID = _load_schema("transaction_bid_" + TX_SCHEMA_VERSION)
 _, TX_SCHEMA_ACCEPT = _load_schema("transaction_accept_" + TX_SCHEMA_VERSION)
 
 _, TX_SCHEMA_RETURN = _load_schema("transaction_return_" + TX_SCHEMA_VERSION)
+
+_, TX_SCHEMA_ADV = _load_schema("transaction_adv_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_BUY = _load_schema("transaction_buy_offer_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_SELL = _load_schema("transaction_sell_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_INVERSE_TXN = _load_schema("transaction_inverse_txn_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_ACCEPT_RETURN = _load_schema("transaction_accept_return_" + TX_SCHEMA_VERSION)
+_, TX_SCHEMA_UPDATE_ADV = _load_schema("transaction_update_adv_" + TX_SCHEMA_VERSION)
 
 
 def _validate_schema(schema, body):
@@ -95,16 +102,29 @@ def validate_transaction_schema(tx):
     if tx["operation"] == "TRANSFER":
         _validate_schema(TX_SCHEMA_TRANSFER, tx)
     elif tx["operation"] == "PRE_REQUEST":
-        _validate_schema(TX_SCHEMA_PRE_REQUEST, tx)
+        _validate_schema(TX_SCHEMA_INVERSE_TXN, tx)
     elif tx["operation"] == "INTEREST":
         _validate_schema(TX_SCHEMA_INTEREST, tx)
     elif tx["operation"] == "REQUEST_FOR_QUOTE":
-        _validate_schema(TX_SCHEMA_REQUEST_FOR_QUOTE, tx)
+        _validate_schema(TX_SCHEMA_UPDATE_ADV, tx)
     elif tx["operation"] == "BID":
         _validate_schema(TX_SCHEMA_BID, tx)
     elif tx["operation"] == "ACCEPT":
         _validate_schema(TX_SCHEMA_ACCEPT, tx)
+    elif tx["operation"] == "INVERSE_TXN":
+        _validate_schema(TX_SCHEMA_INVERSE_TXN, tx)
     elif tx["operation"] == "RETURN":
         _validate_schema(TX_SCHEMA_RETURN, tx)
+    elif tx["operation"] == "BUYOFFER":
+        _validate_schema(TX_SCHEMA_BUY, tx)
+    elif tx["operation"] == "ADV":
+        _validate_schema(TX_SCHEMA_ADV, tx)
+    elif tx["operation"] == "SELL":
+        _validate_schema(TX_SCHEMA_SELL, tx)
+    elif tx["operation"] == "ACCEPT_RETURN":
+        _validate_schema(TX_SCHEMA_ACCEPT_RETURN, tx)
+    elif tx["operation"] == "UPDATE_ADV":
+        _validate_schema(TX_SCHEMA_UPDATE_ADV, tx)
+        
     else:
         _validate_schema(TX_SCHEMA_CREATE, tx)

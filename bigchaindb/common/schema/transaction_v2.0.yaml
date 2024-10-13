@@ -72,6 +72,9 @@ definitions:
       - BID
       - ACCEPT
       - RETURN
+      - ADV
+      - BUYOFFER
+      - SELL
   asset:
     type: object
     additionalProperties: false

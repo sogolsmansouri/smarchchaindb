@@ -50,5 +50,6 @@ bigchaindb-abci = "==0.5.1"
 setproctitle = "~=1.1.0"
 packaging = "~=18.0"
 
+
 [requires]
-python_version = "3.7"
+python_version = "3.8"

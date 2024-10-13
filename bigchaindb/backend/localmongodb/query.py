@@ -56,6 +56,30 @@ def get_metadata(conn, transaction_ids):
 
 
 @register_query(LocalMongoDBConnection)
+def is_asset_returned(conn, asset_id):
+    """
+    Check if the asset has been returned by looking for transactions
+    of operation 'RETURN' or 'INVERSE_TXN' associated with the asset_id.
+
+    Args:
+        conn (LocalMongoDBConnection): Connection to the MongoDB database.
+        asset_id (str): The ID of the asset to check.
+
+    Returns:
+        bool: True if a return transaction exists, False otherwise.
+    """
+    query = {
+        "$and": [
+            {"operation": {"$in": ["PRE_REQUEST"]}},
+            {"asset.data.asset_id": asset_id}
+        ]
+    }
+
+    # Search for any return transactions in the transactions collection
+    return conn.run(conn.collection("transactions").count_documents(query)) > 0
+
+
+@register_query(LocalMongoDBConnection)
 def store_asset(conn, asset):
     try:
         return conn.run(conn.collection("assets").insert_one(asset))
@@ -157,6 +181,20 @@ def get_locked_bid_txids_by_rfq(conn, rfq_tx_id):
             {"operation": "BID"},
             {"asset.data.rfq_id": rfq_tx_id},
             {"outputs.public_keys": config["smartchaindb_key_pair"]["public_key"]},
+        ]
+    }
+    cursor = conn.run(conn.collection("transactions").find(query))
+
+    return (elem["id"] for elem in cursor)
+
+@register_query(LocalMongoDBConnection)
+def get_adv_txids_by_asset(conn, asset_tx_id):
+
+    query = {
+        "$and": [
+            {"operation": "ADV"},
+            {"asset.data.asset_id": asset_tx_id},
+            
         ]
     }
     cursor = conn.run(conn.collection("transactions").find(query))
@@ -451,9 +489,62 @@ def store_accept_tx_updates(conn, accept_id, update):
 
 
 @register_query(LocalMongoDBConnection)
+def store_sell_tx_updates(conn, tx_id, update):
+    return conn.run(
+        conn.collection("sell_tx_recovery").replace_one(
+            {"tx_id": tx_id},
+            update,
+            upsert=True,
+        )
+    )
+    
+@register_query(LocalMongoDBConnection)
+def store_accept_return_tx_updates(conn, tx_id, update):
+    return conn.run(
+        conn.collection("accept_return_tx_recovery").replace_one(
+            {"tx_id": tx_id},
+            update,
+            upsert=True,
+        )
+    )
+
+@register_query(LocalMongoDBConnection)
 def get_uncompleted_accept_tx(conn):
     return conn.run(
         conn.collection("accept_tx_recovery").find(
             {"status": "end_block"}
         )
+    )
+    
+@register_query(LocalMongoDBConnection)
+def get_uncompleted_sell_tx(conn):
+    return conn.run(
+        conn.collection("sell_tx_recovery").find(
+            {"status": "end_block"}
+        )
+    )
+    
+@register_query(LocalMongoDBConnection)
+def get_uncompleted_accept_return_tx(conn):
+    return conn.run(
+        conn.collection("accept_return_tx_recovery").find(
+            {"status": "end_block"}
+        )
+    )
+
+@register_query(LocalMongoDBConnection)
+def store_adv_status_updates(connection, adv_tx_id, update):
+    """
+    Update the status of an advertisement transaction.
+
+    Args:
+        connection: The database connection object.
+        adv_tx_id (str): The transaction ID of the advertisement.
+        update (dict): Dictionary containing the new status value.
+
+    Returns:
+        dict: Update result.
+    """
+    return connection.db.transactions.update_one(
+        {"id": adv_tx_id}, {"$set": update}
     )
