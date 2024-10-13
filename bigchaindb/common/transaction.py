@@ -1680,7 +1680,6 @@ class Transaction(object):
 
         adv_min_amt = adv_tx.metadata.get("minAmt")
         buy_offer_amt = self.metadata.get("minAmt")
-        print("!!!!!!",adv_min_amt,buy_offer_amt)
         # Check if minAmt exists and compare
         if adv_min_amt is None:
             raise ValidationError("ADV transaction must have a `minAmt` specified")
@@ -2069,7 +2068,7 @@ class Transaction(object):
             try:
                 if len(combined_graph) > 0:
                     combined_graph.serialize(destination=ttl_file_path, format='turtle')
-                    print("Successfully saved combined graph to output.ttl")
+                    #print("Successfully saved combined graph to output.ttl")
                 else:
                     print("Warning: combined_graph is empty, nothing will be written to output.ttl")
                 return True ,shacl_graph
