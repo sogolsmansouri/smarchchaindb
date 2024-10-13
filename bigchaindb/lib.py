@@ -523,7 +523,6 @@ class BigchainDB(object):
         #     raise ValidationError("New status must be a valid string (e.g., 'closed').")
 
         update = {"status": new_status}
-        print("!!!!!!store_adv_status_updates!1, ")
         # Store the update in the database and get the UpdateResult
         update_result = backend.query.store_adv_status_updates(self.connection, adv_tx_id, update)
 
