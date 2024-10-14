@@ -2148,25 +2148,14 @@ class Transaction(object):
             )
         
         adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
-        
-        if adv_list:
-            raise DuplicateTransaction(
-                "ADV tx with the same asset input `{}` already committed".format(
-                    adv_list
-                )
-            )
-        # for output in self.outputs:
-        #     if (
-        #         len(output.public_keys) != 1
-        #         or output.public_keys[0]
-        #         != config["smartchaindb_key_pair"]["public_key"]
-        #     ):
-        #         raise ValidationError(
-        #             "ADV transaction's outputs must point to Escrow account"
+        ## uncomment in not shacl
+        # if adv_list:
+        #     raise DuplicateTransaction(
+        #         "ADV tx with the same asset input `{}` already committed".format(
+        #             adv_list
         #         )
-
-        # return self.validate_transfer_inputs(bigchain, current_transactions)
-        #return True
+        #     )
+        #end uncomment
         json_data_adv1 = {
             "asset_id": self.asset["data"]["asset_id"],
             "transaction_id": self.id,
@@ -2197,25 +2186,7 @@ class Transaction(object):
             raise ValidationError(
                 "ADV transaction must be against a commited CREATE transaction"
             )
-        # adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
         
-        # if adv_list:
-        #     raise DuplicateTransaction(
-        #         "ADV tx with the same asset input `{}` already committed".format(
-        #             adv_list
-        #         )
-        #     )
-        # for output in self.outputs:
-        #     if (
-        #         len(output.public_keys) != 1
-        #         or output.public_keys[0]
-        #         != config["smartchaindb_key_pair"]["public_key"]
-        #     ):
-        #         raise ValidationError(
-        #             "ADV transaction's outputs must point to Escrow account"
-        #         )
-
-        # return self.validate_transfer_inputs(bigchain, current_transactions)
         return True
         json_data_adv1 = {
             "asset_id": self.asset["data"]["asset_id"],
