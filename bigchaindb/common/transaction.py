@@ -1499,7 +1499,7 @@ class Transaction(object):
 
     def validate_transfer_inputs(self, bigchain, current_transactions=[]):
         # store the inputs so that we can check if the asset ids match
-        logger.debug("injaaa 1111")
+        
         input_txs = []
         input_conditions = []
         for input_ in self.inputs:
@@ -1553,7 +1553,7 @@ class Transaction(object):
             #         )       
             #end comment
             ##This part should comment if not shacl   
-            logger.debug("Injaaaa")
+            
             json_data_transfer = {
                 "asset_ref": asset_id,
                 "transaction_id": self.id,
