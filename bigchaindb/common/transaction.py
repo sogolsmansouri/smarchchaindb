@@ -1128,9 +1128,9 @@ class Transaction(object):
             #       to check for outputs, we're just submitting dummy
             #       values to the actual method. This simplifies it's logic
             #       greatly, as we do not have to check against `None` values.
-            ##This part should not comment in case of shacl validation
-            # if(self.operation == self.CREATE):
-            #     self.generateShape()
+            ##This part should comment if not shacl validation
+            if(self.operation == self.CREATE):
+                self.generateShape()
             ##end comment area    
             return self._inputs_valid(["dummyvalue" for _ in self.inputs])
         elif self.operation in [self.TRANSFER, self.BID, self.RETURN, self.BUYOFFER, self.SELL, self.INTEREST, self.PRE_REQUEST]:
@@ -1348,7 +1348,7 @@ class Transaction(object):
         # create a set of the transactions' asset ids
         asset_ids = set()
         for tx in transactions:
-            if tx.operation in [tx.CREATE, tx.BID, tx.BUYOFFER, tx.SELL, tx.PRE_REQUEST, tx.INTEREST]: ##todo sogol
+            if tx.operation in [tx.CREATE, tx.BID, tx.BUYOFFER, tx.SELL, tx.PRE_REQUEST, tx.INTEREST, tx.ACCEPT_RETURN]: 
                 asset_id = tx.id
             else:
                 asset_id = tx.asset["id"]
@@ -1499,6 +1499,7 @@ class Transaction(object):
 
     def validate_transfer_inputs(self, bigchain, current_transactions=[]):
         # store the inputs so that we can check if the asset ids match
+        logger.debug("injaaa 1111")
         input_txs = []
         input_conditions = []
         for input_ in self.inputs:
@@ -1513,17 +1514,17 @@ class Transaction(object):
             if input_tx is None:
                 raise InputDoesNotExist("input `{}` doesn't exist".format(input_txid))
             ##This part should comment in case of shacl validation
-            if self.operation == Transaction.PRE_REQUEST:
-                # Implement is_returned logic in the bigchain instance
-                if bigchain.is_asset_returned(input_txid):
-                    raise DoubleSpend("Input transaction `{}` has already been returned".format(input_txid))
-            else:
+            # if self.operation == Transaction.PRE_REQUEST:
+            #     # Implement is_returned logic in the bigchain instance
+            #     if bigchain.is_asset_returned(input_txid):
+            #         raise DoubleSpend("Input transaction `{}` has already been returned".format(input_txid))
+            # else:
             
-                spent = bigchain.get_spent(
-                    input_txid, input_.fulfills.output, current_transactions
-                )
-                if spent:
-                    raise DoubleSpend("input `{}` was already spent".format(input_txid))
+            #     spent = bigchain.get_spent(
+            #         input_txid, input_.fulfills.output, current_transactions
+            #     )
+            #     if spent:
+            #         raise DoubleSpend("input `{}` was already spent".format(input_txid))
             ##end comment area
             output = input_tx.outputs[input_.fulfills.output]
             input_conditions.append(output)
@@ -1535,7 +1536,38 @@ class Transaction(object):
             raise DoubleSpend('tx "{}" spends inputs twice'.format(self.id))
 
         # validate asset id
+        
         asset_id = self.get_asset_id(input_txs)
+        
+        if self.operation == self.TRANSFER:
+            # comment if shacl
+            # adv_list = bigchain.get_adv_txids_for_asset(asset_id)
+            # adv_txs = []
+            # for adv_tx_id in adv_list:
+            #     adv_tx = bigchain.get_transaction(adv_tx_id)
+            #     if adv_tx.asset["data"]["status"] != "open":
+            #         raise ValidationError(
+            #             "The asset has an Open ADV, Transfer is not allowed".format(
+            #             adv_tx_id
+            #         )
+            #         )       
+            #end comment
+            ##This part should comment if not shacl   
+            logger.debug("Injaaaa")
+            json_data_transfer = {
+                "asset_ref": asset_id,
+                "transaction_id": self.id,
+                "operation": self.operation,
+                "spend": asset_id,
+            }
+            
+            
+            script_dir = os.path.dirname(__file__)
+            
+            shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+            
+            result , graph = self.validate_shape(json_data_transfer, shacl_file_path)
+            ##end   
 
         tx_asset_id = ""
         if self.operation == self.BID or self.operation == self.BUYOFFER:
@@ -1699,27 +1731,28 @@ class Transaction(object):
                 raise ValidationError(
                     "BUYOFFER transaction's outputs must point to Escrow account"
                 )
-        
+        ##This part should comment if  shacl
         # if adv_tx.asset["data"]["status"] != "open":
         #     raise ValidationError(
         #         "BUYOFFER transaction must be against an open ADV transaction"
         #     )
-        ##This part should comment
-        # json_data_buy_offer = {
-        #     "asset_ref": self.asset["data"]["id"],
-        #     "adv_ref": self.asset["data"]["adv_id"],
-        #     "transaction_id": self.id,
-        #     "operation": self.operation,
-        #     "spend": self.asset["data"]["id"],
+        ##end
+        ##This part should comment if not shacl
+        json_data_buy_offer = {
+            "asset_ref": self.asset["data"]["id"],
+            "adv_ref": self.asset["data"]["adv_id"],
+            "transaction_id": self.id,
+            "operation": self.operation,
+            "spend": self.asset["data"]["id"],
             
-        # }
+        }
 
         
-        # script_dir = os.path.dirname(__file__)
+        script_dir = os.path.dirname(__file__)
         
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        # self.validate_shape(json_data_buy_offer, shacl_file_path)
+        self.validate_shape(json_data_buy_offer, shacl_file_path)
         ##end
         
         return self.validate_transfer_inputs(bigchain, current_transactions) 
@@ -1753,23 +1786,24 @@ class Transaction(object):
         #     raise ValidationError(
         #         "SELL transaction must be against an open ADV transaction"
         #     )
-        ## end comment area
-        # json_data_sell = {
-        #     "asset_id": self.asset["data"]["asset_id"],
-        #     "adv_ref": self.asset["data"]["ref1_id"],
-        #     "buyOffer_ref": self.asset["data"]["ref2_id"],
-        #     "transaction_id": self.id,
-        #     "operation": self.operation,
-        #     "spend": self.asset["data"]["asset_id"],
-        # }
-    
+        # end comment area
+        ##This part should comment if not shacl validation  
+        json_data_sell = {
+            "asset_id": self.asset["data"]["asset_id"],
+            "adv_ref": self.asset["data"]["ref1_id"],
+            "buyOffer_ref": self.asset["data"]["ref2_id"],
+            "transaction_id": self.id,
+            "operation": self.operation,
+            "spend": self.asset["data"]["asset_id"],
+        }
         
-        # script_dir = os.path.dirname(__file__)
         
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        script_dir = os.path.dirname(__file__)
         
-        # result , graph = self.validate_shape(json_data_sell, shacl_file_path)
-          
+        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        
+        result , graph = self.validate_shape(json_data_sell, shacl_file_path)
+        ##end
         
         return self.validate_transfer_inputs(bigchain, current_transactions) 
      
@@ -1835,20 +1869,25 @@ class Transaction(object):
                     "rdf_property": "ex:operation"
                 },
                 "asset_ref": {
-                    "rdf_property": "ex:adv_ref",
-                    "base": "http://example.org/txn/",  
-                    "shape": "ex:AssetShape"  
-                },
-                "parent_ref": {
-                    "rdf_property": "ex:buyOffer_ref",
-                    "base": "http://example.org/txn/",  
-                    "shape": "ex:SellShape"  
-                },
-                "spend": {
-                "rdf_property": "ex:spend",
+                "rdf_property": "ex:asset_ref",
                 "base": "http://example.org/txn/", 
                 "shape": "ex:AssetShape"  
-                 }
+                },
+                # "asset_ref": {
+                #     "rdf_property": "ex:adv_ref",
+                #     "base": "http://example.org/txn/",  
+                #     "shape": "ex:AssetShape"  
+                # },
+                # "parent_ref": {
+                #     "rdf_property": "ex:buyOffer_ref",
+                #     "base": "http://example.org/txn/",  
+                #     "shape": "ex:SellShape"  
+                # },
+                # "spend": {
+                # "rdf_property": "ex:spend",
+                # "base": "http://example.org/txn/", 
+                # "shape": "ex:AssetShape"  
+                #  }
             }
         },
         "REQUEST_RETURN": {
@@ -2149,31 +2188,26 @@ class Transaction(object):
         
         adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
         ## uncomment in not shacl
-        if adv_list:
-            raise DuplicateTransaction(
-                "ADV tx with the same asset input `{}` already committed".format(
-                    adv_list
-                )
-            )
+        # if adv_list:
+        #     raise DuplicateTransaction(
+        #         "ADV tx with the same asset input `{}` already committed".format(
+        #             adv_list
+        #         )
+        #     )
         ##end uncomment
-        ##This part should comment
-        # json_data_adv1 = {
-        #     "asset_id": self.asset["data"]["asset_id"],
-        #     "transaction_id": self.id,
-        #     "operation": self.operation,
-        #     "status":self.metadata["status"]
+        ##This part should comment if not shacl
+        json_data_adv1 = {
+            "asset_id": self.asset["data"]["asset_id"],
+            "transaction_id": self.id,
+            "operation": self.operation,
+            "status":self.metadata["status"]
             
-        # }
+        }
 
         
-        # script_dir = os.path.dirname(__file__)
-        
-        # # SHACL shapes file path
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
-
-        ## Validate the first advertisement
-        #self.validate_shape(json_data_adv1, shacl_file_path)
+        script_dir = os.path.dirname(__file__)
+        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        self.validate_shape(json_data_adv1, shacl_file_path)
         ##end
     def validate_update_adv(self, bigchain, current_transactions=[]):
         
@@ -2474,20 +2508,20 @@ class Transaction(object):
                     "RETRUN SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment  
-        # json_data_accept_request_return = {
-        #     "asset_ref": self.asset["data"]["asset_id"],
-        #     "sell_ref": self.asset["data"]["sell_id"],
-        #     "transaction_id": self.id,
-        #     "operation": "REQUEST_RETURN", #self.operation,
-        #     "spend": self.asset["data"]["asset_id"],
-        # }
+        json_data_accept_request_return = {
+            "asset_ref": self.asset["data"]["asset_id"],
+            "sell_ref": self.asset["data"]["sell_id"],
+            "transaction_id": self.id,
+            "operation": "REQUEST_RETURN", #self.operation,
+            "spend": self.asset["data"]["asset_id"],
+        }
     
         
-        # script_dir = os.path.dirname(__file__)
+        script_dir = os.path.dirname(__file__)
         
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        # result , graph = self.validate_shape(json_data_accept_request_return, shacl_file_path)
+        result , graph = self.validate_shape(json_data_accept_request_return, shacl_file_path)
         ##end
         return self.validate_transfer_inputs(bigchain, current_transactions) 
 
@@ -2516,21 +2550,21 @@ class Transaction(object):
                     "ACCEPT RETURN transaction's outputs must point to Escrow account"
                 )
         ##This part should comment
-        # json_data_accept_return = {
-        #     "asset_id": self.asset["data"]["asset_id"],
-        #     "sell_ref": self.asset["data"]["ref1_id"],
-        #     "request_return_ref": self.asset["data"]["ref2_id"],
-        #     "transaction_id": self.id,
-        #     "operation": "ACCEPT_RETURN",#self.operation,
-        #     "spend": self.asset["data"]["asset_id"],
-        # }
+        json_data_accept_return = {
+            "asset_id": self.asset["data"]["asset_id"],
+            "sell_ref": self.asset["data"]["ref1_id"],
+            "request_return_ref": self.asset["data"]["ref2_id"],
+            "transaction_id": self.id,
+            "operation": "ACCEPT_RETURN",#self.operation,
+            "spend": self.asset["data"]["asset_id"],
+        }
     
         
-        # script_dir = os.path.dirname(__file__)
+        script_dir = os.path.dirname(__file__)
         
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        # result , graph = self.validate_shape(json_data_accept_return, shacl_file_path)
+        result , graph = self.validate_shape(json_data_accept_return, shacl_file_path)
         ##end
         return self.validate_transfer_inputs(bigchain, current_transactions) 
     
