@@ -68,6 +68,26 @@ from bigchaindb.common.utils import serialize
 from .memoize import memoize_from_dict, memoize_to_dict
 
 
+shacl_graph = None
+
+def load_shacl_graph(shacl_file_path):
+    global shacl_graph
+    if shacl_graph is None:
+        try:
+            shacl_graph = Graph()
+            shacl_graph.parse(shacl_file_path, format='turtle')
+            print(f"SHACL graph loaded from {shacl_file_path}")
+        except Exception as e:
+            print(f"Error loading SHACL file: {e}")
+    else:
+        print("SHACL graph is already loaded.")
+
+# Example usage to load SHACL graph
+script_dir = os.path.dirname(__file__)
+            
+shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+load_shacl_graph(shacl_file_path)
+
 logger = logging.getLogger(__name__)
 
 UnspentOutput = namedtuple(
@@ -1562,11 +1582,11 @@ class Transaction(object):
             }
             
             
-            script_dir = os.path.dirname(__file__)
+            # script_dir = os.path.dirname(__file__)
             
-            shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+            # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
             
-            result , graph = self.validate_shape(json_data_transfer, shacl_file_path)
+            result , graph = self.validate_shape(json_data_transfer)
             ##end   
 
         tx_asset_id = ""
@@ -1748,11 +1768,11 @@ class Transaction(object):
         }
 
         
-        script_dir = os.path.dirname(__file__)
+        # script_dir = os.path.dirname(__file__)
         
-        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        self.validate_shape(json_data_buy_offer, shacl_file_path)
+        self.validate_shape(json_data_buy_offer)
         ##end
         
         return self.validate_transfer_inputs(bigchain, current_transactions) 
@@ -1798,11 +1818,11 @@ class Transaction(object):
         }
         
         
-        script_dir = os.path.dirname(__file__)
+        # script_dir = os.path.dirname(__file__)
         
-        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        result , graph = self.validate_shape(json_data_sell, shacl_file_path)
+        result , graph = self.validate_shape(json_data_sell)
         ##end
         
         return self.validate_transfer_inputs(bigchain, current_transactions) 
@@ -2074,13 +2094,62 @@ class Transaction(object):
         g.parse(data=json.dumps(jsonld_data), format='json-ld')
         return g
 
-    def validate_shape(self,json_data, shacl_file_path):
+    # def validate_shape(self,json_data, shacl_file_path):
         
+    #     rdf_graph = self.convert_json_to_rdf(json_data)
+
+    #     ttl_file_path = os.path.join(os.path.dirname(__file__), 'output.ttl')
+        
+        
+    #     existing_graph = Graph()
+    #     if os.path.exists(ttl_file_path):
+    #         try:
+    #             existing_graph.parse(ttl_file_path, format='turtle')
+    #         except Exception as e:
+    #             print(f"Error parsing existing TTL file: {e}")
+
+    #     combined_graph = existing_graph + rdf_graph
+
+    #     shacl_graph = Graph()
+    #     try:
+    #         shacl_graph.parse(shacl_file_path, format='turtle')
+    #     except Exception as e:
+    #         print(f"Error parsing SHACL file: {e}")
+
+    #     conforms, results_graph, results_text = validate(
+    #         data_graph=combined_graph,
+    #         shacl_graph=shacl_graph,
+    #         inference=None,  # No inference
+    #         debug=True
+    #     )
+
+    #     if conforms:
+    #         try:
+    #             if len(combined_graph) > 0:
+    #                 combined_graph.serialize(destination=ttl_file_path, format='turtle')
+    #                 #print("Successfully saved combined graph to output.ttl")
+    #             else:
+    #                 print("Warning: combined_graph is empty, nothing will be written to output.ttl")
+    #             return True ,shacl_graph
+    #         except Exception as e:
+    #             print(f"Error serializing graph: {e}")
+    #     else:
+    #         results_file_path = os.path.join(os.path.dirname(ttl_file_path), 'validation_report.ttl')
+    #         results_graph.serialize(destination=results_file_path, format='turtle')
+    #         raise ValidationError("The asset has an open ADV")
+     
+     
+        
+    def validate_shape(self, json_data):
+        
+        if shacl_graph is None:
+            load_shacl_graph(shacl_file_path)
+        # Convert the incoming JSON data to RDF format
         rdf_graph = self.convert_json_to_rdf(json_data)
 
         ttl_file_path = os.path.join(os.path.dirname(__file__), 'output.ttl')
-        
-        
+
+        # Avoid reading the TTL file repeatedly, load it once if it exists
         existing_graph = Graph()
         if os.path.exists(ttl_file_path):
             try:
@@ -2090,12 +2159,14 @@ class Transaction(object):
 
         combined_graph = existing_graph + rdf_graph
 
-        shacl_graph = Graph()
-        try:
-            shacl_graph.parse(shacl_file_path, format='turtle')
-        except Exception as e:
-            print(f"Error parsing SHACL file: {e}")
+        # # Parse SHACL graph once
+        # shacl_graph = Graph()
+        # try:
+        #     shacl_graph.parse(shacl_file_path, format='turtle')
+        # except Exception as e:
+        #     print(f"Error parsing SHACL file: {e}")
 
+        # Validate the combined graph with SHACL
         conforms, results_graph, results_text = validate(
             data_graph=combined_graph,
             shacl_graph=shacl_graph,
@@ -2107,18 +2178,17 @@ class Transaction(object):
             try:
                 if len(combined_graph) > 0:
                     combined_graph.serialize(destination=ttl_file_path, format='turtle')
-                    #print("Successfully saved combined graph to output.ttl")
+                    print("Successfully saved combined graph to output.ttl")
                 else:
                     print("Warning: combined_graph is empty, nothing will be written to output.ttl")
-                return True ,shacl_graph
+                return True, shacl_graph
             except Exception as e:
                 print(f"Error serializing graph: {e}")
         else:
             results_file_path = os.path.join(os.path.dirname(ttl_file_path), 'validation_report.ttl')
             results_graph.serialize(destination=results_file_path, format='turtle')
             raise ValidationError("The asset has an open ADV")
-        
-        
+    
                    
         
     def generateShape(self):
@@ -2131,10 +2201,10 @@ class Transaction(object):
         }
 
         
-        script_dir = os.path.dirname(__file__)
+        # script_dir = os.path.dirname(__file__)
         
-        # SHACL shapes file path
-        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        # # SHACL shapes file path
+        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
         
         context = {
@@ -2205,9 +2275,9 @@ class Transaction(object):
         }
 
         
-        script_dir = os.path.dirname(__file__)
-        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        self.validate_shape(json_data_adv1, shacl_file_path)
+        # script_dir = os.path.dirname(__file__)
+        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        self.validate_shape(json_data_adv1)
         ##end
     def validate_update_adv(self, bigchain, current_transactions=[]):
         
@@ -2517,11 +2587,11 @@ class Transaction(object):
         }
     
         
-        script_dir = os.path.dirname(__file__)
+        # script_dir = os.path.dirname(__file__)
         
-        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        result , graph = self.validate_shape(json_data_accept_request_return, shacl_file_path)
+        result , graph = self.validate_shape(json_data_accept_request_return)
         ##end
         return self.validate_transfer_inputs(bigchain, current_transactions) 
 
@@ -2560,11 +2630,11 @@ class Transaction(object):
         }
     
         
-        script_dir = os.path.dirname(__file__)
+        # script_dir = os.path.dirname(__file__)
         
-        shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
+        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        result , graph = self.validate_shape(json_data_accept_return, shacl_file_path)
+        result , graph = self.validate_shape(json_data_accept_return)
         ##end
         return self.validate_transfer_inputs(bigchain, current_transactions) 
     
