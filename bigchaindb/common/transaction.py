@@ -30,6 +30,10 @@ from rdflib import plugin
 from rdflib.serializer import Serializer
 
 
+
+
+import json
+
 #from SPARQLWrapper import SPARQLWrapper
 ####
 import base58
@@ -68,25 +72,6 @@ from bigchaindb.common.utils import serialize
 from .memoize import memoize_from_dict, memoize_to_dict
 
 
-shacl_graph = None
-
-def load_shacl_graph(shacl_file_path):
-    global shacl_graph
-    if shacl_graph is None:
-        try:
-            shacl_graph = Graph()
-            shacl_graph.parse(shacl_file_path, format='turtle')
-            print(f"SHACL graph loaded from {shacl_file_path}")
-        except Exception as e:
-            print(f"Error loading SHACL file: {e}")
-    else:
-        print("SHACL graph is already loaded.")
-
-# Example usage to load SHACL graph
-script_dir = os.path.dirname(__file__)
-            
-shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-load_shacl_graph(shacl_file_path)
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +88,270 @@ UnspentOutput = namedtuple(
     ),
 )
 
+
+
+
+
+transaction_config = {
+        "BUYOFFER": {
+            "properties": {
+            "transaction_id": {
+                "rdf_property": "ex:transaction_id"
+            },
+            "operation": {
+                "rdf_property": "ex:operation"
+            },
+            "adv_ref": {
+                "rdf_property": "ex:adv_ref",
+                "base": "http://example.org/txn/",
+                "shape": "ex:AdvShape"
+            },
+            "asset_ref": {
+                "rdf_property": "ex:asset_ref",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+            },
+            "spend": {
+                "rdf_property": "ex:spend",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+            }
+            }
+        },
+        "SELL": {
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "adv_ref": {
+                    "rdf_property": "ex:adv_ref",
+                    "base": "http://example.org/txn/",  
+                    "shape": "ex:AdvShape"  
+                },
+                "buyOffer_ref": {
+                    "rdf_property": "ex:buyOffer_ref",
+                    "base": "http://example.org/txn/",  
+                    "shape": "ex:BuyOfferShape"  
+                },
+                "spend": {
+                "rdf_property": "ex:spend",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+                 }
+            }
+        },
+        "TRANSFER": {
+        
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "asset_ref": {
+                "rdf_property": "ex:asset_ref",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+                },
+                # "asset_ref": {
+                #     "rdf_property": "ex:adv_ref",
+                #     "base": "http://example.org/txn/",  
+                #     "shape": "ex:AssetShape"  
+                # },
+                # "parent_ref": {
+                #     "rdf_property": "ex:buyOffer_ref",
+                #     "base": "http://example.org/txn/",  
+                #     "shape": "ex:SellShape"  
+                # },
+                # "spend": {
+                # "rdf_property": "ex:spend",
+                # "base": "http://example.org/txn/", 
+                # "shape": "ex:AssetShape"  
+                #  }
+            }
+        },
+        "REQUEST_RETURN": {
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "sell_ref": {
+                    "rdf_property": "ex:sell_ref",
+                    "base": "http://example.org/txn/",
+                    #"shape": "ex:SellShape"
+                },
+                # "asset_ref": {
+                #     "rdf_property": "ex:asset_ref",
+                #     "base": "http://example.org/txn/", 
+                #     #"shape": "ex:AssetShape"  
+                # }
+                # "spend": {
+                #     "rdf_property": "ex:spend",
+                #     "base": "http://example.org/txn/", 
+                #     "shape": "ex:AssetShape"  
+                # }
+            }
+         },
+        "ACCEPT_RETURN": {
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "sell_ref": {
+                    "rdf_property": "ex:adv_ref",
+                    "base": "http://example.org/txn/",  
+                    #"shape": "ex:SellShape"  
+                },
+                # "request_return_ref": {
+                #     "rdf_property": "ex:request_return_ref",
+                #     "base": "http://example.org/txn/",  
+                #     "shape": "ex:Request_ReturnShape"  
+                # },
+                # "spend": {
+                # "rdf_property": "ex:spend",
+                # "base": "http://example.org/txn/", 
+                # #"shape": "ex:AssetShape"  
+                #  }
+            }
+        }
+        
+    }
+
+
+class SHACLValidator:
+    def __init__(self):
+        self.shacl_graph = None  # Cached SHACL graph
+        self.existing_graph = Graph()  # Cached existing graph
+        self.ttl_file_path = os.path.join(os.path.dirname(__file__), 'output.ttl')  # TTL file path
+        self.existing_graph_loaded = False  # Flag to track if existing graph is loaded
+
+    def load_shacl_graph(self, shacl_file_path):
+        if self.shacl_graph is None:
+            try:
+                self.shacl_graph = Graph()
+                self.shacl_graph.parse(shacl_file_path, format='turtle')
+                print(f"SHACL graph loaded from {shacl_file_path}")
+            except Exception as e:
+                print(f"Error loading SHACL file: {e}")
+        else:
+            print("SHACL graph is already loaded.")
+
+    def load_existing_graph(self):
+        if not self.existing_graph_loaded and os.path.exists(self.ttl_file_path):
+            try:
+                self.existing_graph.parse(self.ttl_file_path, format='turtle')
+                self.existing_graph_loaded = True
+                print("Existing TTL graph loaded successfully.")
+            except Exception as e:
+                print(f"Error loading existing TTL file: {e}")
+    
+    def update_existing_graph(self, new_graph):
+        self.existing_graph += new_graph
+        try:
+            self.existing_graph.serialize(destination=self.ttl_file_path, format='turtle')
+            print(f"Existing TTL graph updated successfully at {self.ttl_file_path}")
+        except Exception as e:
+            print(f"Error updating TTL file: {e}")
+
+# Global instance of SHACLValidator
+shacl_validator = SHACLValidator()
+
+def initialize_graphs(shacl_file_path):
+    # Load SHACL and existing graphs once at the start
+    shacl_validator.load_shacl_graph(shacl_file_path)
+    shacl_validator.load_existing_graph()
+
+def process_property(prop, details, json_data, jsonld_data):
+    if prop in json_data:
+        value = json_data[prop]
+        if "base" in details:
+            jsonld_data[details["rdf_property"]] = {
+                "@id": details["base"] + value
+            }
+        else:
+            jsonld_data[details["rdf_property"]] = value
+
+def convert_json_to_rdf(json_data, transaction_config):
+    context = {
+        "@context": {
+            "ex": "http://example.org/",
+            "schema": "http://schema.org/"
+        }
+    }
+
+    jsonld_data = {
+        "@context": context["@context"],
+        "@id": "http://example.org/txn/" + json_data["transaction_id"],
+        "@type": "ex:" + json_data["operation"]
+    }
+
+    if json_data["operation"] == "ADV":
+        jsonld_data["status"] = "Open"
+        jsonld_data["ref"] = "http://example.org/txn/" + json_data["asset_id"]
+    else:
+        transaction_type = json_data["operation"]
+        config = transaction_config.get(transaction_type)
+
+        if not config:
+            raise ValueError(f"Unsupported transaction type: {transaction_type}")
+
+        for prop, details in config["properties"].items():
+            process_property(prop, details, json_data, jsonld_data)
+
+    g = Graph()
+    g.parse(data=json.dumps(jsonld_data), format='json-ld')
+    return g
+
+def validate_shape(json_data):
+    # Ensure SHACL and existing graphs are loaded
+    if shacl_validator.shacl_graph is None or not shacl_validator.existing_graph_loaded:
+        raise Exception("SHACL or existing graph not loaded properly. Call initialize_graphs first.")
+    
+    # Convert the incoming JSON data to RDF format
+    rdf_graph = convert_json_to_rdf(json_data, transaction_config)
+    
+    # Combine the existing graph and the new RDF graph
+    combined_graph = shacl_validator.existing_graph + rdf_graph
+    
+    # Validate the combined graph with SHACL
+    conforms, results_graph, results_text = validate(
+        data_graph=combined_graph,
+        shacl_graph=shacl_validator.shacl_graph,
+        inference=None,  # No inference
+        debug=True
+    )
+
+    if conforms:
+        try:
+            # Only serialize if the graph is modified and not empty
+            if len(combined_graph) > 0:
+                shacl_validator.update_existing_graph(rdf_graph)  # Update the existing graph
+                print("Successfully saved combined graph to output.ttl")
+            else:
+                print("Warning: combined_graph is empty, nothing will be written to output.ttl")
+            return True, shacl_validator.shacl_graph
+        except Exception as e:
+            print(f"Error serializing graph: {e}")
+    else:
+        # Serialize validation results in case of failure
+        results_file_path = os.path.join(os.path.dirname(shacl_validator.ttl_file_path), 'validation_report.ttl')
+        results_graph.serialize(destination=results_file_path, format='turtle')
+        raise ValidationError("The asset has an open ADV")
+
+shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
+
+# Initialize SHACL and existing graphs once at the start
+initialize_graphs(shacl_file_path)
 
 class Input(object):
     """A Input is used to spend assets locked by an Output.
@@ -1828,141 +2077,7 @@ class Transaction(object):
         return self.validate_transfer_inputs(bigchain, current_transactions) 
      
      
-    transaction_config = {
-        "BUYOFFER": {
-            "properties": {
-            "transaction_id": {
-                "rdf_property": "ex:transaction_id"
-            },
-            "operation": {
-                "rdf_property": "ex:operation"
-            },
-            "adv_ref": {
-                "rdf_property": "ex:adv_ref",
-                "base": "http://example.org/txn/",
-                "shape": "ex:AdvShape"
-            },
-            "asset_ref": {
-                "rdf_property": "ex:asset_ref",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"  
-            },
-            "spend": {
-                "rdf_property": "ex:spend",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"  
-            }
-            }
-        },
-        "SELL": {
-            "properties": {
-                "transaction_id": {
-                    "rdf_property": "ex:transaction_id"
-                },
-                "operation": {
-                    "rdf_property": "ex:operation"
-                },
-                "adv_ref": {
-                    "rdf_property": "ex:adv_ref",
-                    "base": "http://example.org/txn/",  
-                    "shape": "ex:AdvShape"  
-                },
-                "buyOffer_ref": {
-                    "rdf_property": "ex:buyOffer_ref",
-                    "base": "http://example.org/txn/",  
-                    "shape": "ex:BuyOfferShape"  
-                },
-                "spend": {
-                "rdf_property": "ex:spend",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"  
-                 }
-            }
-        },
-        "TRANSFER": {
-        
-            "properties": {
-                "transaction_id": {
-                    "rdf_property": "ex:transaction_id"
-                },
-                "operation": {
-                    "rdf_property": "ex:operation"
-                },
-                "asset_ref": {
-                "rdf_property": "ex:asset_ref",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"  
-                },
-                # "asset_ref": {
-                #     "rdf_property": "ex:adv_ref",
-                #     "base": "http://example.org/txn/",  
-                #     "shape": "ex:AssetShape"  
-                # },
-                # "parent_ref": {
-                #     "rdf_property": "ex:buyOffer_ref",
-                #     "base": "http://example.org/txn/",  
-                #     "shape": "ex:SellShape"  
-                # },
-                # "spend": {
-                # "rdf_property": "ex:spend",
-                # "base": "http://example.org/txn/", 
-                # "shape": "ex:AssetShape"  
-                #  }
-            }
-        },
-        "REQUEST_RETURN": {
-            "properties": {
-                "transaction_id": {
-                    "rdf_property": "ex:transaction_id"
-                },
-                "operation": {
-                    "rdf_property": "ex:operation"
-                },
-                "sell_ref": {
-                    "rdf_property": "ex:sell_ref",
-                    "base": "http://example.org/txn/",
-                    #"shape": "ex:SellShape"
-                },
-                # "asset_ref": {
-                #     "rdf_property": "ex:asset_ref",
-                #     "base": "http://example.org/txn/", 
-                #     #"shape": "ex:AssetShape"  
-                # }
-                # "spend": {
-                #     "rdf_property": "ex:spend",
-                #     "base": "http://example.org/txn/", 
-                #     "shape": "ex:AssetShape"  
-                # }
-            }
-         },
-        "ACCEPT_RETURN": {
-            "properties": {
-                "transaction_id": {
-                    "rdf_property": "ex:transaction_id"
-                },
-                "operation": {
-                    "rdf_property": "ex:operation"
-                },
-                "sell_ref": {
-                    "rdf_property": "ex:adv_ref",
-                    "base": "http://example.org/txn/",  
-                    #"shape": "ex:SellShape"  
-                },
-                # "request_return_ref": {
-                #     "rdf_property": "ex:request_return_ref",
-                #     "base": "http://example.org/txn/",  
-                #     "shape": "ex:Request_ReturnShape"  
-                # },
-                # "spend": {
-                # "rdf_property": "ex:spend",
-                # "base": "http://example.org/txn/", 
-                # #"shape": "ex:AssetShape"  
-                #  }
-            }
-        }
-        
-    }
-
+    
     
     @classmethod
     def handle_sell_transaction(cls,sell_data):
@@ -2026,73 +2141,76 @@ class Transaction(object):
             return False
 
     
+    
  
-    def convert_json_to_rdf(self,json_data):
-        if json_data["operation"] ==  "ADV":
+    # def convert_json_to_rdf(self,json_data):
+    #     if json_data["operation"] ==  "ADV":
             
-            context = {
-                "@context": {
-                    "ex": "http://example.org/",
-                    "schema": "http://schema.org/",
-                    "transaction_id": "ex:transaction_id",
-                    "operation": "ex:operation",
-                    "status": "ex:status",
-                    "ref": {
-                        "@id": "ex:ref",
-                        "@type": "@id"  # Ensure this is treated as a URI
-                    }
-                }
-            }
+    #         context = {
+    #             "@context": {
+    #                 "ex": "http://example.org/",
+    #                 "schema": "http://schema.org/",
+    #                 "transaction_id": "ex:transaction_id",
+    #                 "operation": "ex:operation",
+    #                 "status": "ex:status",
+    #                 "ref": {
+    #                     "@id": "ex:ref",
+    #                     "@type": "@id"  # Ensure this is treated as a URI
+    #                 }
+    #             }
+    #         }
 
-            jsonld_data = {
-                "@context": context["@context"],  # Reuse the existing context variable
-                "@id": "http://example.org/txn/" + json_data["transaction_id"],
-                "@type": "ex:" + json_data["operation"],
-                "ref": "http://example.org/txn/" + json_data["asset_id"],  # Now ref is a URI
-                "status": "Open"  # Literal value without prefix
-            }
-        else:
-            # Context definition
-            context = {
-                "@context": {
-                    "ex": "http://example.org/",
-                    "schema": "http://schema.org/"
-                }
-            }
+    #         jsonld_data = {
+    #             "@context": context["@context"],  # Reuse the existing context variable
+    #             "@id": "http://example.org/txn/" + json_data["transaction_id"],
+    #             "@type": "ex:" + json_data["operation"],
+    #             "ref": "http://example.org/txn/" + json_data["asset_id"],  # Now ref is a URI
+    #             "status": "Open"  # Literal value without prefix
+    #         }
+    #     else:
+    #         # Context definition
+    #         context = {
+    #             "@context": {
+    #                 "ex": "http://example.org/",
+    #                 "schema": "http://schema.org/"
+    #             }
+    #         }
 
-            # Assume json_data contains the incoming transaction data
-            transaction_type = json_data.get("operation")
-            config = self.transaction_config.get(transaction_type)
+    #         # Assume json_data contains the incoming transaction data
+    #         transaction_type = json_data.get("operation")
+    #         config = self.transaction_config.get(transaction_type)
 
-            if not config:
-                raise ValueError(f"Unsupported transaction type: {transaction_type}")
+    #         if not config:
+    #             raise ValueError(f"Unsupported transaction type: {transaction_type}")
 
-            # Generate the JSON-LD structure dynamically based on the configuration
-            jsonld_data = {
-                "@context": context["@context"],
-                "@id": "http://example.org/txn/" + json_data["transaction_id"],
-                "@type": "ex:" + transaction_type
-            }
+    #         # Generate the JSON-LD structure dynamically based on the configuration
+    #         jsonld_data = {
+    #             "@context": context["@context"],
+    #             "@id": "http://example.org/txn/" + json_data["transaction_id"],
+    #             "@type": "ex:" + transaction_type
+    #         }
 
-            
-            # Dynamically assign properties based on the config
-            for prop, details in config["properties"].items():
-                if prop in json_data:
-                    value = json_data[prop]
+    #         for prop, details in config["properties"].items():
+    #             self.process_property(prop, details, json_data, jsonld_data)
+
+    #         # Dynamically assign properties based on the config
+    #         # for prop, details in config["properties"].items():
+    #         #     if prop in json_data:
+    #         #         value = json_data[prop]
                     
-                    # Check if the property has a base URL for URI creation
-                    if "base" in details:
-                        # Handle URI-based values like adv_ref and asset_ref
-                        jsonld_data[details["rdf_property"]] = {
-                            "@id": details["base"] + value  # Create the URI based on the base for both adv_ref and asset_ref
-                        }
-                    else:
-                        # Handle literal values like transaction_id and operation
-                        jsonld_data[details["rdf_property"]] = value          
+    #         #         # Check if the property has a base URL for URI creation
+    #         #         if "base" in details:
+    #         #             # Handle URI-based values like adv_ref and asset_ref
+    #         #             jsonld_data[details["rdf_property"]] = {
+    #         #                 "@id": details["base"] + value  # Create the URI based on the base for both adv_ref and asset_ref
+    #         #             }
+    #         #         else:
+    #         #             # Handle literal values like transaction_id and operation
+    #         #             jsonld_data[details["rdf_property"]] = value          
             
-        g = Graph()
-        g.parse(data=json.dumps(jsonld_data), format='json-ld')
-        return g
+    #     g = Graph()
+    #     g.parse(data=json.dumps(jsonld_data), format='json-ld')
+    #     return g
 
     # def validate_shape(self,json_data, shacl_file_path):
         
@@ -2140,55 +2258,42 @@ class Transaction(object):
      
      
         
-    def validate_shape(self, json_data):
+    # def validate_shape(json_data):
+    #     # Ensure SHACL and existing graphs are loaded once
+    #     if shacl_validator.shacl_graph is None or len(shacl_validator.existing_graph) == 0:
+    #         raise Exception("SHACL or existing graph not loaded properly. Call initialize_graphs first.")
         
-        if shacl_graph is None:
-            load_shacl_graph(shacl_file_path)
-        # Convert the incoming JSON data to RDF format
-        rdf_graph = self.convert_json_to_rdf(json_data)
+    #     # Convert the incoming JSON data to RDF format
+    #     rdf_graph = self.convert_json_to_rdf(json_data)  # Assuming this function exists for conversion
+        
+    #     # Combine the existing graph and the new RDF graph
+    #     combined_graph = shacl_validator.existing_graph + rdf_graph
+        
+    #     # Validate the combined graph with SHACL
+    #     conforms, results_graph, results_text = validate(
+    #         data_graph=combined_graph,
+    #         shacl_graph=shacl_validator.shacl_graph,
+    #         inference=None,  # No inference
+    #         debug=True
+    #     )
 
-        ttl_file_path = os.path.join(os.path.dirname(__file__), 'output.ttl')
-
-        # Avoid reading the TTL file repeatedly, load it once if it exists
-        existing_graph = Graph()
-        if os.path.exists(ttl_file_path):
-            try:
-                existing_graph.parse(ttl_file_path, format='turtle')
-            except Exception as e:
-                print(f"Error parsing existing TTL file: {e}")
-
-        combined_graph = existing_graph + rdf_graph
-
-        # # Parse SHACL graph once
-        # shacl_graph = Graph()
-        # try:
-        #     shacl_graph.parse(shacl_file_path, format='turtle')
-        # except Exception as e:
-        #     print(f"Error parsing SHACL file: {e}")
-
-        # Validate the combined graph with SHACL
-        conforms, results_graph, results_text = validate(
-            data_graph=combined_graph,
-            shacl_graph=shacl_graph,
-            inference=None,  # No inference
-            debug=True
-        )
-
-        if conforms:
-            try:
-                if len(combined_graph) > 0:
-                    combined_graph.serialize(destination=ttl_file_path, format='turtle')
-                    print("Successfully saved combined graph to output.ttl")
-                else:
-                    print("Warning: combined_graph is empty, nothing will be written to output.ttl")
-                return True, shacl_graph
-            except Exception as e:
-                print(f"Error serializing graph: {e}")
-        else:
-            results_file_path = os.path.join(os.path.dirname(ttl_file_path), 'validation_report.ttl')
-            results_graph.serialize(destination=results_file_path, format='turtle')
-            raise ValidationError("The asset has an open ADV")
-    
+    #     if conforms:
+    #         try:
+    #             # Only serialize if the graph is modified and not empty
+    #             if len(combined_graph) > 0:
+    #                 shacl_validator.update_existing_graph(rdf_graph)  # Update the existing graph
+    #                 print("Successfully saved combined graph to output.ttl")
+    #             else:
+    #                 print("Warning: combined_graph is empty, nothing will be written to output.ttl")
+    #             return True, shacl_validator.shacl_graph
+    #         except Exception as e:
+    #             print(f"Error serializing graph: {e}")
+    #     else:
+    #         # Serialize validation results in case of failure
+    #         results_file_path = os.path.join(os.path.dirname(shacl_validator.ttl_file_path), 'validation_report.ttl')
+    #         results_graph.serialize(destination=results_file_path, format='turtle')
+    #         raise ValidationError("The asset has an open ADV")
+        
                    
         
     def generateShape(self):
