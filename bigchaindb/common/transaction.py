@@ -119,58 +119,10 @@ BASE_PROPERTIES = {
 }
 
 # Transaction types configuration, with common properties extracted
-transaction_config = {
-    "BUYOFFER": {
-        "properties": {
-            **BASE_PROPERTIES,
-            "adv_ref": {
-                "rdf_property": "ex:adv_ref",
-                "base": "http://example.org/txn/",
-                "shape": "ex:AdvShape"
-            },
-            "asset_ref": {
-                "rdf_property": "ex:asset_ref",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"
-            },
-            "spend": {
-                "rdf_property": "ex:spend",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"
-            }
-        }
-    },
-    "SELL": {
-        "properties": {
-            **BASE_PROPERTIES,
-            "adv_ref": {
-                "rdf_property": "ex:adv_ref",
-                "base": "http://example.org/txn/",
-                "shape": "ex:AdvShape"
-            },
-            "buyOffer_ref": {
-                "rdf_property": "ex:buyOffer_ref",
-                "base": "http://example.org/txn/",
-                "shape": "ex:BuyOfferShape"
-            },
-            "spend": {
-                "rdf_property": "ex:spend",
-                "base": "http://example.org/txn/", 
-                "shape": "ex:AssetShape"
-            }
-        }
-    },
-    # Add more transaction types here as needed
-}
 # transaction_config = {
-#         "BUYOFFER": {
-#             "properties": {
-#             "transaction_id": {
-#                 "rdf_property": "ex:transaction_id"
-#             },
-#             "operation": {
-#                 "rdf_property": "ex:operation"
-#             },
+#     "BUYOFFER": {
+#         "properties": {
+#             **BASE_PROPERTIES,
 #             "adv_ref": {
 #                 "rdf_property": "ex:adv_ref",
 #                 "base": "http://example.org/txn/",
@@ -179,118 +131,166 @@ transaction_config = {
 #             "asset_ref": {
 #                 "rdf_property": "ex:asset_ref",
 #                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
+#                 "shape": "ex:AssetShape"
 #             },
 #             "spend": {
 #                 "rdf_property": "ex:spend",
 #                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#             }
-#             }
-#         },
-#         "SELL": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "adv_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:AdvShape"  
-#                 },
-#                 "buyOffer_ref": {
-#                     "rdf_property": "ex:buyOffer_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:BuyOfferShape"  
-#                 },
-#                 "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#                  }
-#             }
-#         },
-#         "TRANSFER": {
-        
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "asset_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:AssetShape"  
-#                 },
-#                 "parent_ref": {
-#                     "rdf_property": "ex:buyOffer_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:SellShape"  
-#                 },
-#                 "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#                  }
-#             }
-#         },
-#         "REQUEST_RETURN": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "sell_ref": {
-#                     "rdf_property": "ex:sell_ref",
-#                     "base": "http://example.org/txn/",
-#                     #"shape": "ex:SellShape"
-#                 },
-#                 # "asset_ref": {
-#                 #     "rdf_property": "ex:asset_ref",
-#                 #     "base": "http://example.org/txn/", 
-#                 #     #"shape": "ex:AssetShape"  
-#                 # }
-#                 # "spend": {
-#                 #     "rdf_property": "ex:spend",
-#                 #     "base": "http://example.org/txn/", 
-#                 #     "shape": "ex:AssetShape"  
-#                 # }
-#             }
-#          },
-#         "ACCEPT_RETURN": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "sell_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     #"shape": "ex:SellShape"  
-#                 },
-#                 # "request_return_ref": {
-#                 #     "rdf_property": "ex:request_return_ref",
-#                 #     "base": "http://example.org/txn/",  
-#                 #     "shape": "ex:Request_ReturnShape"  
-#                 # },
-#                 # "spend": {
-#                 # "rdf_property": "ex:spend",
-#                 # "base": "http://example.org/txn/", 
-#                 # #"shape": "ex:AssetShape"  
-#                 #  }
+#                 "shape": "ex:AssetShape"
 #             }
 #         }
-        
+#     },
+#     "SELL": {
+#         "properties": {
+#             **BASE_PROPERTIES,
+#             "adv_ref": {
+#                 "rdf_property": "ex:adv_ref",
+#                 "base": "http://example.org/txn/",
+#                 "shape": "ex:AdvShape"
+#             },
+#             "buyOffer_ref": {
+#                 "rdf_property": "ex:buyOffer_ref",
+#                 "base": "http://example.org/txn/",
+#                 "shape": "ex:BuyOfferShape"
+#             },
+#             "spend": {
+#                 "rdf_property": "ex:spend",
+#                 "base": "http://example.org/txn/", 
+#                 "shape": "ex:AssetShape"
+#             }
+#         }
+#     },
+#     # Add more transaction types here as needed
 # }
+transaction_config = {
+        "BUYOFFER": {
+            "properties": {
+            "transaction_id": {
+                "rdf_property": "ex:transaction_id"
+            },
+            "operation": {
+                "rdf_property": "ex:operation"
+            },
+            "adv_ref": {
+                "rdf_property": "ex:adv_ref",
+                "base": "http://example.org/txn/",
+                "shape": "ex:AdvShape"
+            },
+            "asset_ref": {
+                "rdf_property": "ex:asset_ref",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+            },
+            "spend": {
+                "rdf_property": "ex:spend",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+            }
+            }
+        },
+        "SELL": {
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "adv_ref": {
+                    "rdf_property": "ex:adv_ref",
+                    "base": "http://example.org/txn/",  
+                    "shape": "ex:AdvShape"  
+                },
+                "buyOffer_ref": {
+                    "rdf_property": "ex:buyOffer_ref",
+                    "base": "http://example.org/txn/",  
+                    "shape": "ex:BuyOfferShape"  
+                },
+                "spend": {
+                "rdf_property": "ex:spend",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+                 }
+            }
+        },
+        "TRANSFER": {
+        
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "asset_ref": {
+                    "rdf_property": "ex:adv_ref",
+                    "base": "http://example.org/txn/",  
+                    "shape": "ex:AssetShape"  
+                },
+                "parent_ref": {
+                    "rdf_property": "ex:buyOffer_ref",
+                    "base": "http://example.org/txn/",  
+                    "shape": "ex:SellShape"  
+                },
+                "spend": {
+                "rdf_property": "ex:spend",
+                "base": "http://example.org/txn/", 
+                "shape": "ex:AssetShape"  
+                 }
+            }
+        },
+        "REQUEST_RETURN": {
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "sell_ref": {
+                    "rdf_property": "ex:sell_ref",
+                    "base": "http://example.org/txn/",
+                    #"shape": "ex:SellShape"
+                },
+                # "asset_ref": {
+                #     "rdf_property": "ex:asset_ref",
+                #     "base": "http://example.org/txn/", 
+                #     #"shape": "ex:AssetShape"  
+                # }
+                # "spend": {
+                #     "rdf_property": "ex:spend",
+                #     "base": "http://example.org/txn/", 
+                #     "shape": "ex:AssetShape"  
+                # }
+            }
+         },
+        "ACCEPT_RETURN": {
+            "properties": {
+                "transaction_id": {
+                    "rdf_property": "ex:transaction_id"
+                },
+                "operation": {
+                    "rdf_property": "ex:operation"
+                },
+                "sell_ref": {
+                    "rdf_property": "ex:adv_ref",
+                    "base": "http://example.org/txn/",  
+                    #"shape": "ex:SellShape"  
+                },
+                # "request_return_ref": {
+                #     "rdf_property": "ex:request_return_ref",
+                #     "base": "http://example.org/txn/",  
+                #     "shape": "ex:Request_ReturnShape"  
+                # },
+                # "spend": {
+                # "rdf_property": "ex:spend",
+                # "base": "http://example.org/txn/", 
+                # #"shape": "ex:AssetShape"  
+                #  }
+            }
+        }
+        
+}
 
 # RDF Conversion Cache
 class RDFConverter:
@@ -315,89 +315,6 @@ class RDFConverter:
 
     def convert_json_to_rdf(self, json_data, transaction_config):
         """Convert JSON data to RDF graph with caching."""
-        # start_time = time.time()
-
-        # # Check if the result is already cached based on the JSON data
-        # cache_key = json.dumps(json_data, sort_keys=True)
-        # if cache_key in self.rdf_cache:
-        #     logging.info("Cache hit: Returning cached RDF graph.")
-        #     return self.rdf_cache[cache_key]
-        # if json_data["operation"] ==  "ADV":
-            
-        #     context = {
-        #         "@context": {
-        #             "ex": "http://example.org/",
-        #             "schema": "http://schema.org/",
-        #             "transaction_id": "ex:transaction_id",
-        #             "operation": "ex:operation",
-        #             "status": "ex:status",
-        #             "ref": {
-        #                 "@id": "ex:ref",
-        #                 "@type": "@id"  # Ensure this is treated as a URI
-        #             }
-        #         }
-        #     }
-
-        #     jsonld_data = {
-        #         "@context": context["@context"],  # Reuse the existing context variable
-        #         "@id": "http://example.org/txn/" + json_data["transaction_id"],
-        #         "@type": "ex:" + json_data["operation"],
-        #         "ref": "http://example.org/txn/" + json_data["asset_id"],  # Now ref is a URI
-        #         "status": "Open"  # Literal value without prefix
-        #     }
-        # else:
-        #     # Context definition
-        #     context = {
-        #         "@context": {
-        #             "ex": "http://example.org/",
-        #             "schema": "http://schema.org/"
-        #         }
-        #     }
-
-        #     # Assume json_data contains the incoming transaction data
-        #     transaction_type = json_data.get("operation")
-        #     config = self.transaction_config.get(transaction_type)
-
-        #     if not config:
-        #         raise ValueError(f"Unsupported transaction type: {transaction_type}")
-
-        #     # Generate the JSON-LD structure dynamically based on the configuration
-        #     jsonld_data = {
-        #         "@context": context["@context"],
-        #         "@id": "http://example.org/txn/" + json_data["transaction_id"],
-        #         "@type": "ex:" + transaction_type
-        #     }
-
-        #     # for prop, details in config["properties"].items():
-        #     #     self.process_property(prop, details, json_data, jsonld_data)
-
-        #     # Dynamically assign properties based on the config
-        #     for prop, details in config["properties"].items():
-        #         if prop in json_data:
-        #             value = json_data[prop]
-                    
-        #             # Check if the property has a base URL for URI creation
-        #             if "base" in details:
-        #                 # Handle URI-based values like adv_ref and asset_ref
-        #                 jsonld_data[details["rdf_property"]] = {
-        #                     "@id": details["base"] + value  # Create the URI based on the base for both adv_ref and asset_ref
-        #                 }
-        #             else:
-        #                 # Handle literal values like transaction_id and operation
-        #                 jsonld_data[details["rdf_property"]] = value          
-            
-        # # Create RDF graph from the JSON-LD data
-        # g = Graph()
-        # g.parse(data=json.dumps(jsonld_data), format='json-ld')
-
-        # # Cache the RDF graph for future use
-        # self.rdf_cache[cache_key] = g
-
-        # end_time = time.time()
-        # logging.info(f"Time taken to convert JSON to RDF: {end_time - start_time} seconds")
-        # return g
-
-
         start_time = time.time()
 
         # Check if the result is already cached based on the JSON data
@@ -405,29 +322,70 @@ class RDFConverter:
         if cache_key in self.rdf_cache:
             logging.info("Cache hit: Returning cached RDF graph.")
             return self.rdf_cache[cache_key]
+        if json_data["operation"] ==  "ADV":
+            
+            context = {
+                "@context": {
+                    "ex": "http://example.org/",
+                    "schema": "http://schema.org/",
+                    "transaction_id": "ex:transaction_id",
+                    "operation": "ex:operation",
+                    "status": "ex:status",
+                    "ref": {
+                        "@id": "ex:ref",
+                        "@type": "@id"  # Ensure this is treated as a URI
+                    }
+                }
+            }
 
-        context = self.get_static_context()["@context"]
-
-        jsonld_data = {
-            "@context": context,
-            "@id": "http://example.org/txn/" + json_data["transaction_id"],
-            "@type": "ex:" + json_data["operation"]
-        }
-
-        # Handle ADV operation specifically
-        if json_data["operation"] == "ADV":
-            jsonld_data["status"] = Literal("Open")
-            jsonld_data["ref"] = "http://example.org/txn/" + json_data["asset_id"]
+            jsonld_data = {
+                "@context": context["@context"],  # Reuse the existing context variable
+                "@id": "http://example.org/txn/" + json_data["transaction_id"],
+                "@type": "ex:" + json_data["operation"],
+                "ref": "http://example.org/txn/" + json_data["asset_id"],  # Now ref is a URI
+                "status": "Open"  # Literal value without prefix
+            }
         else:
-            transaction_type = json_data["operation"]
-            config = transaction_config.get(transaction_type)
+            # Context definition
+            context = {
+                "@context": {
+                    "ex": "http://example.org/",
+                    "schema": "http://schema.org/"
+                }
+            }
+
+            # Assume json_data contains the incoming transaction data
+            transaction_type = json_data.get("operation")
+            config = self.transaction_config.get(transaction_type)
 
             if not config:
                 raise ValueError(f"Unsupported transaction type: {transaction_type}")
 
-            for prop, details in config["properties"].items():
-                self.process_property(prop, details, json_data, jsonld_data)
+            # Generate the JSON-LD structure dynamically based on the configuration
+            jsonld_data = {
+                "@context": context["@context"],
+                "@id": "http://example.org/txn/" + json_data["transaction_id"],
+                "@type": "ex:" + transaction_type
+            }
 
+            # for prop, details in config["properties"].items():
+            #     self.process_property(prop, details, json_data, jsonld_data)
+
+            # Dynamically assign properties based on the config
+            for prop, details in config["properties"].items():
+                if prop in json_data:
+                    value = json_data[prop]
+                    
+                    # Check if the property has a base URL for URI creation
+                    if "base" in details:
+                        # Handle URI-based values like adv_ref and asset_ref
+                        jsonld_data[details["rdf_property"]] = {
+                            "@id": details["base"] + value  # Create the URI based on the base for both adv_ref and asset_ref
+                        }
+                    else:
+                        # Handle literal values like transaction_id and operation
+                        jsonld_data[details["rdf_property"]] = value          
+            
         # Create RDF graph from the JSON-LD data
         g = Graph()
         g.parse(data=json.dumps(jsonld_data), format='json-ld')
@@ -438,6 +396,48 @@ class RDFConverter:
         end_time = time.time()
         logging.info(f"Time taken to convert JSON to RDF: {end_time - start_time} seconds")
         return g
+
+
+        # start_time = time.time()
+
+        # # Check if the result is already cached based on the JSON data
+        # cache_key = json.dumps(json_data, sort_keys=True)
+        # if cache_key in self.rdf_cache:
+        #     logging.info("Cache hit: Returning cached RDF graph.")
+        #     return self.rdf_cache[cache_key]
+
+        # context = self.get_static_context()["@context"]
+
+        # jsonld_data = {
+        #     "@context": context,
+        #     "@id": "http://example.org/txn/" + json_data["transaction_id"],
+        #     "@type": "ex:" + json_data["operation"]
+        # }
+
+        # # Handle ADV operation specifically
+        # if json_data["operation"] == "ADV":
+        #     jsonld_data["status"] = Literal("Open")
+        #     jsonld_data["ref"] = "http://example.org/txn/" + json_data["asset_id"]
+        # else:
+        #     transaction_type = json_data["operation"]
+        #     config = transaction_config.get(transaction_type)
+
+        #     if not config:
+        #         raise ValueError(f"Unsupported transaction type: {transaction_type}")
+
+        #     for prop, details in config["properties"].items():
+        #         self.process_property(prop, details, json_data, jsonld_data)
+
+        # # Create RDF graph from the JSON-LD data
+        # g = Graph()
+        # g.parse(data=json.dumps(jsonld_data), format='json-ld')
+
+        # # Cache the RDF graph for future use
+        # self.rdf_cache[cache_key] = g
+
+        # end_time = time.time()
+        # logging.info(f"Time taken to convert JSON to RDF: {end_time - start_time} seconds")
+        # return g
 
 # SHACL Validator
 
@@ -530,7 +530,7 @@ class SHACLValidator:
                 debug=True
             )
             end_time = time.time()
-            logging.info(f"Time taken to pyshacl: {end_time - start_time} seconds")
+            logging.info(f"Time taken to validate and update the graph: {end_time - start_time} seconds")
             if conforms:
                 logging.info("Validation successful")
                 
@@ -2554,7 +2554,7 @@ class Transaction(object):
         jsonld_data = {
             "@context": context["@context"],  # Reuse the existing context variable
             "@id": "http://example.org/txn/" + json_data["transaction_id"],
-            "@type": "ex:asset_id",
+            "@type": "ex:" + "asset_id",
             
         }
 
