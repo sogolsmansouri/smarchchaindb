@@ -52,14 +52,18 @@ ex:BuyOfferShape a sh:NodeShape ;
     sh:property [
         sh:path ex:adv_ref ;  # The path where BUYOFFER references the ADV transaction
         sh:node ex:AdvShape ;  # Ensure the referenced node conforms to the ADV shape
+        sh:nodeKind sh:IRI ;  # Ensure the reference is a URI (correcting to IRI ensures proper referencing)
+        sh:maxCount 1 ;  # Ensure no more than one ADV is referenced
+        sh:minCount 1 ;
         sh:qualifiedValueShape [
+            sh:node ex:AdvShape ; 
             sh:property [
                 sh:path ex:status ;
-                sh:hasValue "Open" ;  # Ensure that the referenced ADV transaction has status "Open"
+                sh:hasValue "Open"^^xsd:string ;  # Ensure that the referenced ADV transaction has status "Open"
             ]
         ] ;
-        sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
-        sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
+        #sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
+        #sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
     ] ;
     sh:property [
         sh:path ex:asset_ref ;
