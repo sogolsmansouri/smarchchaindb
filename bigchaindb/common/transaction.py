@@ -204,7 +204,7 @@ class RDFConverter:
 
         # Handle ADV operation specifically
         if json_data["operation"] == "ADV":
-            jsonld_data["status"] = "Open"
+            jsonld_data["status"] = Literal("Open")
             jsonld_data["ref"] = "http://example.org/txn/" + json_data["asset_id"]
         else:
             transaction_type = json_data["operation"]
