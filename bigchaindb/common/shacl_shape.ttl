@@ -157,25 +157,25 @@ ex:Accept_ReturnShape a sh:NodeShape ;
 
 
 # Shape for Transfer transactions
-ex:TransferShape a sh:NodeShape ;
-    sh:targetClass ex:TRANSFER ;
+#ex:TransferShape a sh:NodeShape ;
+#    sh:targetClass ex:TRANSFER ;
 
-    # Reference to a Sell transaction via sell_ref
-    sh:property [
-        sh:path ex:sell_ref ;  # The path where the Transfer transaction references a Sell transaction
-        sh:node ex:SellShape ;  # Ensure the referenced node conforms to the SellShape
-        sh:qualifiedValueShape [
-            sh:property [
-                sh:path ex:adv_ref ;  # Reference to the ADV related to the Sell transaction
-                sh:node ex:AdvShape ;  # Ensure that the ADV conforms to the AdvShape
-                sh:qualifiedValueShape [
-                    sh:property [
-                        sh:path ex:status ;
-                        sh:hasValue "Open" ;  # Ensure the referenced ADV has status "Open"
-                    ]
-                ]
-            ]
-        ] ;
-        sh:qualifiedMinCount 1 ;  # Must reference at least one Sell transaction
-        sh:qualifiedMaxCount 1 ;  # Only one Sell transaction should be referenced
-    ] ;
+#    # Reference to a Sell transaction via sell_ref
+#    sh:property [
+#        sh:path ex:sell_ref ;  # The path where the Transfer transaction references a Sell transaction
+#        sh:node ex:SellShape ;  # Ensure the referenced node conforms to the SellShape
+#        sh:qualifiedValueShape [
+#            sh:property [
+#                sh:path ex:adv_ref ;  # Reference to the ADV related to the Sell transaction
+#                sh:node ex:AdvShape ;  # Ensure that the ADV conforms to the AdvShape
+#                sh:qualifiedValueShape [
+#                    sh:property [
+#                        sh:path ex:status ;
+#                        sh:hasValue "Open" ;  # Ensure the referenced ADV has status "Open"
+#                    ]
+#                ]
+#            ]
+#        ] ;
+#        sh:qualifiedMinCount 1 ;  # Must reference at least one Sell transaction
+#        sh:qualifiedMaxCount 1 ;  # Only one Sell transaction should be referenced
+#    ] ;

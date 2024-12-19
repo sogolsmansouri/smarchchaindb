@@ -1814,7 +1814,7 @@ class Transaction(object):
         
         asset_id = self.get_asset_id(input_txs)
         
-        if self.operation == self.TRANSFER:
+        #if self.operation == self.TRANSFER:
             # comment if shacl
             # adv_list = bigchain.get_adv_txids_for_asset(asset_id)
             # adv_txs = []
@@ -1829,19 +1829,19 @@ class Transaction(object):
             #end comment
             ##This part should comment if not shacl   
             
-            json_data_transfer = {
-                "asset_ref": asset_id,
-                "transaction_id": self.id,
-                "operation": self.operation,
-                "spend": asset_id,
-            }
+            # json_data_transfer = {
+            #     "asset_ref": asset_id,
+            #     "transaction_id": self.id,
+            #     "operation": self.operation,
+            #     "spend": asset_id,
+            # }
             
             
             # script_dir = os.path.dirname(__file__)
             
             # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
             
-            shacl_validator.validate_shape(json_data_transfer)
+            #shacl_validator.validate_shape(json_data_transfer)
             ##end   
 
         tx_asset_id = ""
