@@ -2258,7 +2258,7 @@ class Transaction(object):
         
         if adv_tx is None:
             raise InputDoesNotExist("ADV input `{}` doesn't exist".format(adv_id))
-        logger.debug("!!!!!!1" ,buy_offer_tx.operation)
+        #logger.debug("!!!!!!1" ,buy_offer_tx.operation)
         if buy_offer_tx.operation != self.BUYOFFER:
             raise ValidationError(
                 "SELL transaction must be against a commited BUYOFFER transaction"
