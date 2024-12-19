@@ -64,7 +64,7 @@ ex:BuyOfferShape a sh:NodeShape ;
     sh:property [
         sh:path ex:asset_ref ;
         sh:nodeKind sh:IRI ;  # Ensure that ref is an IRI, not a literal
-        sh:class ex:asset_id ;  # ref should point to a node of type asset_id
+        #sh:class ex:asset_id ;  # ref should point to a node of type asset_id
     ] .
 
 

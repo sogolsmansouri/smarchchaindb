@@ -527,7 +527,7 @@ class SHACLValidator:
                 data_graph=rdf_graph,
                 shacl_graph=self.shacl_graph,
                 inference=None,
-                debug=False
+                debug=True
             )
             end_time = time.time()
             logging.info(f"Time taken to pyshacl: {end_time - start_time} seconds")
