@@ -298,7 +298,7 @@ class SHACLValidator:
         except Exception as e:
             logging.error(f"Error updating TTL file at {self.ttl_file_path}: {e}")
 
-    def validate_shape(self, json_data, transaction_config):
+    def validate_shape(self, json_data):
         start_time = time.time()
     
         """Validate the shape of the incoming JSON data."""
