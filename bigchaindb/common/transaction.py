@@ -2553,7 +2553,7 @@ class Transaction(object):
         jsonld_data = {
             "@context": context["@context"],  # Reuse the existing context variable
             "@id": "http://example.org/txn/" + json_data["transaction_id"],
-            "@type": "ex:" + "asset_id",
+            "@type": "ex:asset_id",
             
         }
 

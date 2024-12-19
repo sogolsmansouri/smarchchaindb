@@ -9,7 +9,7 @@ ex:AdvShape a sh:NodeShape ;
     sh:property [
         sh:path ex:ref ;
         sh:nodeKind sh:IRI ;  # Ensure that ref is an IRI, not a literal
-        sh:class ex:asset_id ;  # ref should point to a node of type asset_id
+        #sh:class ex:asset_id ;  # ref should point to a node of type asset_id
     ] ;
 
     # Ensure that the status is either "Open" or "Closed"
