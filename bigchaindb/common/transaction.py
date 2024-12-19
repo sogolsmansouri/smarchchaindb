@@ -396,7 +396,7 @@ class RDFConverter:
 
             # Assume json_data contains the incoming transaction data
             transaction_type = json_data.get("operation")
-            config = self.transaction_config.get(transaction_type)
+            config = transaction_config.get(transaction_type)
 
             if not config:
                 raise ValueError(f"Unsupported transaction type: {transaction_type}")
