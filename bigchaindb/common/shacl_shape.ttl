@@ -21,27 +21,27 @@ ex:AdvShape a sh:NodeShape ;
 
 # Shape for asset_id
 ex:AssetShape a sh:NodeShape ;
-    sh:targetClass ex:asset_id .
+    sh:targetClass ex:asset_id ;
 
     # Constraint to ensure that each asset_id is referenced by at most one ADV with status "Open"
-    #sh:property [
-    #    sh:path [ sh:inversePath ex:ref ] ;  # Inverse path of ref, which points back to ADV nodes
-    #    sh:node ex:AdvShape ;  # Ensures the referenced node conforms to the ADV shape
-    #    sh:qualifiedValueShape [
-    #        sh:property [
-    #            sh:path ex:status ;
-    #            sh:hasValue "Open" ;  # Ensure that only ADVs with status "Open" are considered
-    #        ]
-    #    ] ;
-    #    sh:qualifiedMaxCount 1 ;  # Ensures that there is at most one ADV with status "Open"
-    #] ;
-    #sh:property [
-    #    sh:path [ sh:inversePath ex:spend ] ;
-    #    sh:qualifiedValueShape [
-    #        sh:nodeKind sh:IRI ;
-    #    ] ;
-    #    sh:qualifiedMaxCount 1 ;  # Each asset can be spent at most once
-    #] .
+    sh:property [
+        sh:path [ sh:inversePath ex:ref ] ;  # Inverse path of ref, which points back to ADV nodes
+        sh:node ex:AdvShape ;  # Ensures the referenced node conforms to the ADV shape
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:status ;
+                sh:hasValue "Open" ;  # Ensure that only ADVs with status "Open" are considered
+            ]
+        ] ;
+        sh:qualifiedMaxCount 1 ;  # Ensures that there is at most one ADV with status "Open"
+    ] ;
+    sh:property [
+        sh:path [ sh:inversePath ex:spend ] ;
+        sh:qualifiedValueShape [
+            sh:nodeKind sh:IRI ;
+        ] ;
+        sh:qualifiedMaxCount 1 ;  # Each asset can be spent at most once
+    ] .
 
 
 # Shape for BuyOffer transactions
@@ -52,12 +52,12 @@ ex:BuyOfferShape a sh:NodeShape ;
     sh:property [
         sh:path ex:adv_ref ;  # The path where BUYOFFER references the ADV transaction
         sh:node ex:AdvShape ;  # Ensure the referenced node conforms to the ADV shape
-        #sh:qualifiedValueShape [
-        #    sh:property [
-        #        sh:path ex:status ;
-        #        sh:hasValue "Open" ;  # Ensure that the referenced ADV transaction has status "Open"
-        #    ]
-        #] ;
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:status ;
+                sh:hasValue "Open" ;  # Ensure that the referenced ADV transaction has status "Open"
+            ]
+        ] ;
         sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
         sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
     ] ;
@@ -76,14 +76,14 @@ ex:SellShape a sh:NodeShape ;
     sh:property [
         sh:path ex:adv_ref ;  
         sh:node ex:AdvShape ;  
-        #sh:qualifiedValueShape [
-        #    sh:property [
-        #        sh:path ex:status ;
-        #        sh:hasValue "Open" ;  
-        #    ]
-        #] ;
-        #sh:qualifiedMinCount 1 ;  
-        #sh:qualifiedMaxCount 1 ;  
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:status ;
+                sh:hasValue "Open" ;  
+            ]
+        ] ;
+        sh:qualifiedMinCount 1 ;  
+        sh:qualifiedMaxCount 1 ;  
     ] ;
     # SPARQL constraint to update status after SELL
     #sh:sparql [
@@ -118,7 +118,7 @@ ex:SellShape a sh:NodeShape ;
 ex:Request_ReturnShape a sh:NodeShape ;
     sh:targetClass ex:REQUEST_RETURN ;
 
-    # Reference to a SELL transaction via sell_ref
+    # Reference to an SELL transaction via sell_ref
     sh:property [
         sh:path ex:sell_ref ; 
         #sh:node ex:SellShape ;  
@@ -136,7 +136,7 @@ ex:Request_ReturnShape a sh:NodeShape ;
 ex:Accept_ReturnShape a sh:NodeShape ;
     sh:targetClass ex:Accept_return ;
 
-    # Reference to a SELL transaction via sell_ref
+    # Reference to an SELL transaction via sell_ref
     sh:property [
         sh:path ex:sell_ref ;  
         #sh:node ex:SellShape ;  
@@ -154,3 +154,28 @@ ex:Accept_ReturnShape a sh:NodeShape ;
     #   sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
     #   sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced
     #] .
+
+
+# Shape for Transfer transactions
+ex:TransferShape a sh:NodeShape ;
+    sh:targetClass ex:TRANSFER ;
+
+    # Reference to a Sell transaction via sell_ref
+    sh:property [
+        sh:path ex:sell_ref ;  # The path where the Transfer transaction references a Sell transaction
+        sh:node ex:SellShape ;  # Ensure the referenced node conforms to the SellShape
+        sh:qualifiedValueShape [
+            sh:property [
+                sh:path ex:adv_ref ;  # Reference to the ADV related to the Sell transaction
+                sh:node ex:AdvShape ;  # Ensure that the ADV conforms to the AdvShape
+                sh:qualifiedValueShape [
+                    sh:property [
+                        sh:path ex:status ;
+                        sh:hasValue "Open" ;  # Ensure the referenced ADV has status "Open"
+                    ]
+                ]
+            ]
+        ] ;
+        sh:qualifiedMinCount 1 ;  # Must reference at least one Sell transaction
+        sh:qualifiedMaxCount 1 ;  # Only one Sell transaction should be referenced
+    ] ;

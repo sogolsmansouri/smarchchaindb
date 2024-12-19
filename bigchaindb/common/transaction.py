@@ -1841,7 +1841,7 @@ class Transaction(object):
             
             # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
             
-            result , graph = shacl_validator.validate_shape(json_data_transfer)
+            shacl_validator.validate_shape(json_data_transfer)
             ##end   
 
         tx_asset_id = ""
@@ -2083,7 +2083,7 @@ class Transaction(object):
         
         # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        result , graph = shacl_validator.validate_shape(json_data_sell)
+        shacl_validator.validate_shape(json_data_sell)
         end_time = time.time()
         logging.info(f"Time taken to validate sell: {end_time - start_time} seconds")
         ##end
@@ -2718,7 +2718,7 @@ class Transaction(object):
         
         # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        result , graph = shacl_validator.validate_shape(json_data_accept_request_return)
+        shacl_validator.validate_shape(json_data_accept_request_return)
         ##end
         return self.validate_transfer_inputs(bigchain, current_transactions) 
 
@@ -2761,7 +2761,7 @@ class Transaction(object):
         
         # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
-        result , graph = shacl_validator.validate_shape(json_data_accept_return)
+        shacl_validator.validate_shape(json_data_accept_return)
         ##end
         return self.validate_transfer_inputs(bigchain, current_transactions) 
     
