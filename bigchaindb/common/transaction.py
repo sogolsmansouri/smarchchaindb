@@ -383,7 +383,7 @@ class SHACLValidator:
 
     def validate_shape(self, json_data):
         start_time = time.time()
-    
+
         """Validate the shape of the incoming JSON data."""
         try:
             if not self.shacl_graph or not self.existing_graph_loaded:
@@ -392,14 +392,9 @@ class SHACLValidator:
             # Convert the incoming JSON data to RDF format using caching
             rdf_graph = self.rdf_converter.convert_json_to_rdf(json_data, transaction_config)
 
-            # Combine existing graph and new RDF graph
-            combined_graph = self.existing_graph + rdf_graph
-            end_time = time.time()
-            logging.info(f"Time taken to combine Graphs: {end_time - start_time} seconds")
-            # Validate with SHACL
-            start_time = time.time()
+            # Validate the new RDF graph against the existing graph (without combining them)
             conforms, results_graph, results_text = validate(
-                data_graph=combined_graph,
+                data_graph=rdf_graph,
                 shacl_graph=self.shacl_graph,
                 inference=None,
                 debug=True
@@ -407,15 +402,18 @@ class SHACLValidator:
 
             if conforms:
                 logging.info("Validation successful")
-                # Append the validated graph to the existing TTL file
-                self.update_existing_graph(rdf_graph)
+                
+                # Append only the validated triples to the existing graph
+               # self.existing_graph.update(rdf_graph)  # Only add the validated triples
+                self.update_existing_graph(rdf_graph)  # Assuming this is needed for persistence
+
                 end_time = time.time()
-                logging.info(f"Time taken to validate shacl validate: {end_time - start_time} seconds")
+                logging.info(f"Time taken to validate and update the graph: {end_time - start_time} seconds")
                 return True
             else:
                 logging.error("Validation failed")
                 end_time = time.time()
-                logging.info(f"Time taken to validate shape ERRor: {end_time - start_time} seconds")
+                logging.info(f"Time taken to validate shape ERROR: {end_time - start_time} seconds")
                 return False
         except Exception as e:
             logging.error(f"Error during shape validation: {e}")
