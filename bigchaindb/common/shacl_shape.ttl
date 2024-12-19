@@ -21,7 +21,7 @@ ex:AdvShape a sh:NodeShape ;
 
 # Shape for asset_id
 ex:AssetShape a sh:NodeShape ;
-    sh:targetClass ex:asset_id ;
+    sh:targetClass ex:asset_id .
 
     # Constraint to ensure that each asset_id is referenced by at most one ADV with status "Open"
     #sh:property [
@@ -118,7 +118,7 @@ ex:SellShape a sh:NodeShape ;
 ex:Request_ReturnShape a sh:NodeShape ;
     sh:targetClass ex:REQUEST_RETURN ;
 
-    # Reference to an SELL transaction via sell_ref
+    # Reference to a SELL transaction via sell_ref
     sh:property [
         sh:path ex:sell_ref ; 
         #sh:node ex:SellShape ;  
@@ -136,7 +136,7 @@ ex:Request_ReturnShape a sh:NodeShape ;
 ex:Accept_ReturnShape a sh:NodeShape ;
     sh:targetClass ex:Accept_return ;
 
-    # Reference to an SELL transaction via sell_ref
+    # Reference to a SELL transaction via sell_ref
     sh:property [
         sh:path ex:sell_ref ;  
         #sh:node ex:SellShape ;  
@@ -154,5 +154,3 @@ ex:Accept_ReturnShape a sh:NodeShape ;
     #   sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
     #   sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced
     #] .
-
-
