@@ -201,135 +201,7 @@ transaction_config = {
             }
         }
 }
-# transaction_config = {
-#         "BUYOFFER": {
-#             "properties": {
-#             "transaction_id": {
-#                 "rdf_property": "ex:transaction_id"
-#             },
-#             "operation": {
-#                 "rdf_property": "ex:operation"
-#             },
-#             "adv_ref": {
-#                 "rdf_property": "ex:adv_ref",
-#                 "base": "http://example.org/txn/",
-#                 "shape": "ex:AdvShape"
-#             },
-#             "asset_ref": {
-#                 "rdf_property": "ex:asset_ref",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#             },
-#             "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#             }
-#             }
-#         },
-#         "SELL": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "adv_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:AdvShape"  
-#                 },
-#                 "buyOffer_ref": {
-#                     "rdf_property": "ex:buyOffer_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:BuyOfferShape"  
-#                 },
-#                 "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#                  }
-#             }
-#         },
-#         "TRANSFER": {
-        
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "asset_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:AssetShape"  
-#                 },
-#                 "parent_ref": {
-#                     "rdf_property": "ex:buyOffer_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:SellShape"  
-#                 },
-#                 "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#                  }
-#             }
-#         },
-#         "REQUEST_RETURN": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "sell_ref": {
-#                     "rdf_property": "ex:sell_ref",
-#                     "base": "http://example.org/txn/",
-#                     #"shape": "ex:SellShape"
-#                 },
-#                 # "asset_ref": {
-#                 #     "rdf_property": "ex:asset_ref",
-#                 #     "base": "http://example.org/txn/", 
-#                 #     #"shape": "ex:AssetShape"  
-#                 # }
-#                 # "spend": {
-#                 #     "rdf_property": "ex:spend",
-#                 #     "base": "http://example.org/txn/", 
-#                 #     "shape": "ex:AssetShape"  
-#                 # }
-#             }
-#          },
-#         "ACCEPT_RETURN": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "sell_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     #"shape": "ex:SellShape"  
-#                 },
-#                 # "request_return_ref": {
-#                 #     "rdf_property": "ex:request_return_ref",
-#                 #     "base": "http://example.org/txn/",  
-#                 #     "shape": "ex:Request_ReturnShape"  
-#                 # },
-#                 # "spend": {
-#                 # "rdf_property": "ex:spend",
-#                 # "base": "http://example.org/txn/", 
-#                 # #"shape": "ex:AssetShape"  
-#                 #  }
-#             }
-#         }
-        
-# }
+
 
 # RDF Conversion Cache
 class RDFConverter:
@@ -605,12 +477,12 @@ def initialize_graphs(shacl_file_path, shacl_validator):
 
 
 # Initialize RDFConverter and SHACLValidator
-rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
-shacl_validator = SHACLValidator(rdf_converter)
-shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
+# rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
+# shacl_validator = SHACLValidator(rdf_converter)
+# shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
 
-# Initialize SHACL and existing graphs once at the start
-initialize_graphs(shacl_file_path, shacl_validator)
+# # Initialize SHACL and existing graphs once at the start
+# initialize_graphs(shacl_file_path, shacl_validator)
 
 class Input(object):
     """A Input is used to spend assets locked by an Output.
