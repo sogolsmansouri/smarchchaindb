@@ -2159,7 +2159,7 @@ class Transaction(object):
         # else:
         # ##end
         
-        return self.validate_transfer_inputs(bigchain, current_transactions) 
+        #return self.validate_transfer_inputs(bigchain, current_transactions) #TODO SOGOL
         
     def validate_sell(self, bigchain, current_transactions=[]):
         asset_id = self.asset["data"]["asset_id"]
@@ -2854,7 +2854,7 @@ class Transaction(object):
         #         )
         # else:
         ##end
-        return self.validate_transfer_inputs(bigchain, current_transactions) 
+        #return self.validate_transfer_inputs(bigchain, current_transactions) #TODO SOGOL
 
     def validate_accept_return(self, bigchain, current_transactions=[]):
         asset_id = self.asset["data"]["asset_id"]
@@ -2898,7 +2898,7 @@ class Transaction(object):
         #         )
         # else:
         ##end
-        return self.validate_transfer_inputs(bigchain, current_transactions) 
+        #return self.validate_transfer_inputs(bigchain, current_transactions) #TODO SOGOL
     
     
     
