@@ -1657,8 +1657,8 @@ class Transaction(object):
             #       values to the actual method. This simplifies it's logic
             #       greatly, as we do not have to check against `None` values.
             ##This part should comment if not shacl validation
-            if(self.operation == self.CREATE):
-                self.generateShape()
+            # if(self.operation == self.CREATE):
+            #     self.generateShape()
             ##end comment area    
             return self._inputs_valid(["dummyvalue" for _ in self.inputs])
         elif self.operation in [self.TRANSFER, self.BID, self.RETURN, self.BUYOFFER, self.SELL, self.INTEREST, self.PRE_REQUEST]:
@@ -2042,17 +2042,17 @@ class Transaction(object):
             if input_tx is None:
                 raise InputDoesNotExist("input `{}` doesn't exist".format(input_txid))
             ##This part should comment in case of shacl validation
-            # if self.operation == Transaction.PRE_REQUEST:
-            #     # Implement is_returned logic in the bigchain instance
-            #     if bigchain.is_asset_returned(input_txid):
-            #         raise DoubleSpend("Input transaction `{}` has already been returned".format(input_txid))
-            # else:
+            if self.operation == Transaction.PRE_REQUEST:
+                # Implement is_returned logic in the bigchain instance
+                if bigchain.is_asset_returned(input_txid):
+                    raise DoubleSpend("Input transaction `{}` has already been returned".format(input_txid))
+            else:
             
-            #     spent = bigchain.get_spent(
-            #         input_txid, input_.fulfills.output, current_transactions
-            #     )
-            #     if spent:
-            #         raise DoubleSpend("input `{}` was already spent".format(input_txid))
+                spent = bigchain.get_spent(
+                    input_txid, input_.fulfills.output, current_transactions
+                )
+                if spent:
+                    raise DoubleSpend("input `{}` was already spent".format(input_txid))
             ##end comment area
             output = input_tx.outputs[input_.fulfills.output]
             input_conditions.append(output)
@@ -2260,39 +2260,32 @@ class Transaction(object):
                     "BUYOFFER transaction's outputs must point to Escrow account"
                 )
         ##This part should comment if  shacl
-        # if adv_tx.asset["data"]["status"] != "open":
-        #     raise ValidationError(
-        #         "BUYOFFER transaction must be against an open ADV transaction"
-        #     )
+        if adv_tx.asset["data"]["status"] != "open":
+            raise ValidationError(
+                "BUYOFFER transaction must be against an open ADV transaction"
+            )
         ##end
         ##This part should comment if not shacl
-        #start_time = time.time()
-    
-        json_data_buy_offer = {
-            "asset_ref": self.asset["data"]["id"],
-            "adv_ref": self.asset["data"]["adv_id"],
-            "transaction_id": self.id,
-            "operation": self.operation,
-            "spend": self.asset["data"]["id"],
+        
+        # json_data_buy_offer = {
+        #     "asset_ref": self.asset["data"]["id"],
+        #     "adv_ref": self.asset["data"]["adv_id"],
+        #     "transaction_id": self.id,
+        #     "operation": self.operation,
+        #     "spend": self.asset["data"]["id"],
             
-        }
+        # }
 
         
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
-        validation_result = shacl_validator.validate_shape(json_data_buy_offer)
-        if not validation_result: 
-            raise ValidationError(
-                    "BUYOFFER transaction'Validation failed"
-                )
-        else:
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate buyoffer: {end_time - start_time} seconds")
+        # validation_result = shacl_validator.validate_shape(json_data_buy_offer)
+        # if not validation_result: 
+        #     raise ValidationError(
+        #             "BUYOFFER transaction'Validation failed"
+        #         )
+        # else:
         # ##end
         
-            return self.validate_transfer_inputs(bigchain, current_transactions) 
+        return self.validate_transfer_inputs(bigchain, current_transactions) 
         
     def validate_sell(self, bigchain, current_transactions=[]):
         asset_id = self.asset["data"]["asset_id"]
@@ -2319,39 +2312,32 @@ class Transaction(object):
                     "SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment in case of shacl validation   
-        # if adv_tx.asset["data"]["status"] != "open":
-        #     raise ValidationError(
-        #         "SELL transaction must be against an open ADV transaction"
-        #     )
+        if adv_tx.asset["data"]["status"] != "open":
+            raise ValidationError(
+                "SELL transaction must be against an open ADV transaction"
+            )
         # end comment area
         ##This part should comment if not shacl validation  
-        #start_time = time.time()
+        
     
-        json_data_sell = {
-            "asset_id": self.asset["data"]["asset_id"],
-            "adv_ref": self.asset["data"]["ref1_id"],
-            "buyOffer_ref": self.asset["data"]["ref2_id"],
-            "transaction_id": self.id,
-            "operation": self.operation,
-            "spend": self.asset["data"]["asset_id"],
-        }
-        
-        
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
-        validation_result = shacl_validator.validate_shape(json_data_sell)
-        if not validation_result: 
-            raise ValidationError(
-                    "SELL transaction'Validation failed"
-                )
-        else:
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate sell: {end_time - start_time} seconds")
+        # json_data_sell = {
+        #     "asset_id": self.asset["data"]["asset_id"],
+        #     "adv_ref": self.asset["data"]["ref1_id"],
+        #     "buyOffer_ref": self.asset["data"]["ref2_id"],
+        #     "transaction_id": self.id,
+        #     "operation": self.operation,
+        #     "spend": self.asset["data"]["asset_id"],
+        # }
+            
+        # validation_result = shacl_validator.validate_shape(json_data_sell)
+        # if not validation_result: 
+        #     raise ValidationError(
+        #             "SELL transaction'Validation failed"
+        #         )
+        # else:
         # ##end
         
-            return self.validate_transfer_inputs(bigchain, current_transactions) 
+        return self.validate_transfer_inputs(bigchain, current_transactions) 
      
      
     
@@ -2641,39 +2627,34 @@ class Transaction(object):
                 "ADV transaction must be against a commited CREATE transaction"
             )
         ## uncomment in not shacl
-        #adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
+        adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
         
-        # if adv_list:
-        #     raise DuplicateTransaction(
-        #         "ADV tx with the same asset input `{}` already committed".format(
-        #             adv_list
-        #         )
-        #     )
+        if adv_list:
+            raise DuplicateTransaction(
+                "ADV tx with the same asset input `{}` already committed".format(
+                    adv_list
+                )
+            )
         ##end uncomment
         ##This part should comment if not shacl
-        #start_time = time.time()
     
-        json_data_adv1 = {
-            "asset_id": self.asset["data"]["asset_id"],
-            "transaction_id": self.id,
-            "operation": self.operation,
-            "status":self.metadata["status"]
+        # json_data_adv1 = {
+        #     "asset_id": self.asset["data"]["asset_id"],
+        #     "transaction_id": self.id,
+        #     "operation": self.operation,
+        #     "status":self.metadata["status"]
             
-        }
+        # }
 
+
+        # validation_result = shacl_validator.validate_shape(json_data_adv1)
         
-        # script_dir = os.path.dirname(__file__)
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        validation_result = shacl_validator.validate_shape(json_data_adv1)
+        # if not validation_result: 
+        #     raise ValidationError(
+        #             "SELL transaction'Validation failed"
+        #         )
         
-        if not validation_result: 
-            raise ValidationError(
-                    "SELL transaction'Validation failed"
-                )
         
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate adv: {end_time - start_time} seconds")
-        # logger.debug(f"Time taken to validate adv: {end_time - start_time} seconds")
         # ##end
     def validate_update_adv(self, bigchain, current_transactions=[]):
         
@@ -2981,27 +2962,24 @@ class Transaction(object):
                     "RETRUN SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment  
-        json_data_accept_request_return = {
-            "asset_ref": self.asset["data"]["asset_id"],
-            "sell_ref": self.asset["data"]["sell_id"],
-            "transaction_id": self.id,
-            "operation": "REQUEST_RETURN", #self.operation,
-            "spend": self.asset["data"]["asset_id"],
-        }
+        # json_data_accept_request_return = {
+        #     "asset_ref": self.asset["data"]["asset_id"],
+        #     "sell_ref": self.asset["data"]["sell_id"],
+        #     "transaction_id": self.id,
+        #     "operation": "REQUEST_RETURN", #self.operation,
+        #     "spend": self.asset["data"]["asset_id"],
+        # }
     
         
-        # script_dir = os.path.dirname(__file__)
         
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
-        validation_result = shacl_validator.validate_shape(json_data_accept_request_return)
-        if not validation_result: 
-            raise ValidationError(
-                    "RETRUN SELL transaction'Validation failed"
-                )
-        else:
+        # validation_result = shacl_validator.validate_shape(json_data_accept_request_return)
+        # if not validation_result: 
+        #     raise ValidationError(
+        #             "RETRUN SELL transaction'Validation failed"
+        #         )
+        # else:
         ##end
-            return self.validate_transfer_inputs(bigchain, current_transactions) 
+        return self.validate_transfer_inputs(bigchain, current_transactions) 
 
     def validate_accept_return(self, bigchain, current_transactions=[]):
         asset_id = self.asset["data"]["asset_id"]
@@ -3028,28 +3006,24 @@ class Transaction(object):
                     "ACCEPT RETURN transaction's outputs must point to Escrow account"
                 )
         ##This part should comment
-        json_data_accept_return = {
-            "asset_id": self.asset["data"]["asset_id"],
-            "sell_ref": self.asset["data"]["ref1_id"],
-            "request_return_ref": self.asset["data"]["ref2_id"],
-            "transaction_id": self.id,
-            "operation": "ACCEPT_RETURN",#self.operation,
-            "spend": self.asset["data"]["asset_id"],
-        }
+        # json_data_accept_return = {
+        #     "asset_id": self.asset["data"]["asset_id"],
+        #     "sell_ref": self.asset["data"]["ref1_id"],
+        #     "request_return_ref": self.asset["data"]["ref2_id"],
+        #     "transaction_id": self.id,
+        #     "operation": "ACCEPT_RETURN",#self.operation,
+        #     "spend": self.asset["data"]["asset_id"],
+        # }
     
         
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
-        validation_result = shacl_validator.validate_shape(json_data_accept_return)
-        if not validation_result: 
-            raise ValidationError(
-                    "ACCEPT_RETURN transaction'Validation failed"
-                )
-        else:
+        # validation_result = shacl_validator.validate_shape(json_data_accept_return)
+        # if not validation_result: 
+        #     raise ValidationError(
+        #             "ACCEPT_RETURN transaction'Validation failed"
+        #         )
+        # else:
         ##end
-            return self.validate_transfer_inputs(bigchain, current_transactions) 
+        return self.validate_transfer_inputs(bigchain, current_transactions) 
     
     
     
