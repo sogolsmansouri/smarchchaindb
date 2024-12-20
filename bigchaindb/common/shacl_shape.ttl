@@ -114,7 +114,7 @@ ex:SellShape a sh:NodeShape ;
     # Reference to a BuyOffer transaction via buyOffer_ref
     sh:property [
        sh:path ex:buyOffer_ref ;  
-       sh:node ex:BuyOfferShape ;  
+       sh:node ex:BUYOFFER ;  
        sh:nodeKind sh:IRI ;  
        sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
        sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced
