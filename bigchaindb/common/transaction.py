@@ -1005,7 +1005,7 @@ class Transaction(object):
         # dicts holding a `data` property. Asset payloads for 'TRANSFER'
         # operations must be dicts holding an `id` property.
         if (
-            (operation == self.CREATE or operation == self.BID or operation == self.BUYOFFER or operation == self.SELL or operation == self.PRE_REQUEST or operation == self.ACCEPT_RETURN)
+            (operation == self.CREATE or operation == self.BID or operation == self.BUYOFFER or operation == self.SELL or operation == self.PRE_REQUEST or operation == self.INTEREST)
             and asset is not None
             and not (isinstance(asset, dict) and "data" in asset)
         ):
@@ -2212,7 +2212,7 @@ class Transaction(object):
         # else:
         # ##end
         
-        return self.validate_transfer_inputs(bigchain, current_transactions) 
+        #return self.validate_transfer_inputs(bigchain, current_transactions) #TODO SOGOL
      
      
     
