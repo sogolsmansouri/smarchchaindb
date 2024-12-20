@@ -80,14 +80,16 @@ ex:SellShape a sh:NodeShape ;
     sh:property [
         sh:path ex:adv_ref ;  
         sh:node ex:AdvShape ;  
+        sh:nodeKind sh:IRI ;
         #sh:qualifiedValueShape [
         #    sh:property [
         #        sh:path ex:status ;
         #        sh:hasValue "Open" ;  
         #    ]
         #] ;
-        sh:qualifiedMinCount 1 ;  
-        sh:qualifiedMaxCount 1 ;  
+      
+       sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
+       sh:maxCount 1 ;  # Ensure only one BuyOffer is referenced 
     ] ;
     # SPARQL constraint to update status after SELL
     #sh:sparql [
