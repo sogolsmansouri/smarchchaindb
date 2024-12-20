@@ -2261,8 +2261,8 @@ class Transaction(object):
                 )
         ##This part should comment if  shacl
         adv_status = adv_tx.metadata.get("status")
-        logger.debug("adv status", adv_status)
-        if adv_status != "Open":
+        logger.debug("adv status %s", adv_status)
+        if adv_status.lower() != "open":
             raise ValidationError(
                 "BUYOFFER transaction must be against an open ADV transaction"
             )
