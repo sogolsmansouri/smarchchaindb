@@ -2260,7 +2260,8 @@ class Transaction(object):
                     "BUYOFFER transaction's outputs must point to Escrow account"
                 )
         ##This part should comment if  shacl
-        if adv_tx.asset["data"]["status"] != "open":
+        adv_status = adv_tx.metadata.get("status")
+        if adv_status != "open":
             raise ValidationError(
                 "BUYOFFER transaction must be against an open ADV transaction"
             )
