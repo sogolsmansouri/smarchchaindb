@@ -2481,12 +2481,12 @@ class Transaction(object):
         # Serialize RDF to Turtle format
         ttl_data = g.serialize(format='turtle').decode('utf-8')
         
-        # Save RDF to a file (optional)
-        # script_dir = os.path.dirname(__file__)
-        # ttl_file_path = os.path.join(script_dir, 'output.ttl')
-        # with open(ttl_file_path, 'a', encoding='utf-8') as turtle_file:
-        #     turtle_file.write(ttl_data)
-        shacl_validator.update_existing_graph(ttl_data) 
+        
+        script_dir = os.path.dirname(__file__)
+        ttl_file_path = os.path.join(script_dir, 'output.ttl')
+        with open(ttl_file_path, 'a', encoding='utf-8') as turtle_file:
+            turtle_file.write(ttl_data)
+        #shacl_validator.update_existing_graph(ttl_data) 
         shacl_validator.create_shape_cache.add(self.id)
         end_time = time.time()
         logging.info(f"Time taken to generate shape: {end_time - start_time} seconds")    
