@@ -2140,7 +2140,7 @@ class Transaction(object):
         ##end
         ##This part should comment if not shacl
         start_time = time.time()
-        if self.id in self.shacl_validator.validated_transactions:
+        if self.id in shacl_validator.validated_transactions:
             logging.info(f"Transaction {self.id} already validated.")
             return  # Skip further processing if already validated
         
@@ -2197,7 +2197,7 @@ class Transaction(object):
         # end comment area
         ##This part should comment if not shacl validation  
         start_time = time.time()
-        if self.id in self.shacl_validator.validated_transactions:
+        if self.id in shacl_validator.validated_transactions:
             logging.info(f"Transaction {self.id} already validated.")
             return  # Skip further processing if already validated
         
@@ -2523,7 +2523,7 @@ class Transaction(object):
         ##This part should comment if not shacl
         start_time = time.time()
         
-        if self.id in self.shacl_validator.validated_transactions:
+        if self.id in shacl_validator.validated_transactions:
             logging.info(f"Transaction {create_tx_id} already validated.")
             return  # Skip further processing if already validated
         json_data_adv1 = {
@@ -2852,7 +2852,7 @@ class Transaction(object):
                     "RETRUN SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment  
-        if self.id in self.shacl_validator.validated_transactions:
+        if self.id in shacl_validator.validated_transactions:
             logging.info(f"Transaction {self.id} already validated.")
             return  # Skip further processing if already validated
         
@@ -2899,7 +2899,7 @@ class Transaction(object):
                     "ACCEPT RETURN transaction's outputs must point to Escrow account"
                 )
         ##This part should comment
-        if self.id in self.shacl_validator.validated_transactions:
+        if self.id in shacl_validator.validated_transactions:
             logging.info(f"Transaction {self.id} already validated.")
             return  # Skip further processing if already validated
         
