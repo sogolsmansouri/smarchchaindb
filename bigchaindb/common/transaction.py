@@ -201,135 +201,6 @@ transaction_config = {
             }
         }
 }
-# transaction_config = {
-#         "BUYOFFER": {
-#             "properties": {
-#             "transaction_id": {
-#                 "rdf_property": "ex:transaction_id"
-#             },
-#             "operation": {
-#                 "rdf_property": "ex:operation"
-#             },
-#             "adv_ref": {
-#                 "rdf_property": "ex:adv_ref",
-#                 "base": "http://example.org/txn/",
-#                 "shape": "ex:AdvShape"
-#             },
-#             "asset_ref": {
-#                 "rdf_property": "ex:asset_ref",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#             },
-#             "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#             }
-#             }
-#         },
-#         "SELL": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "adv_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:AdvShape"  
-#                 },
-#                 "buyOffer_ref": {
-#                     "rdf_property": "ex:buyOffer_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:BuyOfferShape"  
-#                 },
-#                 "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#                  }
-#             }
-#         },
-#         "TRANSFER": {
-        
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "asset_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:AssetShape"  
-#                 },
-#                 "parent_ref": {
-#                     "rdf_property": "ex:buyOffer_ref",
-#                     "base": "http://example.org/txn/",  
-#                     "shape": "ex:SellShape"  
-#                 },
-#                 "spend": {
-#                 "rdf_property": "ex:spend",
-#                 "base": "http://example.org/txn/", 
-#                 "shape": "ex:AssetShape"  
-#                  }
-#             }
-#         },
-#         "REQUEST_RETURN": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "sell_ref": {
-#                     "rdf_property": "ex:sell_ref",
-#                     "base": "http://example.org/txn/",
-#                     #"shape": "ex:SellShape"
-#                 },
-#                 # "asset_ref": {
-#                 #     "rdf_property": "ex:asset_ref",
-#                 #     "base": "http://example.org/txn/", 
-#                 #     #"shape": "ex:AssetShape"  
-#                 # }
-#                 # "spend": {
-#                 #     "rdf_property": "ex:spend",
-#                 #     "base": "http://example.org/txn/", 
-#                 #     "shape": "ex:AssetShape"  
-#                 # }
-#             }
-#          },
-#         "ACCEPT_RETURN": {
-#             "properties": {
-#                 "transaction_id": {
-#                     "rdf_property": "ex:transaction_id"
-#                 },
-#                 "operation": {
-#                     "rdf_property": "ex:operation"
-#                 },
-#                 "sell_ref": {
-#                     "rdf_property": "ex:adv_ref",
-#                     "base": "http://example.org/txn/",  
-#                     #"shape": "ex:SellShape"  
-#                 },
-#                 # "request_return_ref": {
-#                 #     "rdf_property": "ex:request_return_ref",
-#                 #     "base": "http://example.org/txn/",  
-#                 #     "shape": "ex:Request_ReturnShape"  
-#                 # },
-#                 # "spend": {
-#                 # "rdf_property": "ex:spend",
-#                 # "base": "http://example.org/txn/", 
-#                 # #"shape": "ex:AssetShape"  
-#                 #  }
-#             }
-#         }
-        
-# }
 
 # RDF Conversion Cache
 class RDFConverter:
@@ -493,6 +364,7 @@ class SHACLValidator:
         self.ttl_file_path = os.path.join(script_dir, 'output.ttl')  # Path to the TTL file
         self.existing_graph_loaded = False  # Initialize the flag to track if the existing graph is loaded
         self._initialize_existing_graph()  # Initialize the existing graph when the class is instantiated
+        self.validated_transactions = set()
         end_time = time.time()
         logging.info(f"Time taken to __init__: {end_time - start_time} seconds")
 
@@ -555,6 +427,7 @@ class SHACLValidator:
 
         """Validate the shape of the incoming JSON data."""
         try:
+            transaction_id = json_data["transaction_id"]
             if not self.shacl_graph or not self.existing_graph_loaded:
                 raise Exception("SHACL or existing graph not loaded properly. Call initialize_graphs first.")
 
@@ -577,7 +450,7 @@ class SHACLValidator:
                 # Append only the validated triples to the existing graph
                # self.existing_graph.update(rdf_graph)  # Only add the validated triples
                 self.update_existing_graph(rdf_graph)  # Assuming this is needed for persistence
-
+                self.validated_transactions.add(transaction_id)
                 
                 return True
             else:
@@ -2267,7 +2140,10 @@ class Transaction(object):
         ##end
         ##This part should comment if not shacl
         start_time = time.time()
-    
+        if self.id in self.shacl_validator.validated_transactions:
+            logging.info(f"Transaction {self.id} already validated.")
+            return  # Skip further processing if already validated
+        
         json_data_buy_offer = {
             "asset_ref": self.asset["data"]["id"],
             "adv_ref": self.asset["data"]["adv_id"],
@@ -2277,11 +2153,6 @@ class Transaction(object):
             
         }
 
-        
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
         validation_result = shacl_validator.validate_shape(json_data_buy_offer)
         if not validation_result: 
             raise ValidationError(
@@ -2326,7 +2197,10 @@ class Transaction(object):
         # end comment area
         ##This part should comment if not shacl validation  
         start_time = time.time()
-    
+        if self.id in self.shacl_validator.validated_transactions:
+            logging.info(f"Transaction {self.id} already validated.")
+            return  # Skip further processing if already validated
+        
         json_data_sell = {
             "asset_id": self.asset["data"]["asset_id"],
             "adv_ref": self.asset["data"]["ref1_id"],
@@ -2336,10 +2210,6 @@ class Transaction(object):
             "spend": self.asset["data"]["asset_id"],
         }
         
-        
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
         validation_result = shacl_validator.validate_shape(json_data_sell)
         if not validation_result: 
@@ -2652,7 +2522,10 @@ class Transaction(object):
         ##end uncomment
         ##This part should comment if not shacl
         start_time = time.time()
-    
+        
+        if self.id in self.shacl_validator.validated_transactions:
+            logging.info(f"Transaction {create_tx_id} already validated.")
+            return  # Skip further processing if already validated
         json_data_adv1 = {
             "asset_id": self.asset["data"]["asset_id"],
             "transaction_id": self.id,
@@ -2662,8 +2535,6 @@ class Transaction(object):
         }
 
         
-        # script_dir = os.path.dirname(__file__)
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         validation_result = shacl_validator.validate_shape(json_data_adv1)
         
         if not validation_result: 
@@ -2981,6 +2852,10 @@ class Transaction(object):
                     "RETRUN SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment  
+        if self.id in self.shacl_validator.validated_transactions:
+            logging.info(f"Transaction {self.id} already validated.")
+            return  # Skip further processing if already validated
+        
         json_data_accept_request_return = {
             "asset_ref": self.asset["data"]["asset_id"],
             "sell_ref": self.asset["data"]["sell_id"],
@@ -2989,10 +2864,6 @@ class Transaction(object):
             "spend": self.asset["data"]["asset_id"],
         }
     
-        
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
         validation_result = shacl_validator.validate_shape(json_data_accept_request_return)
         if not validation_result: 
@@ -3028,6 +2899,10 @@ class Transaction(object):
                     "ACCEPT RETURN transaction's outputs must point to Escrow account"
                 )
         ##This part should comment
+        if self.id in self.shacl_validator.validated_transactions:
+            logging.info(f"Transaction {self.id} already validated.")
+            return  # Skip further processing if already validated
+        
         json_data_accept_return = {
             "asset_id": self.asset["data"]["asset_id"],
             "sell_ref": self.asset["data"]["ref1_id"],
@@ -3038,9 +2913,6 @@ class Transaction(object):
         }
     
         
-        # script_dir = os.path.dirname(__file__)
-        
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
         
         validation_result = shacl_validator.validate_shape(json_data_accept_return)
         if not validation_result: 
