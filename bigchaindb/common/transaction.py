@@ -365,6 +365,7 @@ class SHACLValidator:
         self.existing_graph_loaded = False  # Initialize the flag to track if the existing graph is loaded
         self._initialize_existing_graph()  # Initialize the existing graph when the class is instantiated
         self.validated_transactions = set()
+        self.create_shape_cache = set() 
         end_time = time.time()
         logging.info(f"Time taken to __init__: {end_time - start_time} seconds")
 
@@ -2445,20 +2446,16 @@ class Transaction(object):
         
     def generateShape(self):
         start_time = time.time()
-    
+        if self.id in shacl_validator.create_shape_cache:
+            logging.info(f"Transaction already processed. Skipping shape generation.")
+            return True
+        
         json_data = {
             "asset_id": self.id,
             "transaction_id": self.id,
             "operation": self.operation,
             
         }
-
-        
-        # script_dir = os.path.dirname(__file__)
-        
-        # # SHACL shapes file path
-        # shacl_file_path = os.path.join(script_dir, 'shacl_shape.ttl')
-        
         
         context = {
             "@context": {
@@ -2476,23 +2473,21 @@ class Transaction(object):
             "@id": "http://example.org/txn/" + json_data["transaction_id"],
             "@type": "ex:" + "asset_id",
             
-        }
-
-    
+        }   
         
         g = Graph()
         g.parse(data=json.dumps(jsonld_data), format='json-ld')
-        
         
         # Serialize RDF to Turtle format
         ttl_data = g.serialize(format='turtle').decode('utf-8')
         
         # Save RDF to a file (optional)
-        script_dir = os.path.dirname(__file__)
-        ttl_file_path = os.path.join(script_dir, 'output.ttl')
-        with open(ttl_file_path, 'a', encoding='utf-8') as turtle_file:
-            turtle_file.write(ttl_data)
-        
+        # script_dir = os.path.dirname(__file__)
+        # ttl_file_path = os.path.join(script_dir, 'output.ttl')
+        # with open(ttl_file_path, 'a', encoding='utf-8') as turtle_file:
+        #     turtle_file.write(ttl_data)
+        shacl_validator.update_existing_graph(ttl_data) 
+        shacl_validator.create_shape_cache.add(self.id)
         end_time = time.time()
         logging.info(f"Time taken to generate shape: {end_time - start_time} seconds")    
         logger.debug(f"Time taken to generate shape: {end_time - start_time} seconds") 
