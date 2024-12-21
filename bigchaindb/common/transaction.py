@@ -355,7 +355,7 @@ class RDFConverter:
 
     def convert_json_to_rdf(self, json_data, transaction_config):
         """Convert JSON data to RDF graph with caching."""
-        #start_time = time.time()
+        start_time = time.time()
 
         # Check if the result is already cached based on the JSON data
         cache_key = json.dumps(json_data, sort_keys=True)
@@ -433,8 +433,8 @@ class RDFConverter:
         # Cache the RDF graph for future use
         self.rdf_cache[cache_key] = g
 
-        # end_time = time.time()
-        # logging.info(f"Time taken to convert JSON to RDF: {end_time - start_time} seconds")
+        end_time = time.time()
+        logging.info(f"Time taken to convert JSON to RDF: {end_time - start_time} seconds")
         return g
 
 
@@ -484,7 +484,7 @@ class RDFConverter:
 
 class SHACLValidator:
     def __init__(self, rdf_converter):
-        #start_time = time.time()
+        start_time = time.time()
     
         self.rdf_converter = rdf_converter  # Initialize RDFConverter
         self.shacl_graph = None
@@ -493,12 +493,12 @@ class SHACLValidator:
         self.ttl_file_path = os.path.join(script_dir, 'output.ttl')  # Path to the TTL file
         self.existing_graph_loaded = False  # Initialize the flag to track if the existing graph is loaded
         self._initialize_existing_graph()  # Initialize the existing graph when the class is instantiated
-        # end_time = time.time()
-        # logging.info(f"Time taken to __init__: {end_time - start_time} seconds")
+        end_time = time.time()
+        logging.info(f"Time taken to __init__: {end_time - start_time} seconds")
 
     def _initialize_existing_graph(self):
         """Helper function to load or create the TTL file."""
-        #start_time = time.time()
+        start_time = time.time()
     
         if os.path.exists(self.ttl_file_path):
             try:
@@ -507,8 +507,8 @@ class SHACLValidator:
                 #logging.info("Existing TTL graph loaded successfully.")
             except Exception as e:
                 logging.error(f"Error loading existing TTL file at {self.ttl_file_path}: {e}")
-                # end_time = time.time()
-                # logging.info(f"Time _initialize_existing_graph Iff: {end_time - start_time} seconds")
+                end_time = time.time()
+                logging.info(f"Time _initialize_existing_graph Iff: {end_time - start_time} seconds")
         else:
             # Create the file if it doesn't exist
             try:
@@ -518,12 +518,12 @@ class SHACLValidator:
                 logging.info(f"Created new empty TTL file at {self.ttl_file_path}")
             except Exception as e:
                 logging.error(f"Error creating the TTL file at {self.ttl_file_path}: {e}")
-            # end_time = time.time()
-            # logging.info(f"_initialize_existing_graph Else: {end_time - start_time} seconds")    
+                end_time = time.time()
+                logging.info(f"_initialize_existing_graph Else: {end_time - start_time} seconds")    
 
     def load_shacl_graph(self, shacl_file_path):
         """Load SHACL graph once."""
-        #start_time = time.time()
+        start_time = time.time()
     
         if self.shacl_graph is None:
             try:
@@ -533,10 +533,10 @@ class SHACLValidator:
                 logging.info(f"SHACL graph loaded from {shacl_file_path}")
             except Exception as e:
                 logging.error(f"Error loading SHACL file at {shacl_file_path}: {e}")
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate shape: {end_time - start_time} seconds")
+        end_time = time.time()
+        logging.info(f"Time taken to validate shape: {end_time - start_time} seconds")
     def update_existing_graph(self, new_graph):
-        #start_time = time.time()
+        start_time = time.time()
     
         """Update the existing graph with new graph data and append to file."""
         try:
@@ -545,8 +545,8 @@ class SHACLValidator:
             with open(self.ttl_file_path, 'a', encoding='utf-8') as turtle_file:
                 turtle_file.write(ttl_data)  # Append the new RDF data
             logging.info(f"Successfully appended validated graph to {self.ttl_file_path}")
-            # end_time = time.time()
-            # logging.info(f"Time taken to update_existing_graph: {end_time - start_time} seconds")
+            end_time = time.time()
+            logging.info(f"Time taken to update_existing_graph: {end_time - start_time} seconds")
         except Exception as e:
             logging.error(f"Error updating TTL file at {self.ttl_file_path}: {e}")
 
@@ -562,15 +562,15 @@ class SHACLValidator:
             rdf_graph = self.rdf_converter.convert_json_to_rdf(json_data, transaction_config)
 
             # Validate the new RDF graph against the existing graph (without combining them)
-            #start_time = time.time()
+            start_time = time.time()
             conforms, results_graph, results_text = validate(
                 data_graph=rdf_graph,
                 shacl_graph=self.shacl_graph,
                 inference=None,
                 debug=True
             )
-            # end_time = time.time()
-            # logging.info(f"Time taken to validate and update the graph: {end_time - start_time} seconds")
+            end_time = time.time()
+            logging.info(f"Time taken to validate and update the graph: {end_time - start_time} seconds")
             if conforms:
                 logging.info("Validation successful")
                 
@@ -582,8 +582,8 @@ class SHACLValidator:
                 return True
             else:
                 logging.error("Validation failed")
-                # end_time = time.time()
-                # logging.info(f"Time taken to validate shape ERROR: {end_time - start_time} seconds")
+                end_time = time.time()
+                logging.info(f"Time taken to validate shape ERROR: {end_time - start_time} seconds")
                 return False
         except Exception as e:
             logging.error(f"Error during shape validation: {e}")
@@ -592,7 +592,7 @@ class SHACLValidator:
 
 def initialize_graphs(shacl_file_path, shacl_validator):
     """Initialize SHACL and existing graphs."""
-    #start_time = time.time()
+    start_time = time.time()
 
     # Only initialize if not already done
     if shacl_validator.shacl_graph is None:
@@ -600,8 +600,8 @@ def initialize_graphs(shacl_file_path, shacl_validator):
     if not shacl_validator.existing_graph_loaded:
         shacl_validator._initialize_existing_graph()  # Using the private method to load or create the graph
 
-    # end_time = time.time()
-    # logging.info(f"Time taken to initialize graphs: {end_time - start_time} seconds")
+    end_time = time.time()
+    logging.info(f"Time taken to initialize graphs: {end_time - start_time} seconds")
 
 
 # Initialize RDFConverter and SHACLValidator
@@ -2266,7 +2266,7 @@ class Transaction(object):
         #     )
         ##end
         ##This part should comment if not shacl
-        #start_time = time.time()
+        start_time = time.time()
     
         json_data_buy_offer = {
             "asset_ref": self.asset["data"]["id"],
@@ -2288,9 +2288,9 @@ class Transaction(object):
                     "BUYOFFER transaction'Validation failed"
                 )
         else:
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate buyoffer: {end_time - start_time} seconds")
-        # ##end
+            end_time = time.time()
+            logging.info(f"Time taken to validate buyoffer: {end_time - start_time} seconds")
+        ##end
         
             return self.validate_transfer_inputs(bigchain, current_transactions) 
         
@@ -2325,7 +2325,7 @@ class Transaction(object):
         #     )
         # end comment area
         ##This part should comment if not shacl validation  
-        #start_time = time.time()
+        start_time = time.time()
     
         json_data_sell = {
             "asset_id": self.asset["data"]["asset_id"],
@@ -2347,9 +2347,9 @@ class Transaction(object):
                     "SELL transaction'Validation failed"
                 )
         else:
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate sell: {end_time - start_time} seconds")
-        # ##end
+            end_time = time.time()
+            logging.info(f"Time taken to validate sell: {end_time - start_time} seconds")
+        ##end
         
             return self.validate_transfer_inputs(bigchain, current_transactions) 
      
@@ -2574,7 +2574,7 @@ class Transaction(object):
                    
         
     def generateShape(self):
-        #start_time = time.time()
+        start_time = time.time()
     
         json_data = {
             "asset_id": self.id,
@@ -2623,9 +2623,9 @@ class Transaction(object):
         with open(ttl_file_path, 'a', encoding='utf-8') as turtle_file:
             turtle_file.write(ttl_data)
         
-        # end_time = time.time()
-        # logging.info(f"Time taken to generate shape: {end_time - start_time} seconds")    
-        # logger.debug(f"Time taken to generate shape: {end_time - start_time} seconds") 
+        end_time = time.time()
+        logging.info(f"Time taken to generate shape: {end_time - start_time} seconds")    
+        logger.debug(f"Time taken to generate shape: {end_time - start_time} seconds") 
         return True
         
     def validate_adv(self, bigchain, current_transactions=[]):
@@ -2651,7 +2651,7 @@ class Transaction(object):
         #     )
         ##end uncomment
         ##This part should comment if not shacl
-        #start_time = time.time()
+        start_time = time.time()
     
         json_data_adv1 = {
             "asset_id": self.asset["data"]["asset_id"],
@@ -2671,9 +2671,9 @@ class Transaction(object):
                     "SELL transaction'Validation failed"
                 )
         
-        # end_time = time.time()
-        # logging.info(f"Time taken to validate adv: {end_time - start_time} seconds")
-        # logger.debug(f"Time taken to validate adv: {end_time - start_time} seconds")
+        end_time = time.time()
+        logging.info(f"Time taken to validate adv: {end_time - start_time} seconds")
+        logger.debug(f"Time taken to validate adv: {end_time - start_time} seconds")
         # ##end
     def validate_update_adv(self, bigchain, current_transactions=[]):
         
