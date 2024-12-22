@@ -24,17 +24,17 @@ ex:AssetShape a sh:NodeShape ;
     sh:targetClass ex:asset_id ;
 
     # Constraint to ensure that each asset_id is referenced by at most one ADV with status "Open"
-    sh:property [
-        sh:path [ sh:inversePath ex:ref ] ;  # Inverse path of ref, which points back to ADV nodes
-        sh:node ex:AdvShape ;  # Ensures the referenced node conforms to the ADV shape
-        sh:qualifiedValueShape [
-            sh:property [
-                sh:path ex:status ;
-                sh:hasValue "Open" ;  # Ensure that only ADVs with status "Open" are considered
-            ]
-        ] ;
-        sh:qualifiedMaxCount 1 ;  # Ensures that there is at most one ADV with status "Open"
-    ] ;
+    #sh:property [
+    #    sh:path [ sh:inversePath ex:ref ] ;  # Inverse path of ref, which points back to ADV nodes
+    #    sh:node ex:AdvShape ;  # Ensures the referenced node conforms to the ADV shape
+    #    sh:qualifiedValueShape [
+    #        sh:property [
+    #            sh:path ex:status ;
+    #            sh:hasValue "Open" ;  # Ensure that only ADVs with status "Open" are considered
+    #        ]
+    #    ] ;
+    #    sh:qualifiedMaxCount 1 ;  # Ensures that there is at most one ADV with status "Open"
+    #] ;
     sh:property [
         sh:path [ sh:inversePath ex:spend ] ;
         sh:qualifiedValueShape [
@@ -55,13 +55,13 @@ ex:BuyOfferShape a sh:NodeShape ;
         sh:nodeKind sh:IRI ;  # Ensure the reference is a URI (correcting to IRI ensures proper referencing)
         sh:maxCount 1 ;  # Ensure no more than one ADV is referenced
         sh:minCount 1 ;
-        sh:qualifiedValueShape [
-            sh:node ex:AdvShape ; 
-            sh:property [
-                sh:path ex:status ;
-                sh:hasValue "Open"^^xsd:string ;  # Ensure that the referenced ADV transaction has status "Open"
-            ]
-        ] ;
+        #sh:qualifiedValueShape [
+        #    sh:node ex:AdvShape ; 
+        #    sh:property [
+        #        sh:path ex:status ;
+        #        sh:hasValue "Open"^^xsd:string ;  # Ensure that the referenced ADV transaction has status "Open"
+        #    ]
+        #] ;
         #sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
         #sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
     ] ;
@@ -80,12 +80,12 @@ ex:SellShape a sh:NodeShape ;
     sh:property [
         sh:path ex:adv_ref ;  
         sh:node ex:AdvShape ;  
-        sh:qualifiedValueShape [
-            sh:property [
-                sh:path ex:status ;
-                sh:hasValue "Open" ;  
-            ]
-        ] ;
+        #sh:qualifiedValueShape [
+        #    sh:property [
+        #        sh:path ex:status ;
+        #        sh:hasValue "Open" ;  
+        #    ]
+        #] ;
         sh:qualifiedMinCount 1 ;  
         sh:qualifiedMaxCount 1 ;  
     ] ;
