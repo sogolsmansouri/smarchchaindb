@@ -482,7 +482,12 @@ def initialize_graphs(shacl_file_path, shacl_validator):
 # rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
 # shacl_validator = SHACLValidator(rdf_converter)
 # shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
+# rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
+# shacl_validator = SHACLValidator(rdf_converter)
+# shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
 
+# # Initialize SHACL and existing graphs once at the start
+# initialize_graphs(shacl_file_path, shacl_validator)
 # # Initialize SHACL and existing graphs once at the start
 # initialize_graphs(shacl_file_path, shacl_validator)
 
@@ -1007,7 +1012,7 @@ class Transaction(object):
         # dicts holding a `data` property. Asset payloads for 'TRANSFER'
         # operations must be dicts holding an `id` property.
         if (
-            (operation == self.CREATE or operation == self.BID or operation == self.BUYOFFER or operation == self.SELL or operation == self.PRE_REQUEST or operation == self.ACCEPT_RETURN)
+            (operation == self.CREATE or operation == self.BID or operation == self.BUYOFFER or operation == self.SELL or operation == self.PRE_REQUEST or operation == self.INTEREST)
             and asset is not None
             and not (isinstance(asset, dict) and "data" in asset)
         ):
@@ -1533,6 +1538,8 @@ class Transaction(object):
             ##This part should comment if not shacl validation
             # if(self.operation == self.CREATE):
             #     self.generateShape()
+            # if(self.operation == self.CREATE):
+            #     self.generateShape()
             ##end comment area    
             return self._inputs_valid(["dummyvalue" for _ in self.inputs])
         elif self.operation in [self.TRANSFER, self.BID, self.RETURN, self.BUYOFFER, self.SELL, self.INTEREST, self.PRE_REQUEST]:
@@ -1921,7 +1928,17 @@ class Transaction(object):
                 if bigchain.is_asset_returned(input_txid):
                     raise DoubleSpend("Input transaction `{}` has already been returned".format(input_txid))
             else:
+            if self.operation == Transaction.PRE_REQUEST:
+                # Implement is_returned logic in the bigchain instance
+                if bigchain.is_asset_returned(input_txid):
+                    raise DoubleSpend("Input transaction `{}` has already been returned".format(input_txid))
+            else:
             
+                spent = bigchain.get_spent(
+                    input_txid, input_.fulfills.output, current_transactions
+                )
+                if spent:
+                    raise DoubleSpend("input `{}` was already spent".format(input_txid))
                 spent = bigchain.get_spent(
                     input_txid, input_.fulfills.output, current_transactions
                 )
@@ -2507,7 +2524,14 @@ class Transaction(object):
             )
         ## uncomment in not shacl
         adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
+        adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
         
+        if adv_list:
+            raise DuplicateTransaction(
+                "ADV tx with the same asset input `{}` already committed".format(
+                    adv_list
+                )
+            )
         if adv_list:
             raise DuplicateTransaction(
                 "ADV tx with the same asset input `{}` already committed".format(
@@ -2527,6 +2551,7 @@ class Transaction(object):
         #     "operation": self.operation,
         #     "status":self.metadata["status"]
             
+        # }
         # }
 
         
