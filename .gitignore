@@ -102,3 +102,5 @@ docs/contributing/source/cross-project-policies/*.md
 .vscode/
 
 .env
+docker/data/
+
