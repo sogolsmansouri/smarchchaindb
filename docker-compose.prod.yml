@@ -67,7 +67,7 @@ services:
   tendermint:
     image: tendermint/tendermint:v0.31.5
     volumes:
-      - ./docker/volumes/tendermint:/tendermint
+      - ./docker/data/tendermint:/tendermint
     entrypoint: ""
     ports:
       - "26656:26656"
