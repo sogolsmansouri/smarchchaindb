@@ -1,0 +1,1737 @@
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> a ex:ADV ;
+    ex:ref <http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> a ex:ADV ;
+    ex:ref <http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> a ex:ADV ;
+    ex:ref <http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> ;
+    ex:asset_ref <http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> ;
+    ex:transaction_id "af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> ;
+    ex:asset_ref <http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> ;
+    ex:transaction_id "af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> ;
+    ex:asset_ref <http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/cc022ec43e85b2c38c02dab5e13a79373a5dde8fd00f52e54f89e2ae9d974966> ;
+    ex:transaction_id "af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4d6b84ec2b0a7b9ba6ffce47ddc79907569dc2cd447697ac07316c7646c254b8> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> ;
+    ex:buyOffer_ref <http://example.org/txn/af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> ;
+    ex:transaction_id "4d6b84ec2b0a7b9ba6ffce47ddc79907569dc2cd447697ac07316c7646c254b8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4d6b84ec2b0a7b9ba6ffce47ddc79907569dc2cd447697ac07316c7646c254b8> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> ;
+    ex:buyOffer_ref <http://example.org/txn/af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> ;
+    ex:transaction_id "4d6b84ec2b0a7b9ba6ffce47ddc79907569dc2cd447697ac07316c7646c254b8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4d6b84ec2b0a7b9ba6ffce47ddc79907569dc2cd447697ac07316c7646c254b8> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/db8a76288323ad3913b6e498ae06bdfd74cddc0bd5b2aae0d30b16cb6b907849> ;
+    ex:buyOffer_ref <http://example.org/txn/af73cc41627cbc0545c5401d88d99d7388ed56934f91ddbf15d9bee583da410c> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/d73921c3f0622c0f62d8270775c57efb431effc3a73be74a53612c71ed582961> ;
+    ex:transaction_id "4d6b84ec2b0a7b9ba6ffce47ddc79907569dc2cd447697ac07316c7646c254b8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> a ex:ADV ;
+    ex:ref <http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> a ex:ADV ;
+    ex:ref <http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> a ex:ADV ;
+    ex:ref <http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:asset_ref <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:transaction_id "904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:asset_ref <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:transaction_id "904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:asset_ref <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:transaction_id "904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:asset_ref <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8a776b7deff9fa8979e29ce7f5b1401b06df96d3a9a5be6b9bd89d90c624f66a> ;
+    ex:transaction_id "904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/fdd8abc79722812abcc25638b388dd94811c03dbdf175d4159bd96497d259201> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:buyOffer_ref <http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> ;
+    ex:transaction_id "fdd8abc79722812abcc25638b388dd94811c03dbdf175d4159bd96497d259201" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/fdd8abc79722812abcc25638b388dd94811c03dbdf175d4159bd96497d259201> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:buyOffer_ref <http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> ;
+    ex:transaction_id "fdd8abc79722812abcc25638b388dd94811c03dbdf175d4159bd96497d259201" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/fdd8abc79722812abcc25638b388dd94811c03dbdf175d4159bd96497d259201> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/eacec928903a0996d204747a33b93ea0c4f897716882882278ea184b1dacc9e7> ;
+    ex:buyOffer_ref <http://example.org/txn/904d8d4d28fcbaa81d8e67a53f78cbd31edd122eb95529c31b9ce947be8aabc8> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/274ed4418e0a19b80614b13910025a3b5c7b0075cfb695e72659c7a66f9c6025> ;
+    ex:transaction_id "fdd8abc79722812abcc25638b388dd94811c03dbdf175d4159bd96497d259201" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> a ex:ADV ;
+    ex:ref <http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> a ex:ADV ;
+    ex:ref <http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> a ex:ADV ;
+    ex:ref <http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> ;
+    ex:asset_ref <http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> ;
+    ex:transaction_id "9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> ;
+    ex:asset_ref <http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> ;
+    ex:transaction_id "9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> ;
+    ex:asset_ref <http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a317bba0644f5417ef012d7e80108ee333ae938e139f02c97c8871e2081033b8> ;
+    ex:transaction_id "9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/07cda62e8bd6a746f72cf2d97027517e146e5eb985713816f8971325c744da47> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> ;
+    ex:buyOffer_ref <http://example.org/txn/9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> ;
+    ex:transaction_id "07cda62e8bd6a746f72cf2d97027517e146e5eb985713816f8971325c744da47" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/07cda62e8bd6a746f72cf2d97027517e146e5eb985713816f8971325c744da47> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> ;
+    ex:buyOffer_ref <http://example.org/txn/9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> ;
+    ex:transaction_id "07cda62e8bd6a746f72cf2d97027517e146e5eb985713816f8971325c744da47" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/07cda62e8bd6a746f72cf2d97027517e146e5eb985713816f8971325c744da47> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/c43c3076e6acb8b6a8839719f2ab77cceba4ea3d3cf8966271143093cca94393> ;
+    ex:buyOffer_ref <http://example.org/txn/9e8ec51511162340ba7e6471dc522e333fbb693ad3694872e4bf1cf099a33776> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/d6c28c8ac82d0443691a21bb6c04b40cda49ea294187d79e926e193afa10ccc2> ;
+    ex:transaction_id "07cda62e8bd6a746f72cf2d97027517e146e5eb985713816f8971325c744da47" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> a ex:ADV ;
+    ex:ref <http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> a ex:ADV ;
+    ex:ref <http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> a ex:ADV ;
+    ex:ref <http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> ;
+    ex:asset_ref <http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> ;
+    ex:transaction_id "e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> ;
+    ex:asset_ref <http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> ;
+    ex:transaction_id "e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> ;
+    ex:asset_ref <http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/099891e886381b23d5cb0845108d68dc994923c23eb0944d6d47a3c4e9139119> ;
+    ex:transaction_id "e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ef9f099b1d972033587600d92c647886a7c37fbd2c6ca2769a0a640293ca7711> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> ;
+    ex:buyOffer_ref <http://example.org/txn/e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> ;
+    ex:transaction_id "ef9f099b1d972033587600d92c647886a7c37fbd2c6ca2769a0a640293ca7711" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ef9f099b1d972033587600d92c647886a7c37fbd2c6ca2769a0a640293ca7711> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> ;
+    ex:buyOffer_ref <http://example.org/txn/e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> ;
+    ex:transaction_id "ef9f099b1d972033587600d92c647886a7c37fbd2c6ca2769a0a640293ca7711" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ef9f099b1d972033587600d92c647886a7c37fbd2c6ca2769a0a640293ca7711> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/4750f6fc83071d4e1ccc985eed84ec69f695c14ebc8e6b74041d16d6e6d8ebfb> ;
+    ex:buyOffer_ref <http://example.org/txn/e4d3d6ac65add0221604bc8de098134a20cc22970e450de57833797686e4b9fe> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/796b72b6eaaa787372576e56d59f4d1d0c850d05960a15623ae9f9adba66c73d> ;
+    ex:transaction_id "ef9f099b1d972033587600d92c647886a7c37fbd2c6ca2769a0a640293ca7711" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> a ex:ADV ;
+    ex:ref <http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> a ex:ADV ;
+    ex:ref <http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> a ex:ADV ;
+    ex:ref <http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> ;
+    ex:asset_ref <http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> ;
+    ex:transaction_id "9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> ;
+    ex:asset_ref <http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> ;
+    ex:transaction_id "9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> ;
+    ex:asset_ref <http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/1254a51fd8f847d94553557f8e8aa410e3381048bb4411c3d984499f1b873d0f> ;
+    ex:transaction_id "9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/2d349c904b2d53cf68206dfca0bd4c924f6f1b30c4311394d0977c0482353181> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> ;
+    ex:buyOffer_ref <http://example.org/txn/9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> ;
+    ex:transaction_id "2d349c904b2d53cf68206dfca0bd4c924f6f1b30c4311394d0977c0482353181" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/2d349c904b2d53cf68206dfca0bd4c924f6f1b30c4311394d0977c0482353181> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> ;
+    ex:buyOffer_ref <http://example.org/txn/9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> ;
+    ex:transaction_id "2d349c904b2d53cf68206dfca0bd4c924f6f1b30c4311394d0977c0482353181" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/2d349c904b2d53cf68206dfca0bd4c924f6f1b30c4311394d0977c0482353181> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/295e322d35be661a89cd086d12f193c0550d7131d93b66d47b2ffbdda41dd38d> ;
+    ex:buyOffer_ref <http://example.org/txn/9536978cf21ffdba9fe9649283ae33842e20d41bc998ffa7f84fa14e85b8aa11> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/168e3dc8c1d4e57972d2403e774c28ec54ed1026f0871d82ad8ff6353813c131> ;
+    ex:transaction_id "2d349c904b2d53cf68206dfca0bd4c924f6f1b30c4311394d0977c0482353181" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ae8993bf0f66bbe890d955c2ccda4a339450d5f2f758aef6c51a9711b2eafa8f> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/41b37c3e70b0e92e7b44252dd247d58a275329dcf431eb10405775f6efd10997> ;
+    ex:transaction_id "ae8993bf0f66bbe890d955c2ccda4a339450d5f2f758aef6c51a9711b2eafa8f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ae8993bf0f66bbe890d955c2ccda4a339450d5f2f758aef6c51a9711b2eafa8f> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/41b37c3e70b0e92e7b44252dd247d58a275329dcf431eb10405775f6efd10997> ;
+    ex:transaction_id "ae8993bf0f66bbe890d955c2ccda4a339450d5f2f758aef6c51a9711b2eafa8f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ae8993bf0f66bbe890d955c2ccda4a339450d5f2f758aef6c51a9711b2eafa8f> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/41b37c3e70b0e92e7b44252dd247d58a275329dcf431eb10405775f6efd10997> ;
+    ex:transaction_id "ae8993bf0f66bbe890d955c2ccda4a339450d5f2f758aef6c51a9711b2eafa8f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/24bc15add1661a23005b8edfbea9c280434d7474e53c7d85e4809b84c324a45b> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/2f2e3ad6915256d5850758888119c18effbc0915664d7c9961079c22200ebd7c> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "24bc15add1661a23005b8edfbea9c280434d7474e53c7d85e4809b84c324a45b" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/24bc15add1661a23005b8edfbea9c280434d7474e53c7d85e4809b84c324a45b> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/2f2e3ad6915256d5850758888119c18effbc0915664d7c9961079c22200ebd7c> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "24bc15add1661a23005b8edfbea9c280434d7474e53c7d85e4809b84c324a45b" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/24bc15add1661a23005b8edfbea9c280434d7474e53c7d85e4809b84c324a45b> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/2f2e3ad6915256d5850758888119c18effbc0915664d7c9961079c22200ebd7c> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "24bc15add1661a23005b8edfbea9c280434d7474e53c7d85e4809b84c324a45b" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/5e3ce5cea952201343e937442dc8f518f76d2874428ae6e3bd831278cb98df45> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/5e3ce5cea952201343e937442dc8f518f76d2874428ae6e3bd831278cb98df45> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/5e3ce5cea952201343e937442dc8f518f76d2874428ae6e3bd831278cb98df45> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/2ce841c71cee14148999fa931c653a7ddf3a61cc173c85754f849b2f2af3e1a2> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/2ce841c71cee14148999fa931c653a7ddf3a61cc173c85754f849b2f2af3e1a2> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/2ce841c71cee14148999fa931c653a7ddf3a61cc173c85754f849b2f2af3e1a2> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bca6713ae81be8c4858385a78fbdef7484f1f625c677de6979a5af736ff26022> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bca6713ae81be8c4858385a78fbdef7484f1f625c677de6979a5af736ff26022> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bca6713ae81be8c4858385a78fbdef7484f1f625c677de6979a5af736ff26022> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/59a3371eff645c0e51097942851af64df44ecbf875fd9bc5346bff0d655bba56> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/59a3371eff645c0e51097942851af64df44ecbf875fd9bc5346bff0d655bba56> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/59a3371eff645c0e51097942851af64df44ecbf875fd9bc5346bff0d655bba56> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c9e734e52e4e0e2b8b68b87c79beefef116651023c7fb54cd1047b5cb55c3eee> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c9e734e52e4e0e2b8b68b87c79beefef116651023c7fb54cd1047b5cb55c3eee> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c9e734e52e4e0e2b8b68b87c79beefef116651023c7fb54cd1047b5cb55c3eee> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/76a69f3ce2bb759cbfa1e4d9df201fe34fef4fe51868f7bdaacd525e1331d17f> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/76a69f3ce2bb759cbfa1e4d9df201fe34fef4fe51868f7bdaacd525e1331d17f> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/76a69f3ce2bb759cbfa1e4d9df201fe34fef4fe51868f7bdaacd525e1331d17f> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1f843a60107d7b778d3c2aa3989452f807e9fb0415a4548329d2c19233fdce2d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1f843a60107d7b778d3c2aa3989452f807e9fb0415a4548329d2c19233fdce2d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1f843a60107d7b778d3c2aa3989452f807e9fb0415a4548329d2c19233fdce2d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> a ex:asset_id .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> a ex:ADV ;
+    ex:ref <http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> a ex:ADV ;
+    ex:ref <http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> a ex:ADV ;
+    ex:ref <http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> a ex:ADV ;
+    ex:ref <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> a ex:ADV ;
+    ex:ref <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> a ex:ADV ;
+    ex:ref <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> a ex:ADV ;
+    ex:ref <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> a ex:ADV ;
+    ex:ref <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> a ex:ADV ;
+    ex:ref <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> a ex:ADV ;
+    ex:ref <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> a ex:ADV ;
+    ex:ref <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> a ex:ADV ;
+    ex:ref <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> a ex:ADV ;
+    ex:ref <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> a ex:ADV ;
+    ex:ref <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> a ex:ADV ;
+    ex:ref <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> a ex:ADV ;
+    ex:ref <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> a ex:ADV ;
+    ex:ref <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> a ex:ADV ;
+    ex:ref <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> a ex:ADV ;
+    ex:ref <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> a ex:ADV ;
+    ex:ref <http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> a ex:ADV ;
+    ex:ref <http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> a ex:ADV ;
+    ex:ref <http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> a ex:ADV ;
+    ex:ref <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> a ex:ADV ;
+    ex:ref <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> a ex:ADV ;
+    ex:ref <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> a ex:ADV ;
+    ex:ref <http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> a ex:ADV ;
+    ex:ref <http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> a ex:ADV ;
+    ex:ref <http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> a ex:ADV ;
+    ex:ref <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> a ex:ADV ;
+    ex:ref <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> a ex:ADV ;
+    ex:ref <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> a ex:ADV ;
+    ex:ref <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:status "Open" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> ;
+    ex:asset_ref <http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> ;
+    ex:transaction_id "d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> ;
+    ex:asset_ref <http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> ;
+    ex:transaction_id "d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> ;
+    ex:asset_ref <http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/99e64333fb57cf79aeda905ceeba111002ed013692d9ae0da88922639d8c5151> ;
+    ex:transaction_id "d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> ;
+    ex:asset_ref <http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> ;
+    ex:transaction_id "0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> ;
+    ex:asset_ref <http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> ;
+    ex:transaction_id "0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> ;
+    ex:asset_ref <http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8d47de48b096fb7d97739d38a679d4a2b0dc82dd893043597569d432f0b723e9> ;
+    ex:transaction_id "0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:asset_ref <http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> ;
+    ex:transaction_id "3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:asset_ref <http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> ;
+    ex:transaction_id "3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:asset_ref <http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/4a7951728e0336ca430f9d1207c8211f98db5fd1cc16e6e274a0fad65994a6c3> ;
+    ex:transaction_id "3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:asset_ref <http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> ;
+    ex:transaction_id "92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:asset_ref <http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> ;
+    ex:transaction_id "92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:asset_ref <http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a5a784c3546e23dd2d158f7fd20f028140135540fa936fff017b8763bf127ee9> ;
+    ex:transaction_id "92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:asset_ref <http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> ;
+    ex:transaction_id "420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:asset_ref <http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> ;
+    ex:transaction_id "420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:asset_ref <http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/bbad93c23cb84a10b41cc6302119dade09e1d0ae08ac538d54a3c34c2218c511> ;
+    ex:transaction_id "420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:asset_ref <http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> ;
+    ex:transaction_id "f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:asset_ref <http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> ;
+    ex:transaction_id "f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:asset_ref <http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/7aad907d5d60dfd1052ed5ac2cf56a59bc20870d42dba588e124291cfe2358f5> ;
+    ex:transaction_id "f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> ;
+    ex:asset_ref <http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> ;
+    ex:transaction_id "efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> ;
+    ex:asset_ref <http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> ;
+    ex:transaction_id "efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> ;
+    ex:asset_ref <http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/fd2b144faa869ccc5972cc18c39169e1449ffce1a9a6e61f816d0689d5af3e24> ;
+    ex:transaction_id "efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:asset_ref <http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> ;
+    ex:transaction_id "1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:asset_ref <http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> ;
+    ex:transaction_id "1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:asset_ref <http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/78ff1e2bd220775761eaab4c31fa6c8822b3aa3f35ccde16ff3786e115887ab7> ;
+    ex:transaction_id "1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> ;
+    ex:asset_ref <http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> ;
+    ex:transaction_id "e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> ;
+    ex:asset_ref <http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> ;
+    ex:transaction_id "e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> ;
+    ex:asset_ref <http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/a891fd89a9ed8aff607f97ed07930b4c3c8ae4ed3aacde0afc9da97c991f8cf6> ;
+    ex:transaction_id "e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> ;
+    ex:asset_ref <http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> ;
+    ex:transaction_id "60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> ;
+    ex:asset_ref <http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> ;
+    ex:transaction_id "60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5> a ex:BUYOFFER ;
+    ex:adv_ref <http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> ;
+    ex:asset_ref <http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> ;
+    ex:operation "BUYOFFER" ;
+    ex:spend <http://example.org/txn/8455df73d23606795c83e66773ee221f926c4fb10f04ae2c58c2f85f9fffbc60> ;
+    ex:transaction_id "60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/84ff62c6a8458e85cd2a86487412a86788f7c67fcdaa5802b5fef3d09b074543> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> ;
+    ex:buyOffer_ref <http://example.org/txn/d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> ;
+    ex:transaction_id "84ff62c6a8458e85cd2a86487412a86788f7c67fcdaa5802b5fef3d09b074543" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/84ff62c6a8458e85cd2a86487412a86788f7c67fcdaa5802b5fef3d09b074543> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> ;
+    ex:buyOffer_ref <http://example.org/txn/d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> ;
+    ex:transaction_id "84ff62c6a8458e85cd2a86487412a86788f7c67fcdaa5802b5fef3d09b074543" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/84ff62c6a8458e85cd2a86487412a86788f7c67fcdaa5802b5fef3d09b074543> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8bc9ae03a5f734e9990450af8556149db658b11a6ae133a2ad60e0319f9dd1ea> ;
+    ex:buyOffer_ref <http://example.org/txn/d76555c5b2187d09808f84aecd7e938f60ffd7fbc4fc43bbab612d1a24b279c4> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/7d495a3eed21a5044bfebbcd3b468fc0eb5de669548ec5a358434349a7ad7dcb> ;
+    ex:transaction_id "84ff62c6a8458e85cd2a86487412a86788f7c67fcdaa5802b5fef3d09b074543" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a0da4493eb88ffdfcc8aadf1ea851516b8d866b03d35df3050499f111c6e5931> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> ;
+    ex:buyOffer_ref <http://example.org/txn/0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:transaction_id "a0da4493eb88ffdfcc8aadf1ea851516b8d866b03d35df3050499f111c6e5931" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a0da4493eb88ffdfcc8aadf1ea851516b8d866b03d35df3050499f111c6e5931> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> ;
+    ex:buyOffer_ref <http://example.org/txn/0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:transaction_id "a0da4493eb88ffdfcc8aadf1ea851516b8d866b03d35df3050499f111c6e5931" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/a0da4493eb88ffdfcc8aadf1ea851516b8d866b03d35df3050499f111c6e5931> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e81bb6b888c6712991fe93418fb72dfa024a39a836a9a64c91184ee227c3121d> ;
+    ex:buyOffer_ref <http://example.org/txn/0a60164b4f28ce8cf047dd80cb0a3749687d55ccffac9ce8bbe06b688ee88ff9> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/173119d6ddf7b31e514c2622547a7391c93ae1da99bd78d1379635ccd4925ad9> ;
+    ex:transaction_id "a0da4493eb88ffdfcc8aadf1ea851516b8d866b03d35df3050499f111c6e5931" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:buyOffer_ref <http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:transaction_id "3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:buyOffer_ref <http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:transaction_id "3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:buyOffer_ref <http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:transaction_id "3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/a56bcd905820d082adcc3c8ed802d6996db55bed887ebae1de4671e62aa90b85> ;
+    ex:buyOffer_ref <http://example.org/txn/3e4011069ccd2e151b5af971fce23e20a4634b2cb873569b8dfaa66c4db5b579> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/3ab3514a9319cda7778f385643493206094bccc669e37e11870a07f2396170cd> ;
+    ex:transaction_id "3faa91e3c5855f565e27314b4d4f9abf2d984fbfb1eb8df601ec627a7e3ebeec" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:buyOffer_ref <http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:transaction_id "44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:buyOffer_ref <http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:transaction_id "44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:buyOffer_ref <http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:transaction_id "44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/8a08f8cc833ba86f745373e493ba9b3af6ddcc11747136975b36f7884d729247> ;
+    ex:buyOffer_ref <http://example.org/txn/92dd1de6f0a49aaf3af92b691ae9702309c95b52ce9f8a795f3a1a136233e935> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/5f2a18c9b32a2fbc8b66a658d12a4d162dc0d6fa266f24536328939a5a62b40c> ;
+    ex:transaction_id "44916eebd4fde8c686cd91ceb93e32aac2047affdbd56bba73957b32973bc450" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:buyOffer_ref <http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:transaction_id "1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:buyOffer_ref <http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:transaction_id "1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:buyOffer_ref <http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:transaction_id "1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/e0ca420f2be552ff9df32e7faddfb29c2e66a0fa5f723e962854311202d7d355> ;
+    ex:buyOffer_ref <http://example.org/txn/420fee650d94b45b2f66f949fbacfc1dca7e252c90ea16391dcf3edfc3c438cf> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/b86a6457f517e29eeebbc917e2d9cb3e5e3dd0c22d26624383f043f200cbda3b> ;
+    ex:transaction_id "1ad65bc7a253ad71f0751bc4e04000ac00fe04765a91e97bb0b827d78c4e908c" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:buyOffer_ref <http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:transaction_id "29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:buyOffer_ref <http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:transaction_id "29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:buyOffer_ref <http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:transaction_id "29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/f32a9c22c01bf565db46ace296f7d85a1c27d77451c80a3fecda6f19b8c3e2fd> ;
+    ex:buyOffer_ref <http://example.org/txn/f45c5f35677834c73920482299e289d55730b7c8f88d41a5943f662b734e7673> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/c4264bbfa2f838b022d3b947655376facd50e1e1007f66866eb7f500c3e26e56> ;
+    ex:transaction_id "29bc6f91f128f97c5e9e3412921ed907e1caee02050cd3685ddfeb3961d34579" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/b40cb479311591e437851af7aa3140340d3ca6f3b2ba7a8c6bf064ab12bc5620> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> ;
+    ex:buyOffer_ref <http://example.org/txn/efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> ;
+    ex:transaction_id "b40cb479311591e437851af7aa3140340d3ca6f3b2ba7a8c6bf064ab12bc5620" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/b40cb479311591e437851af7aa3140340d3ca6f3b2ba7a8c6bf064ab12bc5620> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> ;
+    ex:buyOffer_ref <http://example.org/txn/efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> ;
+    ex:transaction_id "b40cb479311591e437851af7aa3140340d3ca6f3b2ba7a8c6bf064ab12bc5620" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/b40cb479311591e437851af7aa3140340d3ca6f3b2ba7a8c6bf064ab12bc5620> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/4fe5d61122a7a32d8335da5fa0a3a9c87b0d9a0dc6b2cac6b81a3d0de377a0f4> ;
+    ex:buyOffer_ref <http://example.org/txn/efb7d0c78a7ad218afb35162a8f2ee703149fba0fe218e1e4861b8c85675ce93> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/450c5ff25d8d4338a51b27ed96b2a68c0fb4b02512bea0344521b3343f40ec7b> ;
+    ex:transaction_id "b40cb479311591e437851af7aa3140340d3ca6f3b2ba7a8c6bf064ab12bc5620" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:buyOffer_ref <http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:transaction_id "889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:buyOffer_ref <http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:transaction_id "889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:buyOffer_ref <http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:transaction_id "889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/9fcaf63cc17bc97518e806974ea23ce9040688fe15bb947bf15a7b32b6426f9f> ;
+    ex:buyOffer_ref <http://example.org/txn/1d0d3753754a63e9f866cdcd4913485b8d0ca30d76f256d35beac9fd61a659e6> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/bd6e4cfdbb81d3bd97ef6908c1c7ae7e15ab74be9bb8c1304f00318cccf3d0ed> ;
+    ex:transaction_id "889b3921be964bef4593a6cf2effffc53910aa3e4c4e88fb650b4831eda7b36f" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/177ff7b2d536f0e2e884f1b6df422d36ce56a09a146e048fbb0d1a9146b0ee9d> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> ;
+    ex:buyOffer_ref <http://example.org/txn/e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> ;
+    ex:transaction_id "177ff7b2d536f0e2e884f1b6df422d36ce56a09a146e048fbb0d1a9146b0ee9d" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/177ff7b2d536f0e2e884f1b6df422d36ce56a09a146e048fbb0d1a9146b0ee9d> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> ;
+    ex:buyOffer_ref <http://example.org/txn/e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> ;
+    ex:transaction_id "177ff7b2d536f0e2e884f1b6df422d36ce56a09a146e048fbb0d1a9146b0ee9d" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/177ff7b2d536f0e2e884f1b6df422d36ce56a09a146e048fbb0d1a9146b0ee9d> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/ac0b903e7a437d982e585cc092bed3989aa306c831245d0c9a48081c12995699> ;
+    ex:buyOffer_ref <http://example.org/txn/e6ff3e299abf8011b31c9c5a4b61f648050168a618aafdbd3bd2d227cab44eb5> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/ca1fdf4777a5a47e85c018f5124a481f786af51941cb9313a911eb5fef63622d> ;
+    ex:transaction_id "177ff7b2d536f0e2e884f1b6df422d36ce56a09a146e048fbb0d1a9146b0ee9d" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c8b04338e304e934640402f139769468bee1c4b20daf74b63c5d812872520b96> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> ;
+    ex:buyOffer_ref <http://example.org/txn/60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:transaction_id "c8b04338e304e934640402f139769468bee1c4b20daf74b63c5d812872520b96" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c8b04338e304e934640402f139769468bee1c4b20daf74b63c5d812872520b96> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> ;
+    ex:buyOffer_ref <http://example.org/txn/60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:transaction_id "c8b04338e304e934640402f139769468bee1c4b20daf74b63c5d812872520b96" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c8b04338e304e934640402f139769468bee1c4b20daf74b63c5d812872520b96> a ex:SELL ;
+    ex:adv_ref <http://example.org/txn/945997b967ca25716e38ca377b70d3e1bf5c7c12757504d69e5e70c0c090a4a9> ;
+    ex:buyOffer_ref <http://example.org/txn/60de4ec14ed0647ffabe549f5683b40ba4847ef43babd2dfa02ade0670fdf3b5> ;
+    ex:operation "SELL" ;
+    ex:spend <http://example.org/txn/ea5b90c2525116a20d667d8b87e23ce1622874f227a22579db1890732517a6eb> ;
+    ex:transaction_id "c8b04338e304e934640402f139769468bee1c4b20daf74b63c5d812872520b96" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/26d07590bc7073d94944dd5ba24ad4296e1275af34ce3377f84fc93fe56346b4> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/4ac1ee133de4a31fbf215f46f5f5f440798c44dee55fb09d4d909ac25b45a9a8> ;
+    ex:transaction_id "26d07590bc7073d94944dd5ba24ad4296e1275af34ce3377f84fc93fe56346b4" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/26d07590bc7073d94944dd5ba24ad4296e1275af34ce3377f84fc93fe56346b4> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/4ac1ee133de4a31fbf215f46f5f5f440798c44dee55fb09d4d909ac25b45a9a8> ;
+    ex:transaction_id "26d07590bc7073d94944dd5ba24ad4296e1275af34ce3377f84fc93fe56346b4" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/26d07590bc7073d94944dd5ba24ad4296e1275af34ce3377f84fc93fe56346b4> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/4ac1ee133de4a31fbf215f46f5f5f440798c44dee55fb09d4d909ac25b45a9a8> ;
+    ex:transaction_id "26d07590bc7073d94944dd5ba24ad4296e1275af34ce3377f84fc93fe56346b4" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/4cf3b7eb82e18874c818b9ecc8a0104bcac46b5a81d6ad3c1d6ebabe20a9f422> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/4cf3b7eb82e18874c818b9ecc8a0104bcac46b5a81d6ad3c1d6ebabe20a9f422> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/4cf3b7eb82e18874c818b9ecc8a0104bcac46b5a81d6ad3c1d6ebabe20a9f422> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/4cf3b7eb82e18874c818b9ecc8a0104bcac46b5a81d6ad3c1d6ebabe20a9f422> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "9ee90a4e014e6a8bd7e509a85a2d17afa674efb6cfbdaa6c6ef4d6d45a9eeadd" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/c40641d5f302d584a1db16f3daaefdb5e7d0ab189e739fcace48a37fb21aba13> ;
+    ex:transaction_id "c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/c40641d5f302d584a1db16f3daaefdb5e7d0ab189e739fcace48a37fb21aba13> ;
+    ex:transaction_id "c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/c40641d5f302d584a1db16f3daaefdb5e7d0ab189e739fcace48a37fb21aba13> ;
+    ex:transaction_id "c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654> a ex:REQUEST_RETURN ;
+    ex:operation "REQUEST_RETURN" ;
+    ex:sell_ref <http://example.org/txn/c40641d5f302d584a1db16f3daaefdb5e7d0ab189e739fcace48a37fb21aba13> ;
+    ex:transaction_id "c78dafa4e04074c483896fdca7903b8861d2ecaa0e4b9984e39e730b5dd76654" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/86e70b41bdbf0ae1c527349dfd6676f9d2f80e34d7782ce1b14abf1b40b3460e> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/86e70b41bdbf0ae1c527349dfd6676f9d2f80e34d7782ce1b14abf1b40b3460e> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/86e70b41bdbf0ae1c527349dfd6676f9d2f80e34d7782ce1b14abf1b40b3460e> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678" .
+
+@prefix ex: <http://example.org/> .
+
+<http://example.org/txn/ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678> a ex:ACCEPT_RETURN ;
+    ex:adv_ref <http://example.org/txn/86e70b41bdbf0ae1c527349dfd6676f9d2f80e34d7782ce1b14abf1b40b3460e> ;
+    ex:operation "ACCEPT_RETURN" ;
+    ex:transaction_id "ab6f62ff34b569d1cd3391fdc63609b17a375a6fdeca36386e282a65bc62d678" .
+

@@ -11,6 +11,7 @@ Attributes:
         representing an unspent output.
 
 """
+import requests
 import json
 import os
 from datetime import datetime
@@ -427,6 +428,7 @@ class RDFConverter:
                         jsonld_data[details["rdf_property"]] = value          
             
         # Create RDF graph from the JSON-LD data
+        print("\n\n===================== JSON-LD Data ====================\n", jsonld_data, '\n\n')
         g = Graph()
         g.parse(data=json.dumps(jsonld_data), format='json-ld')
 
@@ -551,16 +553,18 @@ class SHACLValidator:
             logging.error(f"Error updating TTL file at {self.ttl_file_path}: {e}")
 
     def validate_shape(self, json_data):
+        print("\n\n===================== JSON Data ====================\n", json_data, '\n\n')
         
-
         """Validate the shape of the incoming JSON data."""
         try:
             if not self.shacl_graph or not self.existing_graph_loaded:
                 raise Exception("SHACL or existing graph not loaded properly. Call initialize_graphs first.")
 
+            start = time.perf_counter()
             # Convert the incoming JSON data to RDF format using caching
             rdf_graph = self.rdf_converter.convert_json_to_rdf(json_data, transaction_config)
-
+            end_conversion = time.perf_counter()
+            print("\n\n===================== RDF Graph ====================\n", rdf_graph, '\n\n')
             # Validate the new RDF graph against the existing graph (without combining them)
             #start_time = time.time()
             conforms, results_graph, results_text = validate(
@@ -569,6 +573,13 @@ class SHACLValidator:
                 inference=None,
                 debug=True
             )
+            end_validation = time.perf_counter()
+
+            # Print time taken for conversion and validation
+            print("\n\n===================== START BENCHMARKS ====================\n")
+            print(f"Time taken for conversion: {(end_conversion - start) * 1000} ms")
+            print(f"Time taken for validation: {(end_validation - end_conversion) * 1000} ms")
+            print("\n\n===================== END BENCHMARKS ====================\n")
             # end_time = time.time()
             # logging.info(f"Time taken to validate and update the graph: {end_time - start_time} seconds")
             if conforms:
