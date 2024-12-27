@@ -72,7 +72,9 @@ services:
     ports:
       - "26656:26656"
       - "26657:26657"
-    command: sh -c "tendermint init && tendermint node --consensus.create_empty_blocks=false --proxy_app=tcp://bigchaindb:26658"
+    command: >
+      sh -c "[ -f /tendermint/config/config.toml ] || tendermint init &&
+            tendermint node --consensus.create_empty_blocks=false --proxy_app=tcp://bigchaindb:26658"
     restart: always
   bdb:
     image: busybox
