@@ -2575,8 +2575,7 @@ class Transaction(object):
     @classmethod
     def build_exchange_tx(cls, asset_id, fulfilled_tx, recepient_pub_key):
         
-        logger.debug("asset_id " ,asset_id)
-        logger.debug("fulfilled_tx %s" ,fulfilled_tx)
+        
         output_index = 0
         output = fulfilled_tx.outputs[output_index]
 
