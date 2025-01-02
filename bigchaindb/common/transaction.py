@@ -2573,9 +2573,10 @@ class Transaction(object):
         
 
     @classmethod
-    def build_exchange_tx(cls, sell_id, asset_id, fulfilled_tx, recepient_pub_key):
+    def build_exchange_tx(cls, asset_id, fulfilled_tx, recepient_pub_key):
         
-        
+        logger.debug("asset_id " ,asset_id)
+        logger.debug("fulfilled_tx %s" ,fulfilled_tx)
         output_index = 0
         output = fulfilled_tx.outputs[output_index]
 
@@ -2595,7 +2596,10 @@ class Transaction(object):
                 
             
         }
-        
+        # "data": {
+        #         "bid_id": asset_id,
+        #         "accept_id": accept_id,
+        #     }
         metadata = {
             "requestCreationTimestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")
         }
@@ -2697,14 +2701,15 @@ class Transaction(object):
         buyer_asset_tx = bigchain.get_transaction(buyer_asset_tx_id)
 
         seller_pub_key = sell_tx.inputs[input_index].owners_before[-1]
+        
         buy_tx = Transaction.build_exchange_tx(
-            sell_id, buyer_asset_tx_id, buyer_asset_tx, seller_pub_key
+            buyer_asset_tx_id, buyer_asset_tx, seller_pub_key
         )
         exchange_txs.append(buy_tx)
 
         buyer_pub_key = buyer_asset_tx.inputs[input_index].owners_before[-1]
         buy_tx = Transaction.build_exchange_tx(
-            sell_id, sell_id, sell_tx, buyer_pub_key
+            sell_id, sell_tx, buyer_pub_key
         )
         exchange_txs.append(buy_tx)
 
