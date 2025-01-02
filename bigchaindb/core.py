@@ -241,6 +241,9 @@ class App(BaseApplication):
         if not transaction:
             logger.debug("deliver_tx: INVALID")
             status = "INVALID"
+            code = CodeTypeError
+            return self.abci.ResponseDeliverTx(code=code)  # Immediately return for invalid transactions
+
         else:
             logger.debug("storing tx")
             self.block_txn_ids.append(transaction.id)
