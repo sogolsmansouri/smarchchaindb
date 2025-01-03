@@ -482,12 +482,9 @@ def initialize_graphs(shacl_file_path, shacl_validator):
 rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
 shacl_validator = SHACLValidator(rdf_converter)
 shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
-rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
-shacl_validator = SHACLValidator(rdf_converter)
-shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
 
-# Initialize SHACL and existing graphs once at the start
-initialize_graphs(shacl_file_path, shacl_validator)
+
+
 # Initialize SHACL and existing graphs once at the start
 initialize_graphs(shacl_file_path, shacl_validator)
 class Input(object):
