@@ -202,7 +202,6 @@ transaction_config = {
         }
 }
 
-
 # RDF Conversion Cache
 class RDFConverter:
     def __init__(self):
@@ -365,6 +364,8 @@ class SHACLValidator:
         self.ttl_file_path = os.path.join(script_dir, 'output.ttl')  # Path to the TTL file
         self.existing_graph_loaded = False  # Initialize the flag to track if the existing graph is loaded
         self._initialize_existing_graph()  # Initialize the existing graph when the class is instantiated
+        self.validated_transactions = set()
+        self.create_shape_cache = set() 
         # end_time = time.time()
         # logging.info(f"Time taken to __init__: {end_time - start_time} seconds")
 
@@ -387,11 +388,11 @@ class SHACLValidator:
                 with open(self.ttl_file_path, 'w', encoding='utf-8') as f:
                     pass  # Create an empty file to initialize it
                 self.existing_graph_loaded = True  # Set the flag to True after creating the file
-                logging.info(f"Created new empty TTL file at {self.ttl_file_path}")
+                #logging.info(f"Created new empty TTL file at {self.ttl_file_path}")
             except Exception as e:
                 logging.error(f"Error creating the TTL file at {self.ttl_file_path}: {e}")
-            # end_time = time.time()
-            # logging.info(f"_initialize_existing_graph Else: {end_time - start_time} seconds")    
+                # end_time = time.time()
+                # logging.info(f"_initialize_existing_graph Else: {end_time - start_time} seconds")    
 
     def load_shacl_graph(self, shacl_file_path):
         """Load SHACL graph once."""
@@ -399,10 +400,10 @@ class SHACLValidator:
     
         if self.shacl_graph is None:
             try:
-                logging.info(f"In load shacl graph")
+                
                 self.shacl_graph = Graph()
                 self.shacl_graph.parse(shacl_file_path, format='turtle')
-                logging.info(f"SHACL graph loaded from {shacl_file_path}")
+                
             except Exception as e:
                 logging.error(f"Error loading SHACL file at {shacl_file_path}: {e}")
         # end_time = time.time()
@@ -416,7 +417,7 @@ class SHACLValidator:
             ttl_data = new_graph.serialize(format='turtle').decode('utf-8')
             with open(self.ttl_file_path, 'a', encoding='utf-8') as turtle_file:
                 turtle_file.write(ttl_data)  # Append the new RDF data
-            logging.info(f"Successfully appended validated graph to {self.ttl_file_path}")
+            # logging.info(f"Successfully appended validated graph to {self.ttl_file_path}")
             # end_time = time.time()
             # logging.info(f"Time taken to update_existing_graph: {end_time - start_time} seconds")
         except Exception as e:
@@ -427,6 +428,7 @@ class SHACLValidator:
 
         """Validate the shape of the incoming JSON data."""
         try:
+            transaction_id = json_data["transaction_id"]
             if not self.shacl_graph or not self.existing_graph_loaded:
                 raise Exception("SHACL or existing graph not loaded properly. Call initialize_graphs first.")
 
@@ -444,21 +446,21 @@ class SHACLValidator:
             # end_time = time.time()
             # logging.info(f"Time taken to validate and update the graph: {end_time - start_time} seconds")
             if conforms:
-                logging.info("Validation successful")
+                #logging.info("Validation successful")
                 
                 # Append only the validated triples to the existing graph
                # self.existing_graph.update(rdf_graph)  # Only add the validated triples
                 self.update_existing_graph(rdf_graph)  # Assuming this is needed for persistence
-
+                self.validated_transactions.add(transaction_id)
                 
                 return True
             else:
-                logging.error("Validation failed")
+                # logging.error("Validation failed")
                 # end_time = time.time()
                 # logging.info(f"Time taken to validate shape ERROR: {end_time - start_time} seconds")
                 return False
         except Exception as e:
-            logging.error(f"Error during shape validation: {e}")
+            #logging.error(f"Error during shape validation: {e}")
             return False
 
 
@@ -477,13 +479,17 @@ def initialize_graphs(shacl_file_path, shacl_validator):
 
 
 # Initialize RDFConverter and SHACLValidator
-rdf_converter = RDFConverter()  
+rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
+shacl_validator = SHACLValidator(rdf_converter)
+shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
+rdf_converter = RDFConverter()  # Ensure you have the RDFConverter class or import it
 shacl_validator = SHACLValidator(rdf_converter)
 shacl_file_path = os.path.join(os.path.dirname(__file__), 'shacl_shape.ttl')
 
 # Initialize SHACL and existing graphs once at the start
 initialize_graphs(shacl_file_path, shacl_validator)
-
+# Initialize SHACL and existing graphs once at the start
+initialize_graphs(shacl_file_path, shacl_validator)
 class Input(object):
     """A Input is used to spend assets locked by an Output.
 
