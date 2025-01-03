@@ -105,8 +105,8 @@ ex:SellShape a sh:NodeShape ;
                 sh:hasValue "Open" ;  
             ]
         ] ;
-        sh:qualifiedMinCount 1 ;  
-        sh:qualifiedMaxCount 1 ;  
+        sh:minCount 1 ;  # Ensure at least one BuyOffer is referenced
+        sh:maxCount 1 ;  
     ] ;
     # SPARQL constraint to update status after SELL
     #sh:sparql [
