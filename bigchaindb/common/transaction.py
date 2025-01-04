@@ -231,7 +231,7 @@ class RDFConverter:
         # Check if the result is already cached based on the JSON data
         cache_key = json.dumps(json_data, sort_keys=True)
         if cache_key in self.rdf_cache:
-            logging.info("Cache hit: Returning cached RDF graph.")
+            #logging.info("Cache hit: Returning cached RDF graph.")
             return self.rdf_cache[cache_key]
         if json_data["operation"] ==  "ADV":
             
@@ -2447,7 +2447,7 @@ class Transaction(object):
         #commented for not shacl
         #start_time = time.time()
         if self.id in shacl_validator.create_shape_cache:
-            logging.info(f"Transaction already processed. Skipping shape generation.")
+            #logging.info(f"Transaction already processed. Skipping shape generation.")
             return True
         
         json_data = {
@@ -2894,7 +2894,7 @@ class Transaction(object):
                 )
         ##This part should comment
         if self.id in shacl_validator.validated_transactions:
-            logging.info(f"Transaction {self.id} already validated.")
+            #logging.info(f"Transaction {self.id} already validated.")
             return  # Skip further processing if already validated
         
         json_data_accept_return = {
