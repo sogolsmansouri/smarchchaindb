@@ -2134,12 +2134,13 @@ class Transaction(object):
                     "BUYOFFER transaction's outputs must point to Escrow account"
                 )
         #This part should comment if  shacl
-        adv_status = adv_tx.metadata.get("status")
-        #logger.debug("adv status %s", adv_status)
-        if adv_status.lower() != "open":
-            raise ValidationError(
-                "BUYOFFER transaction must be against an open ADV transaction"
-            )
+        #complex validation
+        # adv_status = adv_tx.metadata.get("status")
+        
+        # if adv_status.lower() != "open":
+        #     raise ValidationError(
+        #         "BUYOFFER transaction must be against an open ADV transaction"
+        #     ) 
         #end
         ##This part should comment if not shacl
         # #start_time = time.time()
@@ -2192,12 +2193,13 @@ class Transaction(object):
                 raise ValidationError(
                     "SELL transaction's outputs must point to Escrow account"
                 )
-        #This part should comment in case of shacl validation   
-        adv_status = adv_tx.metadata.get("status") 
-        if adv_status.lower() != "open":
-            raise ValidationError(
-                "SELL transaction must be against an open ADV transaction"
-            )
+        #This part should comment in case of shacl validation  
+        #complex validation 
+        # adv_status = adv_tx.metadata.get("status") 
+        # if adv_status.lower() != "open":
+        #     raise ValidationError(
+        #         "SELL transaction must be against an open ADV transaction"
+        #     )
         #end comment area
         ##This part should comment if not shacl validation  
         # #start_time = time.time()
@@ -2878,13 +2880,13 @@ class Transaction(object):
         buy_offer_tx = bigchain.get_transaction(offer_id)
         adv_tx = bigchain.get_transaction(adv_id)
         #logger.debug("adv!!! %s", adv_tx)
-        # if buy_offer_tx is None:
-        #     raise InputDoesNotExist("Return request  `{}` doesn't exist".format(offer_id))
+        if buy_offer_tx is None:
+            raise InputDoesNotExist("Return request  `{}` doesn't exist".format(offer_id))
 
-        # if buy_offer_tx.operation != self.PRE_REQUEST:
-        #     raise ValidationError(
-        #         "ACCEPT RETURN transaction must be against a commited RETURN SELL transaction"
-        #     )
+        if buy_offer_tx.operation != self.PRE_REQUEST:
+            raise ValidationError(
+                "ACCEPT RETURN transaction must be against a commited RETURN SELL transaction"
+            )
 
         for output in self.outputs:
             if (
