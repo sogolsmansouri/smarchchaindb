@@ -451,7 +451,7 @@ class SHACLValidator:
                 # Append only the validated triples to the existing graph
                # self.existing_graph.update(rdf_graph)  # Only add the validated triples
                 self.update_existing_graph(rdf_graph)  # Assuming this is needed for persistence
-                self.validated_transactions.add(transaction_id)
+                #self.validated_transactions.add(transaction_id)#not optimized
                 
                 return True
             else:
@@ -2141,9 +2141,9 @@ class Transaction(object):
         ##end
         ##This part should comment if not shacl
         #start_time = time.time()
-        if self.id in shacl_validator.validated_transactions:
-            #logging.info(f"Transaction {self.id} already validated.")
-            return  self.validate_transfer_inputs(bigchain, current_transactions) 
+        # if self.id in shacl_validator.validated_transactions:#not optimized
+        #     #logging.info(f"Transaction {self.id} already validated.")
+        #     return  self.validate_transfer_inputs(bigchain, current_transactions) 
         
         json_data_buy_offer = {
             "asset_ref": self.asset["data"]["id"],
@@ -2198,8 +2198,8 @@ class Transaction(object):
         # end comment area
         ##This part should comment if not shacl validation  
         #start_time = time.time()
-        if self.id in shacl_validator.validated_transactions:
-            return  self.validate_transfer_inputs(bigchain, current_transactions) 
+        # if self.id in shacl_validator.validated_transactions:
+        #     return  self.validate_transfer_inputs(bigchain, current_transactions) 
         
         json_data_sell = {
             "asset_id": self.asset["data"]["asset_id"],
@@ -2518,9 +2518,9 @@ class Transaction(object):
         ##This part should comment if not shacl
         #start_time = time.time()
         
-        if self.id in shacl_validator.validated_transactions:
+        # if self.id in shacl_validator.validated_transactions: #not optimized
             
-            return  
+        #     return  
         json_data_adv1 = {
             "asset_id": self.asset["data"]["asset_id"],
             "transaction_id": self.id,
@@ -2847,9 +2847,9 @@ class Transaction(object):
                     "RETRUN SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment  
-        if self.id in shacl_validator.validated_transactions:
-            #logging.info(f"Transaction {self.id} already validated.")
-            return  
+        # if self.id in shacl_validator.validated_transactions:#not optimized
+        #     #logging.info(f"Transaction {self.id} already validated.")
+        #     return  
         json_data_accept_request_return = {
             "asset_ref": self.asset["data"]["asset_id"],
             "sell_ref": self.asset["data"]["sell_id"],
@@ -2893,9 +2893,9 @@ class Transaction(object):
                     "ACCEPT RETURN transaction's outputs must point to Escrow account"
                 )
         ##This part should comment
-        if self.id in shacl_validator.validated_transactions:
-            #logging.info(f"Transaction {self.id} already validated.")
-            return  # Skip further processing if already validated
+        # if self.id in shacl_validator.validated_transactions:#not optimized
+        #     #logging.info(f"Transaction {self.id} already validated.")
+        #     return  
         
         json_data_accept_return = {
             "asset_id": self.asset["data"]["asset_id"],
