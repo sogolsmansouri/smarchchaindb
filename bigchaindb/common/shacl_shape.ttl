@@ -64,8 +64,8 @@ ex:BuyOfferShape a sh:NodeShape ;
         #    ]
         #] ;
         
-        sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
-        sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
+        #sh:qualifiedMinCount 1 ;  # Must reference at least one ADV
+        #sh:qualifiedMaxCount 1 ;  # Only one ADV should be referenced
     ] ;
     sh:property [
         sh:path ex:asset_ref ;
