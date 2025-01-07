@@ -309,47 +309,6 @@ class RDFConverter:
         return g
 
 
-        # start_time = time.time()
-
-        # # Check if the result is already cached based on the JSON data
-        # cache_key = json.dumps(json_data, sort_keys=True)
-        # if cache_key in self.rdf_cache:
-        #     logging.info("Cache hit: Returning cached RDF graph.")
-        #     return self.rdf_cache[cache_key]
-
-        # context = self.get_static_context()["@context"]
-
-        # jsonld_data = {
-        #     "@context": context,
-        #     "@id": "http://example.org/txn/" + json_data["transaction_id"],
-        #     "@type": "ex:" + json_data["operation"]
-        # }
-
-        # # Handle ADV operation specifically
-        # if json_data["operation"] == "ADV":
-        #     jsonld_data["status"] = Literal("Open")
-        #     jsonld_data["ref"] = "http://example.org/txn/" + json_data["asset_id"]
-        # else:
-        #     transaction_type = json_data["operation"]
-        #     config = transaction_config.get(transaction_type)
-
-        #     if not config:
-        #         raise ValueError(f"Unsupported transaction type: {transaction_type}")
-
-        #     for prop, details in config["properties"].items():
-        #         self.process_property(prop, details, json_data, jsonld_data)
-
-        # # Create RDF graph from the JSON-LD data
-        # g = Graph()
-        # g.parse(data=json.dumps(jsonld_data), format='json-ld')
-
-        # # Cache the RDF graph for future use
-        # self.rdf_cache[cache_key] = g
-
-        # end_time = time.time()
-        # logging.info(f"Time taken to convert JSON to RDF: {end_time - start_time} seconds")
-        # return g
-
 # SHACL Validator
 
 
@@ -448,10 +407,9 @@ class SHACLValidator:
             if conforms:
                 #logging.info("Validation successful")
                 
-                # Append only the validated triples to the existing graph
-               # self.existing_graph.update(rdf_graph)  # Only add the validated triples
+               
                 self.update_existing_graph(rdf_graph)  # Assuming this is needed for persistence
-                self.validated_transactions.add(transaction_id)
+                #self.validated_transactions.add(transaction_id) #not optimized
                 
                 return True
             else:
@@ -2144,9 +2102,9 @@ class Transaction(object):
         #end
         #This part should comment if not shacl
         #start_time = time.time()
-        if self.id in shacl_validator.validated_transactions:
-            #logging.info(f"Transaction {self.id} already validated.")
-            return  self.validate_transfer_inputs(bigchain, current_transactions) 
+        # if self.id in shacl_validator.validated_transactions:#not optimized
+        #     #logging.info(f"Transaction {self.id} already validated.")
+        #     return  self.validate_transfer_inputs(bigchain, current_transactions) 
         
         json_data_buy_offer = {
             "asset_ref": self.asset["data"]["id"],
@@ -2178,7 +2136,7 @@ class Transaction(object):
         
         if adv_tx is None:
             raise InputDoesNotExist("ADV input `{}` doesn't exist".format(adv_id))
-        #logger.debug("!!!!!!1" ,buy_offer_tx.operation)
+       
         if buy_offer_tx.operation != self.BUYOFFER:
             raise ValidationError(
                 "SELL transaction must be against a commited BUYOFFER transaction"
@@ -2203,8 +2161,8 @@ class Transaction(object):
         #end comment area
         ##This part should comment if not shacl validation  
         #start_time = time.time()
-        if self.id in shacl_validator.validated_transactions:
-            return  self.validate_transfer_inputs(bigchain, current_transactions) 
+        # if self.id in shacl_validator.validated_transactions:
+        #     return  self.validate_transfer_inputs(bigchain, current_transactions) 
         
         json_data_sell = {
             "asset_id": self.asset["data"]["asset_id"],
@@ -2292,168 +2250,14 @@ class Transaction(object):
             print("ADV transaction not found in the graph.")
             return False
 
-    
-    
- 
-    # def convert_json_to_rdf(self,json_data):
-    #     if json_data["operation"] ==  "ADV":
-            
-    #         context = {
-    #             "@context": {
-    #                 "ex": "http://example.org/",
-    #                 "schema": "http://schema.org/",
-    #                 "transaction_id": "ex:transaction_id",
-    #                 "operation": "ex:operation",
-    #                 "status": "ex:status",
-    #                 "ref": {
-    #                     "@id": "ex:ref",
-    #                     "@type": "@id"  # Ensure this is treated as a URI
-    #                 }
-    #             }
-    #         }
-
-    #         jsonld_data = {
-    #             "@context": context["@context"],  # Reuse the existing context variable
-    #             "@id": "http://example.org/txn/" + json_data["transaction_id"],
-    #             "@type": "ex:" + json_data["operation"],
-    #             "ref": "http://example.org/txn/" + json_data["asset_id"],  # Now ref is a URI
-    #             "status": "Open"  # Literal value without prefix
-    #         }
-    #     else:
-    #         # Context definition
-    #         context = {
-    #             "@context": {
-    #                 "ex": "http://example.org/",
-    #                 "schema": "http://schema.org/"
-    #             }
-    #         }
-
-    #         # Assume json_data contains the incoming transaction data
-    #         transaction_type = json_data.get("operation")
-    #         config = self.transaction_config.get(transaction_type)
-
-    #         if not config:
-    #             raise ValueError(f"Unsupported transaction type: {transaction_type}")
-
-    #         # Generate the JSON-LD structure dynamically based on the configuration
-    #         jsonld_data = {
-    #             "@context": context["@context"],
-    #             "@id": "http://example.org/txn/" + json_data["transaction_id"],
-    #             "@type": "ex:" + transaction_type
-    #         }
-
-    #         for prop, details in config["properties"].items():
-    #             self.process_property(prop, details, json_data, jsonld_data)
-
-    #         # Dynamically assign properties based on the config
-    #         # for prop, details in config["properties"].items():
-    #         #     if prop in json_data:
-    #         #         value = json_data[prop]
-                    
-    #         #         # Check if the property has a base URL for URI creation
-    #         #         if "base" in details:
-    #         #             # Handle URI-based values like adv_ref and asset_ref
-    #         #             jsonld_data[details["rdf_property"]] = {
-    #         #                 "@id": details["base"] + value  # Create the URI based on the base for both adv_ref and asset_ref
-    #         #             }
-    #         #         else:
-    #         #             # Handle literal values like transaction_id and operation
-    #         #             jsonld_data[details["rdf_property"]] = value          
-            
-    #     g = Graph()
-    #     g.parse(data=json.dumps(jsonld_data), format='json-ld')
-    #     return g
-
-    # def validate_shape(self,json_data, shacl_file_path):
-        
-    #     rdf_graph = self.convert_json_to_rdf(json_data)
-
-    #     ttl_file_path = os.path.join(os.path.dirname(__file__), 'output.ttl')
-        
-        
-    #     existing_graph = Graph()
-    #     if os.path.exists(ttl_file_path):
-    #         try:
-    #             existing_graph.parse(ttl_file_path, format='turtle')
-    #         except Exception as e:
-    #             print(f"Error parsing existing TTL file: {e}")
-
-    #     combined_graph = existing_graph + rdf_graph
-
-    #     shacl_graph = Graph()
-    #     try:
-    #         shacl_graph.parse(shacl_file_path, format='turtle')
-    #     except Exception as e:
-    #         print(f"Error parsing SHACL file: {e}")
-
-    #     conforms, results_graph, results_text = validate(
-    #         data_graph=combined_graph,
-    #         shacl_graph=shacl_graph,
-    #         inference=None,  # No inference
-    #         debug=True
-    #     )
-
-    #     if conforms:
-    #         try:
-    #             if len(combined_graph) > 0:
-    #                 combined_graph.serialize(destination=ttl_file_path, format='turtle')
-    #                 #print("Successfully saved combined graph to output.ttl")
-    #             else:
-    #                 print("Warning: combined_graph is empty, nothing will be written to output.ttl")
-    #             return True ,shacl_graph
-    #         except Exception as e:
-    #             print(f"Error serializing graph: {e}")
-    #     else:
-    #         results_file_path = os.path.join(os.path.dirname(ttl_file_path), 'validation_report.ttl')
-    #         results_graph.serialize(destination=results_file_path, format='turtle')
-    #         raise ValidationError("The asset has an open ADV")
-     
-     
-        
-    # def validate_shape(json_data):
-    #     # Ensure SHACL and existing graphs are loaded once
-    #     if shacl_validator.shacl_graph is None or len(shacl_validator.existing_graph) == 0:
-    #         raise Exception("SHACL or existing graph not loaded properly. Call initialize_graphs first.")
-        
-    #     # Convert the incoming JSON data to RDF format
-    #     rdf_graph = self.convert_json_to_rdf(json_data)  # Assuming this function exists for conversion
-        
-    #     # Combine the existing graph and the new RDF graph
-    #     combined_graph = shacl_validator.existing_graph + rdf_graph
-        
-    #     # Validate the combined graph with SHACL
-    #     conforms, results_graph, results_text = validate(
-    #         data_graph=combined_graph,
-    #         shacl_graph=shacl_validator.shacl_graph,
-    #         inference=None,  # No inference
-    #         debug=True
-    #     )
-
-    #     if conforms:
-    #         try:
-    #             # Only serialize if the graph is modified and not empty
-    #             if len(combined_graph) > 0:
-    #                 shacl_validator.update_existing_graph(rdf_graph)  # Update the existing graph
-    #                 print("Successfully saved combined graph to output.ttl")
-    #             else:
-    #                 print("Warning: combined_graph is empty, nothing will be written to output.ttl")
-    #             return True, shacl_validator.shacl_graph
-    #         except Exception as e:
-    #             print(f"Error serializing graph: {e}")
-    #     else:
-    #         # Serialize validation results in case of failure
-    #         results_file_path = os.path.join(os.path.dirname(shacl_validator.ttl_file_path), 'validation_report.ttl')
-    #         results_graph.serialize(destination=results_file_path, format='turtle')
-    #         raise ValidationError("The asset has an open ADV")
-        
                    
         
     def generateShape(self):
         #commented for not shacl
         #start_time = time.time()
-        if self.id in shacl_validator.create_shape_cache:
-            #logging.info(f"Transaction already processed. Skipping shape generation.")
-            return True
+        # if self.id in shacl_validator.create_shape_cache: #not optimized
+        #     #logging.info(f"Transaction already processed. Skipping shape generation.")
+        #     return True
         
         json_data = {
             "asset_id": self.id,
@@ -2523,9 +2327,9 @@ class Transaction(object):
         ##This part should comment if not shacl
         #start_time = time.time()
         
-        if self.id in shacl_validator.validated_transactions:
+        # if self.id in shacl_validator.validated_transactions: #not optimized
             
-            return  
+        #     return  
         json_data_adv1 = {
             "asset_id": self.asset["data"]["asset_id"],
             "transaction_id": self.id,
@@ -2852,9 +2656,9 @@ class Transaction(object):
                     "RETRUN SELL transaction's outputs must point to Escrow account"
                 )
         ##This part should comment  
-        if self.id in shacl_validator.validated_transactions:
-            #logging.info(f"Transaction {self.id} already validated.")
-            return  
+        # if self.id in shacl_validator.validated_transactions: #not optimized
+        #     #logging.info(f"Transaction {self.id} already validated.")
+        #     return  
         json_data_accept_request_return = {
             "asset_ref": self.asset["data"]["asset_id"],
             "sell_ref": self.asset["data"]["sell_id"],
@@ -2879,7 +2683,7 @@ class Transaction(object):
         adv_id = self.asset["data"]["ref1_id"]
         buy_offer_tx = bigchain.get_transaction(offer_id)
         adv_tx = bigchain.get_transaction(adv_id)
-        #logger.debug("adv!!! %s", adv_tx)
+        
         if buy_offer_tx is None:
             raise InputDoesNotExist("Return request  `{}` doesn't exist".format(offer_id))
 
@@ -2898,9 +2702,9 @@ class Transaction(object):
                     "ACCEPT RETURN transaction's outputs must point to Escrow account"
                 )
         ##This part should comment
-        if self.id in shacl_validator.validated_transactions:
-            #logging.info(f"Transaction {self.id} already validated.")
-            return  # Skip further processing if already validated
+        # if self.id in shacl_validator.validated_transactions:#not optimized
+        #     #logging.info(f"Transaction {self.id} already validated.")
+        #     return  # Skip further processing if already validated
         
         json_data_accept_return = {
             "asset_id": self.asset["data"]["asset_id"],
