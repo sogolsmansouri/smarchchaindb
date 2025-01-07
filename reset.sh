@@ -1,12 +1,12 @@
 WORKDIR=$(pwd)
 
+DBD=$WORKDIR/docker/data/_tmdbackup
 TM=$WORKDIR/docker/data/tendermint
 
 docker-compose down
 
 rm -rf $TM/data
-mkdir $TM/data
-cp $TM/priv_validator_state.json.backup $TM/data/priv_validator_state.json
+cp -r $DBD/data $TM/data
 sudo chmod -R 777 $TM/data
 
 docker-compose up -d bigchaindb
