@@ -2093,12 +2093,12 @@ class Transaction(object):
                 )
         #This part should comment if  shacl
         #complex validation
-        # adv_status = adv_tx.metadata.get("status")
+        adv_status = adv_tx.metadata.get("status")
         
-        # if adv_status.lower() != "open":
-        #     raise ValidationError(
-        #         "BUYOFFER transaction must be against an open ADV transaction"
-        #     ) 
+        if adv_status.lower() != "open":
+            raise ValidationError(
+                "BUYOFFER transaction must be against an open ADV transaction"
+            ) 
         #end
         #This part should comment if not shacl
         #start_time = time.time()
@@ -2153,11 +2153,11 @@ class Transaction(object):
                 )
         #This part should comment in case of shacl validation  
         #complex validation 
-        # adv_status = adv_tx.metadata.get("status") 
-        # if adv_status.lower() != "open":
-        #     raise ValidationError(
-        #         "SELL transaction must be against an open ADV transaction"
-        #     )
+        adv_status = adv_tx.metadata.get("status") 
+        if adv_status.lower() != "open":
+            raise ValidationError(
+                "SELL transaction must be against an open ADV transaction"
+            )
         #end comment area
         ##This part should comment if not shacl validation  
         # #start_time = time.time()
@@ -2316,14 +2316,14 @@ class Transaction(object):
             )
         ## uncomment in not shacl
         #complex
-        # adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
+        adv_list = bigchain.get_adv_txids_for_asset(create_tx_id)
         
-        # if adv_list:
-        #     raise DuplicateTransaction(
-        #         "ADV tx with the same asset input `{}` already committed".format(
-        #             adv_list
-        #         )
-        #     )
+        if adv_list:
+            raise DuplicateTransaction(
+                "ADV tx with the same asset input `{}` already committed".format(
+                    adv_list
+                )
+            )
         ##end uncomment
         ##This part should comment if not shacl
         # #start_time = time.time()
