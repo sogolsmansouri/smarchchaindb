@@ -2351,6 +2351,7 @@ class Transaction(object):
         # logging.info(f"Time taken to validate adv: {end_time - start_time} seconds")
         # logger.debug(f"Time taken to validate adv: {end_time - start_time} seconds")
         ##end
+            
     def validate_update_adv(self, bigchain, current_transactions=[]):
         
         create_tx_id = self.asset["data"]["asset_id"]
@@ -2659,7 +2660,7 @@ class Transaction(object):
         ##This part should comment  if not shacl
         if self.id in shacl_validator.validated_transactions: #not optimized
             #logging.info(f"Transaction {self.id} already validated.")
-            return  
+            return  self.validate_transfer_inputs(bigchain, current_transactions) 
         json_data_accept_request_return = {
             "asset_ref": self.asset["data"]["asset_id"],
             "sell_ref": self.asset["data"]["sell_id"],
@@ -2705,7 +2706,7 @@ class Transaction(object):
         ##This part should comment if not shacl
         if self.id in shacl_validator.validated_transactions:#not optimized
             #logging.info(f"Transaction {self.id} already validated.")
-            return  # Skip further processing if already validated
+            return self.validate_transfer_inputs(bigchain, current_transactions)  # Skip further processing if already validated
         
         json_data_accept_return = {
             "asset_id": self.asset["data"]["asset_id"],
